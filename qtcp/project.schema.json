@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "project.schema.json",
+  "title": "Project Configuration",
+  "description": "Schema for project configuration",
+  "type": "object",
+	"required": ["properties"],
+  	"properties": {
+		"properties": {
+			"type": "object",
+			"description": "Basic properties",
+			"required": ["type"],
+			"properties": {
+				"exportVersion": {
+					"type": "string",
+					"description": "Version of the export format",
+					"examples": ["1.0"]
+				},
+				"name": {
+					"type": "string",
+					"description": "Project name"
+				},
+				"space": {
+					"type": "string",
+					"description": "Space ID in which the project is created, recommended to use reference like ref{project.current.spaceId}",
+					"examples": ["ref{project.current.spaceId}"]
+				},
+				"type": {
+					"type": "string",
+					"description": "Project type",
+					"enum": ["DATA_MOVEMENT", "DATA_PIPELINE"]
+				},
+				"description": {
+					"type": "string",
+					"description": "Project description"
+				},
+				"platformType": {
+					"type": "string",
+					"description": "Target platform type",
+					"enum": ["QLIK_OPEN_LAKEHOUSE", "SNOWFLAKE", "BIGQUERY", "SYNAPSE", "QVD", "DATABRICKS", "REDSHIFT", "MSSQL", "FABRIC"]
+				},
+				"platformConnection": {
+					"type": "string",
+					"description": "Target platform connection ID",
+					"examples": ["{{platformConnection}}"]
+				},
+				"cloudStagingConnection": {
+					"type": "string",
+					"description": "Cloud staging connection ID",
+					"examples": ["{{cloudStagingConnection}}"]
+				},
+				"snowflakeStorageIntegration": {
+					"type": "string",
+					"description": "Snowflake storage integration"
+				}
+			},
+			"additionalProperties": false
+		}
+	},
+	"allOf": [
+		{
+			"if": {
+				"properties": {
+					"properties": {
+						"properties": {
+							"type": {
+								"const": "DATA_MOVEMENT"
+							}
+						},
+						"required": ["type"]
+					}
+				}
+			},
+			"then": {
+				"properties": {
+					"properties": true
+				},
+				"additionalProperties": false
+			}
+		},
+		{
+			"if": {
+				"properties": {
+					"properties": {
+						"properties": {
+							"type": {
+								"const": "DATA_PIPELINE"
+							}
+						},
+						"required": ["type"]
+					}
+				}
+			},
+			"then": {
+				"properties": {
+					"properties": true,
+					"settings": {
+						"type": "object",
+						"description": "Additional settings (valid for DATA_PIPELINE projects)",
+						"required": [],
+						"properties": {
+							"artifactsNaming": {
+								"type": "object",
+								"description": "Naming conventions and prefixes/suffixes used when generating artifacts (tables, views, schemas)",
+								"required": [],
+								"properties": {
+									"suffixLiveViews": { 
+										"type": "string", 
+										"description": "Suffix applied to live view names",
+										"default": "__live"
+									},
+									"suffixChangesView": { 
+										"type": "string", 
+										"description": "Suffix applied to change table/view names",
+										"default": "__changes"
+									},
+									"suffixCurrentView": { 
+										"type": "string", 
+										"description": "Suffix applied to current view names",
+										"default": ""
+									},
+									"suffixHistoryViews": { 
+										"type": "string", 
+										"description": "Suffix applied to history view names",
+										"default": "__history"
+									},
+									"suffixLiveHistoryViews": { 
+										"type": "string", 
+										"description": "Suffix applied to live history view names",
+										"default": "__live_history"
+									},
+									"suffixInternalSchema": { 
+										"type": "string", 
+										"description": "Suffix used for internal schema names",
+										"default": "__internal"
+									},
+									"prefixHeaderColumns": { 
+										"type": "string", 
+										"description": "Prefix applied to header columns in change tables",
+										"default": "hdr__"
+									},
+									"prefixSchema": { 
+										"type": "string", 
+										"description": "Prefix used when creating schemas for tasks"
+									},
+									"defaultSchemaNameOption": { 
+										"type": "string", 
+										"description": "How to format schema names by default",
+										"enum": ["NONE", "LOWER_CASE", "UPPER_CASE", "NO_FURTHER_PROCESSING"],
+										"default": "LOWER_CASE"
+									}
+								},
+								"additionalProperties": false
+							},
+							"transformationSettings": {
+								"type": "object",
+								"description": "Transformation settings for open lakehouse project",
+								"required": [],
+								"properties": {
+									"hashSaltString": { 
+										"type": "string", 
+										"description": "hash salt string",
+										"default": ""
+									}
+								},
+								"additionalProperties": false
+							}
+						},
+						"additionalProperties": false
+					}
+				},
+				"additionalProperties": false
+			}
+		}
+	]
+}

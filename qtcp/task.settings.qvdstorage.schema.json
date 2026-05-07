@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",	
+  "$id": "task.settings.qvdstorage.schema.json",  
+  "title": "QVD Storage Task Settings",
+  "description": "Schema for QVD storage task settings configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "fullLoadOnly": {
+      "$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True"
+    },
+		"folderLocationType": {
+      "type": "string",
+      "description": "Type of folder location",
+      "enum": ["NONE", "DATA_ASSET_NAME", "ROOT_FOLDER", "SPECIFIC_FOLDER"],
+      "default": "DATA_ASSET_NAME"
+    },
+    "specificFolder": {
+      "type": "string",
+      "description": "Specific folder path when folderLocationType is SPECIFIC_FOLDER"
+    }
+  }
+}

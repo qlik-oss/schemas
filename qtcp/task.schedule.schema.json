@@ -1,0 +1,119 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.schedule.schema.json",
+	"title": "Task Schedule Configuration",
+	"description": "Schema for task scheduling configuration",
+	"type": "object",
+	"required": ["scheduling"],
+	"properties": {
+		"scheduling": {
+			"type": "array",
+			"description": "Scheduling array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"description": {
+						"type": "string",
+						"description": "Schedule description",
+						"examples": ["Time based schedule running every 6 hours"]
+					},
+					"version": {
+						"type": "string",
+						"description": "Schedule version",
+						"examples": ["1"]
+					},
+					"enabled": {
+						"type": "boolean",
+						"description": "Indicates if the schedule is enabled",
+						"enum": [true, false],
+						"default": true
+					},
+					"schedulingType": {
+						"type": "string",
+						"description": "Type of scheduling",
+						"enum": ["NONE", "TIME_BASED", "EVENT_BASED", "DATA_EVENTS_BASED"],
+						"default": "NONE"
+					},
+					"timeBasedScheduling": {
+						"type": "object",
+						"description": "Configuration for time-based schedules (RRULE or cron-like patterns)",
+						"properties": {
+							"schedule": {
+								"type": "array",
+								"items": {"type": "string"},
+								"description": "One or more RFC-5545 RRULE strings or schedule expressions",
+								"examples": [["RRULE:FREQ=HOURLY;INTERVAL=6;BYMINUTE=16;BYSECOND=0"]]
+							},
+							"startDateTime": {
+								"type": "string",
+								"format": "date-time",
+								"description": "Optional scheduled start datetime in ISO 8601 format (UTC recommended)",
+								"examples": ["2024-12-17T06:16:00.000Z"]
+							},
+							"endDateTime": {
+								"type": "string",
+								"format": "date-time",
+								"description": "Optional scheduled end datetime in ISO 8601 format (UTC recommended)",
+								"examples": ["2025-12-17T06:16:00.000Z"]
+							},
+							"timezone": {
+								"type": "string",
+								"description": "Timezone identifier for the schedule",
+								"examples": ["Etc/UTC"]
+							},
+							"fullloadInterval": {
+								"type": "integer",
+								"description": "Full load interval",
+								"default": 0
+							}
+						},
+						"required": ["schedule"],
+						"additionalProperties": false
+					},
+					"eventBasedScheduling": {
+						"type": "object",
+						"description": "Configuration for event-based triggers",
+						"properties": {
+							"eventSchedulingType": {
+								"type": "string",
+								"description": "Type of event-based scheduling",
+								"enum": ["ANY_INPUT_TASK","ANY_SELECTED_TASK"],
+								"default": "ANY_INPUT_TASK"
+							},
+							"triggerApps": {
+								"type": "array",
+								"description": "List of application identifiers that can trigger this schedule",
+								"items": {
+									"type": "object",
+									"properties": {
+										"projectId": {
+											"type": "string",
+											"description": "Project ID, recommended to use reference like ref{project.current.projectId}",
+											"examples": ["{{ref(project.current.projectId)}}"]
+										},
+										"dataAppId": {
+											"type": "string",
+											"description": "Task ID",
+											"examples": ["replication-fbwa"]
+										}
+									},
+									"additionalProperties": false
+								}
+							}
+						},
+						"additionalProperties": false
+					},
+					"runOnReconnect": {
+						"type": "string",
+						"description": "Behavior when reconnecting",
+						"enum": ["ONSCHEDULED", "IMMEDIATE"],
+						"default": "IMMEDIATE"
+					}
+				},
+				"required": ["schedulingType"],
+				"additionalProperties": false
+			}
+		}
+	},
+ 	"additionalProperties": false
+}

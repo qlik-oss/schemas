@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.icebergtransform.schema.json",
+  "title": "Defaults for new Iceberg Transform Task",
+  "description": "Schema for iceberg transform task default configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskRuntime": {
+      "type": "object",
+      "description": "Runtime configuration for the task",
+      "additionalProperties": false
+    },
+    "catalogIntegration": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/catalogIntegration"
+    },
+    "folderLocationType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/folderLocationType"
+    },
+    "specificFolder": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/specificFolder"
+    }
+  }
+}

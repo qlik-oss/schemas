@@ -1,0 +1,275 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.common.schema.json",
+  "title": "Common Task Settings Definitions",
+  "description": "Shared definitions for task settings schemas to promote reusability and consistency",
+  "definitions": {
+    "catalogIntegration": {
+      "type": "object",
+      "description": "Catalog integration settings",
+      "additionalProperties": false,
+      "properties": {
+        "publishDatasets": {
+          "type": "boolean",
+          "enum": [true, false],
+          "description": "Whether to publish datasets to catalog",
+          "default": false
+        }
+      }
+    },
+    "databaseSelection": {
+      "type": "object",
+      "description": "Database selection configuration",
+      "additionalProperties": false,
+      "properties": {
+        "databaseName": {
+          "type": "string",
+          "description": "Name of the database"
+        },
+        "selectionMethod": {
+          "type": "string",
+          "description": "Method for selecting the database"
+        }
+      }
+    },
+    "warehouseSelection": {
+      "type": "object",
+      "description": "Warehouse selection configuration",
+      "additionalProperties": false,
+      "properties": {
+        "warehouseName": {
+          "type": "string",
+          "description": "Name of the warehouse to use"
+        },
+        "selectionMethod": {
+          "type": "string",
+          "description": "Method for selecting the warehouse"
+        }
+      }
+    },
+    "folderLocationType": {
+      "type": "string",
+      "description": "Type of folder location",
+      "enum": ["NONE", "DATA_ASSET_NAME", "ROOT_FOLDER", "SPECIFIC_FOLDER"],
+      "default": "DATA_ASSET_NAME"
+    },
+    "specificFolder": {
+      "type": "string",
+      "description": "Specific folder path when folderLocationType is SPECIFIC_FOLDER"
+    },
+    "taskRunSchedule-EventBased": {
+      "type": "object",
+      "description": "Schedule configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+        "runInterval": {
+          "type": "integer",
+          "description": "Run interval in minutes",
+          "minimum": 0,
+          "default": 15
+        },
+        "schedulingType": {
+          "type": "string",
+          "description": "Type of scheduling",
+          "enum": ["NONE", "EVENT_BASED", "TIME_BASED"],
+          "default": "EVENT_BASED"
+        }
+      }
+    },
+    "taskRunSchedule-TimeBased": {
+      "type": "object",
+      "description": "Schedule configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+        "runInterval": {
+          "type": "integer",
+          "description": "Run interval in minutes",
+          "minimum": 0,
+          "default": 15
+        },
+        "schedulingType": {
+          "type": "string",
+          "description": "Type of scheduling",
+          "enum": ["EVENT_BASED", "TIME_BASED"],
+          "default": "TIME_BASED"
+        }
+      }
+    },
+    "viewType": {
+      "type": "string",
+      "description": "Type of view",
+      "enum": ["DEFAULT", "SECURE_VIEW"],
+      "default": "DEFAULT"
+    },
+    "hasHistory": {
+      "type": "boolean",
+      "enum": [true, false],
+      "description": "Whether the storage maintains history",
+      "default": true
+    },
+    "hasLiveViews": {
+      "type": "boolean",
+      "enum": [true, false],
+      "description": "Whether the storage has live views",
+      "default": true
+    },
+    "materialized": {
+      "type": "boolean",
+      "description": "Whether artifacts are materialized",
+      "enum": [true, false],
+      "default": false
+    },
+    "tableUpdateInterval": {
+      "type": "integer",
+      "description": "Interval in minutes for table updates",
+      "minimum": 0,
+      "default": 15
+    },
+    "tableUpdateConcurrency": {
+      "type": "integer",
+      "description": "Number of concurrent table updates",
+      "minimum": 1,
+      "default": 10
+    },
+    "tableLoadInParallel": {
+      "type": "integer",
+      "description": "Number of tables to load in parallel",
+      "minimum": 1,
+      "default": 5
+    },
+    "icebergSettings": {
+      "type": "object",
+      "description": "Settings for Iceberg tables",
+      "additionalProperties": false,
+      "properties": {
+        "snowflakeExternalVolume": {
+          "type": "string",
+          "description": "Snowflake external volume name"
+        },
+        "folderLocationType": {
+          "type": "string",
+          "description": "Type of folder location",
+          "enum": ["NONE", "DATA_ASSET_NAME", "ROOT_FOLDER", "SPECIFIC_FOLDER"],
+          "default": "DATA_ASSET_NAME"
+        },
+        "specificFolder": {
+          "type": "string",
+          "description": "Specific folder path when folderLocationType is SPECIFIC_FOLDER"
+        },
+        "enableOpenCatalogSync": {
+          "type": "boolean",
+          "description": "Whether to enable open catalog sync",
+          "enum": [true, false],
+          "default": false
+        },
+        "snowflakeOpenCatalog": {
+          "type": "string",
+          "description": "Snowflake open catalog name"
+        }
+      }
+    },
+    "tableTypeSettings": {
+      "type": "object",
+      "description": "Table type configuration",
+      "additionalProperties": false,
+      "properties": {
+        "tableType": {
+          "type": "string",
+          "description": "Type of table",
+          "enum": ["REGULAR", "ICEBERG"],
+          "default": "REGULAR"
+        },
+        "icebergSettings": {
+          "$ref": "#/definitions/icebergSettings"
+        }
+      }
+    },
+    "indexArtifactsLocation": {
+      "type": "object",
+      "description": "Location for index artifacts",
+      "additionalProperties": false,
+      "properties": {
+        "databaseSelection": {
+          "type": "object",
+          "description": "Database selection for index artifacts",
+          "additionalProperties": false,
+          "properties": {
+            "databaseName": {
+              "type": "string",
+              "description": "Name of the index database"
+            },
+            "selectionMethod": {
+              "type": "string",
+              "description": "Method for selecting the index database"
+            }
+          }
+        },
+        "databricksVectorSearchEndpoint": {
+          "type": "string",
+          "description": "Databricks vector search endpoint URL",
+          "default": "qlik_vector_search_endpoint"
+        }
+      }
+    },
+    "llmSettings": {
+      "type": "object",
+      "description": "LLM configuration settings",
+      "additionalProperties": false,
+      "properties": {
+        "kindId": {
+          "type": "string",
+          "description": "LLM kind identifier",
+          "example": "llm:SnowflakeCortex@1.0.0"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "LLM parameters",
+          "additionalProperties": false,
+          "properties": {
+            "embedding_model": {
+              "type": "string",
+              "description": "Embedding model name",
+              "example": "nv-embed-qa-4"
+            },
+            "completion_model": {
+              "type": "string",
+              "description": "Completion model name",
+              "example": "mistral-7b"
+            }
+          }
+        }
+      }
+    },
+    "vectorDbConnection": {
+      "type": "string",
+      "description": "Vector database connection string"
+    },
+    "vectorDbTargetType": {
+      "type": "string",
+      "description": "Target type for vector database"
+    },
+    "llmConnection": {
+      "type": "string",
+      "description": "LLM connection string"
+    },
+    "proxySettings": {
+      "type": "object",
+      "description": "Proxy configuration settings",
+      "additionalProperties": false,
+      "properties": {
+        "proxyOdbc": {
+          "type": "boolean",
+          "enum": [true, false],
+          "description": "Whether to use proxy for ODBC connections",
+          "default": false
+        },
+        "proxyStorage": {
+          "type": "boolean",
+          "enum": [true, false],
+          "description": "Whether to use proxy for storage connections",
+          "default": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "task.settings.datamart.schema.json",
+	"title": "Data Mart Task Settings",
+	"description": "Schema for Data Mart task settings configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"fullLoadOnly": {
+			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True"
+		},
+		"artifactsSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-WithDeletedRows"
+    },
+		"artifactsLocation": {
+			"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"
+    },
+		"taskRuntime": {
+      "type": "object",
+      "description": "Task runtime configuration",
+      "additionalProperties": false,
+      "properties": {
+        "tableUpdateConcurrency": {
+          "$ref": "task.settings.common.schema.json#/definitions/tableUpdateConcurrency"
+        },
+        "warehouseSelection": {
+          "$ref": "task.settings.common.schema.json#/definitions/warehouseSelection"
+        }
+      }
+    },
+		"catalogIntegration": {
+			"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+    },
+		"tableTypeSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/tableTypeSettings"
+    },
+		"viewType": {
+      "$ref": "task.settings.common.schema.json#/definitions/viewType"
+    }
+	}
+}

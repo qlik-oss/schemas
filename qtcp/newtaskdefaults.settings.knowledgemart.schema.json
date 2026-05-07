@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.knowledgemart.schema.json",
+  "title": "Defaults for new Knowledge Mart Task",
+  "description": "Schema for knowledge mart task default configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskRuntime": {
+      "type": "object",
+      "description": "Runtime configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+        "tableUpdateInterval": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableUpdateInterval"
+        },
+        "tableUpdateConcurrency": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableUpdateConcurrency"
+        },
+        "warehouseSelection": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/warehouseSelection"
+        }
+      }
+    },
+    "database": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/databaseSelection"
+    },
+    "viewType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/viewType"
+    },
+    "indexArtifactsLocation": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/indexArtifactsLocation"
+    },
+    "taskRunSchedule": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/taskRunSchedule-EventBased"
+    },
+    "vectorDbTargetType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/vectorDbTargetType"
+    },
+    "vectorDbConnection": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/vectorDbConnection"
+    },
+    "llmConnection": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/llmConnection"
+    },
+    "llmSettings": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/llmSettings"
+    }
+  }
+}

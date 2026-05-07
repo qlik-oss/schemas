@@ -1,0 +1,206 @@
+{
+	"$schema": "https://json-schema.org/draft-07/schema#",
+	"$id": "task.schema.json",
+	"title": "Task Configuration",
+	"description": "Schema for task configuration",
+	"type": "object",
+	"required": ["properties"],
+	"oneOf": [
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "DATAMART" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.datamart.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "FILE_BASED_KNOWLEDGE_MART" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.filebasedknowledgemart.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "ICEBERG_STORAGE" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.icebergstorage.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "ICEBERG_TRANSFORM" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.icebergtransform.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "KNOWLEDGE_MART" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.knowledgemart.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "LAKE_LANDING" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.lakelanding.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "LANDING_SAAS_MANAGED" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.landing.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "MIRROR" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.mirror.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "QVD_STORAGE" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.qvdstorage.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "REGISTERED_DATA" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.registereddata.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "REPLICATION" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.replication.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "STORAGE" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.storage.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "STREAMING_LANDING" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.streaminglanding.schema.json" }
+			},
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "TRANSFORM" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.transform.schema.json" }
+			},
+			"additionalProperties": false
+		}
+	],
+	"$defs": {
+		"BaseProperties": {
+			"type": "object",
+			"description": "Basic properties",
+			"required": ["type"],
+			"additionalProperties": false,
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Task name"
+				},
+				"id": {
+					"type": "string",
+					"description": "Unique task identifier, to be used in other tasks",
+					"examples": ["my_task_name-5ek3"]
+				},
+				"description": {
+					"type": "string",
+					"description": "Task description"
+				},
+				"type": {
+					"type": "string",
+					"description": "Task type",
+					"enum": ["DATAMART","FILE_BASED_KNOWLEDGE_MART","ICEBERG_STORAGE","ICEBERG_TRANSFORM","KNOWLEDGE_MART","LAKE_LANDING","LANDING_SAAS_MANAGED","MIRROR","QVD_STORAGE","REGISTERED_DATA","REPLICATION","STORAGE","STREAMING_LANDING","TRANSFORM"]
+				}
+			}
+		}
+	}
+}

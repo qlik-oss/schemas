@@ -1,0 +1,314 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.settings.lakelanding.schema.json",
+	"title": "Lake Landing Task Configuration (Replication)",
+	"description": "Schema for Lake Landing task configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"fullLoadOnly": {
+			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"
+		},
+		"targetEndpoint": {
+			"type": "object",
+			"description": "Target endpoint configuration",
+			"properties": {
+				"targetConnection": {
+					"type": "string",
+					"description": "Target connection ID"
+				},
+				"targetSchema": {
+					"type": "string",
+					"description": "Target schema name"
+				},
+				"targetControlTableSchema": {
+					"type": "string",
+					"description": "Target control table schema name"
+				}
+			},
+			"additionalProperties": false
+		},
+		"proxySettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/proxySettings"
+		},
+		"changeDataPartitioning": {
+			"type": "object",
+			"description": "Change data partitioning",
+			"properties": {
+				"mode": {
+					"mode": "string",
+					"description": "Change data partitioning mode",
+					"enum": ["PARTITION_OFF"],
+					"default": "PARTITION_OFF"
+				},
+				"partitionEvery": {
+					"type": "integer",
+					"description": "Change data partitioning interval",
+					"default": 60
+				}
+			},
+			"additionalProperties": false
+		},
+		"fullLoadOptions": {
+			"type": "object",
+			"description": "Full load options",
+			"properties": {
+				"tableExistsHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/tableExistsHandling"
+				},
+				"afterFullLoadCompleted": {
+					"type": "object",
+					"description": "Actions after full load is completed",
+					"properties": {
+						"stopTask": {
+							"$ref": "task.settings.common.schema.json#/definitions/stopTask"
+						},
+						"createKeyOrUniqueIndex": {
+							"$ref": "task.settings.common.schema.json#/definitions/createKeyOrUniqueIndex"
+						}
+					},
+					"additionalProperties": false
+				},
+				"fullLoadOptionsTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/fullLoadOptionsTuning"
+				}
+			},
+			"additionalProperties": false
+		},
+		"applyChangesOptions": {
+			"type": "object",
+			"description": "Apply changes options",
+			"properties": {
+				"changeProcessingTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/applyChangesOptionsChangeProcessingTuning"
+				}
+			},
+			"additionalProperties": false
+		},
+		"storeChangesOptions": {
+			"type": "object",
+			"description": "Options for storing changes",
+			"properties": {
+				"changeTableHeaderColumn": {
+					"$ref": "task.settings.common.schema.json#/definitions/changeTableHeaderColumn"
+				}
+			},
+			"additionalProperties": false
+		},
+		"errorHandling": {
+			"type": "object",
+			"description": "Error handling configuration",
+			"properties": {
+				"applyConflicts": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingApplyConflicts"
+				},
+				"data": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingData"
+				},
+				"tableError": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingTableError"
+				},
+				"environmental": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingEnvironmental"
+				}
+			},
+			"additionalProperties": false
+		},
+		"metadata": {
+			"type": "object",
+			"description": "Metadata configuration",
+			"properties": {
+				"controlTableSelection": {
+					"$ref": "task.settings.common.schema.json#/definitions/controlTableSelection"
+				},
+				"jsonHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/jsonHandling"
+				}
+			},
+			"additionalProperties": false
+		},
+		"changeProcessingTuning": {
+			"type": "object",
+			"description": "Change processing tuning",
+			"properties": {
+				"transactionTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/transactionTuning-TotalMemoryFalse"
+				},
+				"transactionalApply": {
+					"$ref": "task.settings.common.schema.json#/definitions/transactionalApply"
+				}
+			},
+			"additionalProperties": false
+		},
+		"characterSubstitution": {
+			"$ref": "task.settings.common.schema.json#/definitions/characterSubstitution"
+		},
+		"moreOptions": {
+			"$ref": "task.settings.common.schema.json#/definitions/moreOptions"
+		},
+		"fileAttributes": {
+			"type": "object",
+			"description": "File attributes",
+			"properties": {
+				"general": {
+					"type": "object",
+					"description": "General file attributes",
+					"properties": {
+						"format": {
+							"type": "string",
+							"description": "File format",
+							"examples": ["CSV"],
+							"enum": ["NONE", "CSV", "JSON", "PARQUET"],
+							"default": "CSV"
+						},
+						"fieldDelimiter": {
+							"type": "string",
+							"description": "Field delimiter"
+						},
+						"nullValue": {
+							"type": "string",
+							"description": "Null value representation"
+						},
+						"recordDelimiter": {
+							"type": "string",
+							"description": "Record delimiter"
+						},
+						"quoteCharacter": {
+							"type": "string",
+							"description": "Quote character"
+						},
+						"quoteEscapeCharacter": {
+							"type": "string",
+							"description": "Quote escape character"
+						},
+						"maxFileSize": {
+							"type": "integer",
+							"description": "Maximum file size",
+							"default": 1000000
+						},
+						"parquetMaxLobSize": {
+							"type": "integer",
+							"description": "Parquet max LOB size",
+							"default": 64
+						},
+						"parquetTimeStampUnit": {
+							"type": "string",
+							"description": "Parquet timestamp unit"
+						},
+						"parquetVersion": {
+							"type": "string",
+							"description": "Parquet version"
+						},
+						"compressFileUsing": {
+							"type": "string",
+							"description": "Compression type"
+						},
+						"addMetadataHeader": {
+							"type": "object",
+							"description": "Add metadata header settings",
+							"properties": {
+								"withColumnName": {
+									"type": "boolean",
+									"description": "Add column name to metadata header",
+									"enum": [true, false],
+									"default": false
+								},
+								"withDataTypes": {
+									"type": "boolean",
+									"description": "Add data types to metadata header",
+									"enum": [true, false],
+									"default": false
+								}
+							},
+							"additionalProperties": false
+						}
+					},
+					"additionalProperties": false
+				},
+				"changeProcessing": {
+					"type": "object",
+					"description": "Change processing settings",
+					"properties": {
+						"applyWhenFullSizeReaches": {
+							"type": "integer",
+							"description": "Apply changes when full size reaches value",
+							"default": 32000
+						},
+						"applyWhenElapsedTimeReaches": {
+							"type": "integer",
+							"description": "Apply changes when elapsed time reaches value",
+							"default": 60
+						}
+					},
+					"additionalProperties": false
+				},
+				"metadataFiles": {
+					"type": "object",
+					"description": "Metadata files settings",
+					"properties": {
+						"createInTargetFolder": {
+							"type": "boolean",
+							"description": "Create metadata files in target folder",
+							"enum": [true, false],
+							"default": false
+						}
+					},
+					"additionalProperties": false
+				}
+			},
+			"additionalProperties": false
+		},
+		"ddlHandlingPolicy": {
+			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+		},
+		"artifactsInfo": {
+			"$ref": "task.settings.common.schema.json#/definitions/artifactsInfo"
+		},
+		"dataProviderType": {
+			"$ref": "task.settings.common.schema.json#/definitions/dataProviderType"
+		},
+		"landingDwSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/landingDwSettings"
+		},
+		"landingStorageSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/locationSettings"
+		},
+		"landingAppRuntime": {
+			"type": "object",
+			"description": "Landing application runtime settings",
+			"properties": {
+				"tableLoadInParallel": {
+					"type": "integer",
+					"description": "Number of tables to load in parallel",
+					"default": 5
+				},
+				"changeProcessingInterval": {
+					"type": "integer",
+					"description": "Change processing interval",
+					"default": 60
+				},
+				"sourceCdcFetchIntervalMinutes": {
+					"type": "integer",
+					"description": "Source CDC fetch interval in minutes",
+					"default": 60
+				},
+				"cdcSettings": {
+					"$ref": "task.settings.common.schema.json#/definitions/cdcSettings"
+				},
+				"initialLoadMode": {
+					"$ref": "task.settings.common.schema.json#/definitions/initialLoadMode"
+				},
+				"workloadExecutionEngine": {
+					"$ref": "task.settings.common.schema.json#/definitions/workloadExecutionEngine"
+				}
+			},
+			"additionalProperties": false
+		},
+		"maximumLobSize": {
+			"$ref": "task.settings.common.schema.json#/definitions/maximumLobSize"
+		},
+		"includeLobColumns": {
+			"$ref": "task.settings.common.schema.json#/definitions/includeLobColumns"
+		}
+	}
+}

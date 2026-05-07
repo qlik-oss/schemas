@@ -1,0 +1,105 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "Iceberg Transform Task Settings",
+	"description": "Schema for Iceberg Transform task settings configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"generalSettings": {
+			"type": "object",
+			"description": "General settings",
+			"additionalProperties": false,
+			"properties": {
+				"artifactsLocation": {
+					"$ref": "task.settings.common.schema.json#/definitions/artifactsLocation"
+				},
+				"artifactsSettings": {
+					"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-WithDeletedRows"
+				},
+				"loadSettings": {
+					"type": "object",
+					"description": "Settings for data loading behavior",
+					"properties": {
+						"loadMode": {
+							"type": "string",
+							"description": "Mode for loading data",
+							"enum": ["APPEND_ONLY", "MERGE"],
+							"default": "MERGE"
+						},
+						"mergeSettings": {
+							"type": "object",
+							"description": "Settings specific to merge load mode",
+							"properties": {
+								"softDelete": {
+									"type": "boolean",
+									"description": "Whether to use soft delete (mark as deleted) instead of hard delete",
+									"enum": [true, false],
+									"default": false
+								},
+								"hasHistory": {
+									"type": "boolean",
+									"description": "Whether to maintain historical records",
+									"enum": [true, false],
+									"default": false
+								}
+							},
+							"additionalProperties": false
+						}
+					},
+					"additionalProperties": false
+				},
+				"storageLocationSettings": {
+					"$ref": "task.settings.common.schema.json#/definitions/locationSettings"
+				},
+				"nestedFieldsHandling": {
+					"type": "string",
+					"description": "How to handle nested fields in the data",
+					"enum": ["KEEP_NESTED_FIELDS", "EXPAND_NESTED_FIELDS"],
+					"default": "KEEP_NESTED_FIELDS"
+				},
+				"targetTablePartition": {
+					"type": "string",
+					"description": "Partitioning strategy for target table",
+					"enum": ["NONE", "EVENT_INGESTION_DATE"],
+					"default": "EVENT_INGESTION_DATE"
+				},
+				"retentionSettings": {
+					"type": "object",
+					"description": "Settings for data retention policy",
+					"properties": {
+						"type": {
+							"type": "string",
+							"description": "Type of retention policy",
+							"enum": ["NONE", "RETENTION"],
+							"default": "NONE"
+						},
+						"days": {
+							"type": "integer",
+							"description": "Number of days to retain data",
+							"minimum": 1,
+							"default": 1
+						}
+					},
+					"additionalProperties": false
+				}
+			}
+		},
+		"runtimeSettings": {
+			"type": "object",
+			"description": "Runtime configuration for the task",
+			"additionalProperties": false,
+			"properties": {
+				"lakehouseClusterId": {
+					"type": "string",
+					"description": "Lakehouse cluster Id"
+				}
+			}
+		},
+		"ddlHandlingPolicy": {
+			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+		},
+		"catalogIntegration": {
+			"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+		}
+	}
+}

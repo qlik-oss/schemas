@@ -1,0 +1,184 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.settings.landing.schema.json",	
+	"title": "Landing CDC Task Settings",
+	"description": "Schema for Landing CDC task settings configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"fullLoadOnly": {
+			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True"
+		},
+		"artifactsInfo": {
+			"$ref": "task.settings.common.schema.json#/definitions/artifactsInfo"
+		},
+		"errorHandling": {
+			"type": "object",
+			"description": "Error handling configuration",
+			"additionalProperties": false,
+			"properties": {
+				"applyConflicts": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingApplyConflicts"
+				},
+				"data": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingData"
+				},
+				"tableError": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingTableError"
+				},
+				"environmental": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingEnvironmental"
+				}
+			}
+		},
+		"landingDwSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/landingDwSettings"
+		},
+		"landingStorageSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/locationSettings"
+		},
+		"landingAppRuntime": {
+			"type": "object",
+			"description": "Landing application runtime settings",
+			"additionalProperties": false,
+			"properties": {
+				"tableLoadInParallel": {
+					"type": "integer",
+					"description": "Number of tables to load in parallel",
+					"default": 5
+				},
+				"changeProcessingInterval": {
+					"type": "integer",
+					"description": "Change processing interval",
+					"default": 60
+				},
+				"sourceCdcFetchIntervalMinutes": {
+					"type": "integer",
+					"description": "Source CDC fetch interval in minutes",
+					"default": 60
+				},
+				"cdcSettings": {
+					"$ref": "task.settings.common.schema.json#/definitions/cdcSettings"
+				},
+				"initialLoadMode": {
+					"$ref": "task.settings.common.schema.json#/definitions/initialLoadMode"
+				},
+				"workloadExecutionEngine": {
+					"$ref": "task.settings.common.schema.json#/definitions/workloadExecutionEngine"
+				}
+			}
+		},
+		"maximumLobSize": {
+			"$ref": "task.settings.common.schema.json#/definitions/maximumLobSize"
+		},
+		"includeLobColumns": {
+			"$ref": "task.settings.common.schema.json#/definitions/includeLobColumns"
+		},
+		"landingType": {
+			"type": "string",
+			"description": "Type of landing engine",
+			"enum": ["REPLICATE","PRECOG"],
+			"default": "REPLICATE"
+		},
+		"proxySettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/proxySettings"
+		},
+		"fileAttributes": {
+			"type": "object",
+			"description": "File attributes",
+			"additionalProperties": false,
+			"properties": {
+				"general": {
+					"$ref": "task.settings.common.schema.json#/definitions/fileAttributesGeneral-Landing"
+				}
+			}
+		},
+		"changeProcessingTuning": {
+			"type": "object",
+			"description": "Change processing tuning configuration",
+			"additionalProperties": false,
+			"properties": {
+				"batchApply": {
+					"$ref": "task.settings.common.schema.json#/definitions/batchApply"
+				},
+				"batchSplitSize": {
+					"$ref": "task.settings.common.schema.json#/definitions/batchSplitSize"
+				},
+				"transactionTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/transactionTuning-TotalMemoryTrue"
+				},
+				"transactionalApply": {
+					"$ref": "task.settings.common.schema.json#/definitions/transactionalApply"
+				}
+			}
+		},
+		"applyChangesOptions": {
+			"type": "object",
+			"description": "Apply changes options",
+			"additionalProperties": false,
+			"properties": {
+				"changeProcessingTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/applyChangesOptionsChangeProcessingTuning"
+				}
+			}
+		},
+		"metadata": {
+			"type": "object",
+			"description": "Metadata configuration",
+			"additionalProperties": false,
+			"properties": {
+				"lobHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/lobHandling"
+				},
+				"controlTableSelection": {
+					"$ref": "task.settings.common.schema.json#/definitions/controlTableSelection"
+				},
+				"jsonHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/jsonHandling"
+				}
+			}
+		},
+		"characterSubstitution": {
+			"$ref": "task.settings.common.schema.json#/definitions/characterSubstitution"
+		},
+		"moreOptions": {
+			"$ref": "task.settings.common.schema.json#/definitions/moreOptions"
+		},
+		"storeChangesOptions": {
+			"type": "object",
+			"description": "Options for storing changes",
+			"additionalProperties": false,
+			"properties": {
+				"changeTableHeaderColumn": {
+					"$ref": "task.settings.common.schema.json#/definitions/changeTableHeaderColumn"
+				}
+			}
+		},
+		"fullLoadOptions": {
+			"type": "object",
+			"description": "Full load options",
+			"additionalProperties": false,
+			"properties": {
+				"tableExistsHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/tableExistsHandling"
+				},
+				"afterFullLoadCompleted": {
+					"type": "object",
+					"description": "Actions after full load is completed",
+					"additionalProperties": false,
+					"properties": {
+						"createKeyOrUniqueIndex": {
+							"$ref": "task.settings.common.schema.json#/definitions/createKeyOrUniqueIndex"
+						}
+					}
+				},
+				"fullLoadOptionsTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/fullLoadOptionsTuning"
+				}
+			}
+		},
+		"ddlHandlingPolicy": {
+			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+		}
+	}
+}

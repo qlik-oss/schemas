@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.qvdstorage.schema.json",
+  "title": "Defaults for new QVD Storage Task",
+  "description": "Schema for QVD storage task default configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "folderLocationType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/folderLocationType"
+    },
+    "specificFolder": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/specificFolder"
+    }
+  }
+}

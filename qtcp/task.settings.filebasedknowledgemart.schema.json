@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "task.settings.filebasedknowledgemart.schema.json",
+  "title": "Knowledge Mart Task Settings",
+  "description": "Schema for Knowledge Mart task settings configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+		"fullLoadOnly": {
+      "$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"
+    },
+    "taskRuntime": {
+      "type": "object",
+      "description": "Task runtime configuration",
+      "additionalProperties": false,
+      "properties": {
+        "chunkSize": {
+          "type": "integer",
+          "description": "Chunk size",
+          "default": 2000
+        },
+				"chunkOverlap": {
+          "type": "integer",
+          "description": "Chunk overlap",
+          "default": 0
+        },
+				"bulkSize": {
+          "type": "integer",
+          "description": "Bulk size",
+          "default": 100
+        },
+				"filesLocation": {
+					"type": "object",
+          "description": "Settings for file location configuration",
+          "additionalProperties": false,
+          "properties": {
+						"donePath": {
+							"type": "string",
+							"description": "Path to directory for successfully processed files",
+							"default": "./done"
+						},
+						"failPath": {
+							"type": "string",
+							"description": "Path to directory for failed file processing",
+							"default": "./fail"
+						},
+						"contextType": {
+							"type": "string",
+							"description": "Type of context for file processing",
+							"enum": ["NONE", "MOVE_FILES", "GLOBAL_TS", "FULL_INFO"],
+							"default": "GLOBAL_TS"
+						},
+						"deepScanLevel": {
+							"type": "integer",
+							"description": "Depth level for scanning subdirectories (0 = current directory only)",
+							"minimum": 0,
+							"maximum": 10,
+							"default": 1
+						}
+					}
+				},
+				"processingMethod": {
+          "type": "string",
+          "description": "Processing method",
+					"enum": ["ALL_FILES", "NEW_FILES", "NEW_AND_MODIFIED_FILES"],
+					"default": "NEW_AND_MODIFIED_FILES"
+        },
+        "warehouseSelection": {
+          "$ref": "task.settings.common.schema.json#/definitions/warehouseSelection"
+        }
+      }
+    },
+    "viewType": {
+      "$ref": "task.settings.common.schema.json#/definitions/viewType"
+    },
+		"vectorDbTargetType": {
+      "$ref": "task.settings.common.schema.json#/definitions/vectorDbTargetType"
+    },
+    "vectorDbConnection": {
+      "$ref": "task.settings.common.schema.json#/definitions/vectorDbConnection"
+    },
+    "llmConnection": {
+      "$ref": "task.settings.common.schema.json#/definitions/llmConnection"
+    },
+    "llmSettings": {
+      "$ref": "task.settings.common.schema.json#/definitions/llmSettings"
+    },
+		"indexArtifactsLocation": {
+      "$ref": "task.settings.common.schema.json#/definitions/indexArtifactsLocation"
+    },
+		"loadViewsSuffix": {
+      "$ref": "task.settings.common.schema.json#/definitions/loadViewsSuffix"
+    },
+    "cdcViewsSuffix": {
+      "$ref": "task.settings.common.schema.json#/definitions/cdcViewsSuffix"
+    },
+    "outputDirectory": {
+      "$ref": "task.settings.common.schema.json#/definitions/outputDirectory"
+    },
+    "indexActionOnPrepare": {
+      "$ref": "task.settings.common.schema.json#/definitions/indexActionOnPrepare-CREATE_IF_NOT_EXISTS"
+    },
+    "includedFilesPatterns": {
+      "type": "string",
+      "description": "List of file patterns to include",
+      "default": "*.csv, *.tsv, *.json, *.avro"
+    },
+    "testAssistantSettings": {
+      "$ref": "task.settings.common.schema.json#/definitions/testAssistantSettings"
+    }
+  }
+}

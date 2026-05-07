@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.storage.schema.json",
+  "title": "Defaults for new Storage Task",
+  "description": "Schema for storage task default configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "hasLiveViews": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/hasLiveViews"
+    },
+    "hasHistory": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/hasHistory"
+    },
+    "taskRuntime": {
+      "type": "object",
+      "description": "Runtime configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+        "tableUpdateInterval": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableUpdateInterval"
+        },
+        "tableUpdateConcurrency": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableUpdateConcurrency"
+        },
+        "warehouseSelection": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/warehouseSelection"
+        }
+      }
+    },
+    "taskRunSchedule": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/taskRunSchedule-TimeBased"
+    },
+    "catalogIntegration": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/catalogIntegration"
+    },
+    "databaseSelection": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/databaseSelection"
+    },
+    "tableTypeSettings": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableTypeSettings"
+    },
+    "viewType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/viewType"
+    }
+  }
+}

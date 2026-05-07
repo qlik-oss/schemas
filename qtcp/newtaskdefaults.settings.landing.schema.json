@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.landing.schema.json",
+  "title": "Defaults for new Landing Task",
+  "description": "Schema for landing task default configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskRuntime": {
+      "type": "object",
+      "description": "Runtime configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+        "tableLoadInParallel": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableLoadInParallel"
+        },
+        "warehouseSelection": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/warehouseSelection"
+        }
+      }
+    },
+    "proxySettings": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/proxySettings"
+    },
+    "databaseSelection": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/databaseSelection"
+    },
+    "folderLocationType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/folderLocationType"
+    },
+    "specificFolder": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/specificFolder"
+    }
+  }
+}

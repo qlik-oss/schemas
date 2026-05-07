@@ -1,0 +1,331 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.settings.replication.schema.json",
+	"title": "Replication Task Configuration (Replication)",
+	"description": "Schema for Replication task configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"fullLoadOnly": {
+			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"
+		},
+		"targetEndpoint": {
+			"type": "object",
+			"description": "Target endpoint configuration",
+			"properties": {
+				"targetConnection": {
+					"type": "string",
+					"description": "Target connection ID"
+				},
+				"targetSchema": {
+					"type": "string",
+					"description": "Target schema name"
+				},
+				"targetStorageConnection": {
+					"type": "string",
+					"description": "Target storage connection ID"
+				},
+				"targetControlTableSchema": {
+					"type": "string",
+					"description": "Target control table schema name"
+				}
+			},
+			"required": [
+				"targetConnection",
+				"targetSchema",
+				"targetStorageConnection"
+			],
+			"additionalProperties": false
+		},
+		"dataProviderType": {
+			"$ref": "task.settings.common.schema.json#/definitions/dataProviderType"
+		},
+		"replicationAppRuntime": {
+			"type": "object",
+			"description": "Replication runtime settings",
+			"properties": {
+				"sourceCdcFetchIntervalMinutes": {
+					"type": "integer",
+					"description": "Source CDC fetch interval in minutes",
+					"default": 60
+				},
+				"cdcSettings": {
+					"$ref": "task.settings.common.schema.json#/definitions/cdcSettings"
+									
+				},
+				"initialLoadMode": {
+					"$ref": "task.settings.common.schema.json#/definitions/initialLoadMode"
+				}
+			},
+			"additionalProperties": false
+		},
+		"proxySettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/proxySettings"
+		},
+		"taskSettings": {
+			"type": "object",
+			"description": "Task-specific settings",
+			"properties": {
+				"fullLoad": {
+					"type": "boolean",
+					"description": "Enable full load",
+					"enum": [true, false],
+					"default": false
+				},
+				"applyChanges": {
+					"type": "boolean",
+					"description": "Apply changes after full load",
+					"enum": [true, false],
+					"default": false
+				},
+				"storeChanges": {
+					"type": "boolean",
+					"description": "Store changes after full load",
+					"enum": [true, false],
+					"default": false
+				}
+			},
+			"additionalProperties": false
+		},
+		"fullLoadOptions": {
+			"type": "object",
+			"description": "Full load options",
+			"properties": {
+				"tableExistsHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/tableExistsHandling"
+				},
+				"afterFullLoadCompleted": {
+					"type": "object",
+					"description": "Actions after full load is completed",
+					"properties": {
+						"stopTask": {
+							"type": "object",
+							"description": "Stop task options",
+							"properties": {
+								"beforeCachedChanges": {
+									"type": "boolean",
+									"enum": [true, false],
+									"default": false
+								},
+								"afterCachedChanges": {
+									"type": "boolean",
+									"enum": [true, false],
+									"default": false
+								}
+							},
+							"additionalProperties": false
+						},
+						"createKeyOrUniqueIndex": {
+							"$ref": "task.settings.common.schema.json#/definitions/createKeyOrUniqueIndex"
+						}
+					},
+					"additionalProperties": false
+				},
+				"fullLoadOptionsTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/fullLoadOptionsTuning"
+				}
+			},
+			"additionalProperties": false
+		},
+		"applyChangesOptions": {
+			"type": "object",
+			"description": "Apply changes options",
+			"properties": {
+				"sourceTableDropped": {
+					"type": "boolean",
+					"description": "Indicates if the source table was dropped",
+					"enum": [true, false],
+					"default": false
+				},
+				"sourceTableTruncated": {
+					"type": "boolean",
+					"description": "Indicates if the source table was truncated",
+					"enum": [true, false],
+					"default": false
+				},
+				"sourceTableAltered": {
+					"type": "boolean",
+					"description": "Indicates if the source table was altered",
+					"enum": [true, false],
+					"default": false
+				},
+				"changeProcessingTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/applyChangesOptionsChangeProcessingTuning"
+				}
+			},
+			"additionalProperties": false
+		},
+		"storeChangesOptions": {
+			"type": "object",
+			"description": "Options for storing changes",
+			"properties": {
+				"ddlOptions": {
+					"type": "boolean",
+					"description": "Enable DDL options for storing changes",
+					"enum": [true, false],
+					"default": false
+				},
+				"onUpdate": {
+					"type": "boolean",
+					"description": "Enable update handling for storing changes",
+					"enum": [true, false],
+					"default": false
+				},
+				"changeTableCreation": {
+					"type": "string",
+					"description": "Change table creation policy",
+					"enum": ["DROP_AND_CREATE", "TRUNCATE", "IGNORE"],
+					"default": "DROP_AND_CREATE"
+				},
+				"suffix": {
+					"type": "string",
+					"description": "Suffix for change tables",
+					"examples": ["__ct"]
+				},
+				"headerColumnPrefix": {
+					"type": "string",
+					"description": "Prefix for header columns",
+					"examples": ["header__"]
+				},
+				"changeDataPartitioning": {
+					"type": "object",
+					"description": "Change data partitioning settings",
+					"properties": {
+						"mode": {
+							"type": "string",
+							"description": "Partitioning mode",
+							"enum": ["PARTITION_OFF"],
+							"default": "PARTITION_OFF"
+						},
+						"partitionEvery": {
+							"type": "integer",
+							"description": "Partition every N units",
+							"default": 60
+						},
+						"partitionBaseTime": {
+							"type": "string",
+							"description": "Base time for partitioning",
+							"examples": ["2025-11-13T07:06:29.262Z"]
+						}
+					},
+					"additionalProperties": false
+				},
+				"changeTableHeaderColumn": {
+					"$ref": "task.settings.common.schema.json#/definitions/changeTableHeaderColumn"
+				}
+			},
+			"additionalProperties": false
+		},
+		"errorHandling": {
+			"type": "object",
+			"description": "Error handling configuration",
+			"properties": {
+				"applyConflicts": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingApplyConflicts"
+				},
+				"data": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingData"
+				},
+				"tableError": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingTableError"
+				},
+				"environmental": {
+					"$ref": "task.settings.common.schema.json#/definitions/errorHandlingEnvironmental"
+				}
+			},
+			"additionalProperties": false
+		},
+		"metadata": {
+			"type": "object",
+			"description": "Metadata configuration",
+			"properties": {
+				"lobHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/lobHandling"
+				},
+				"targetControlTableTablespace": {
+					"type": "string",
+					"description": "Target tablespace for control tables"
+				},
+				"targetControlTableIndexesTablespace": {
+					"type": "string",
+					"description": "Target tablespace for control table indexes"
+				},
+				"historyTimeSlot": {
+					"type": "integer",
+					"description": "Time slot for history retention",
+					"default": 5
+				},
+				"targetControlTableSchema": {
+					"type": "string",
+					"description": "Target schema for control tables"
+				},
+				"controlTableSelection": {
+					"$ref": "task.settings.common.schema.json#/definitions/controlTableSelection"
+				},
+				"jsonHandling": {
+					"$ref": "task.settings.common.schema.json#/definitions/jsonHandling"
+				}
+			},
+			"additionalProperties": false
+		},
+		"changeProcessingTuning": {
+			"type": "object",
+			"description": "Batch and transaction tuning options",
+			"properties": {
+				"batchApply": {
+					"$ref": "task.settings.common.schema.json#/definitions/batchApply"
+				},
+				"batchSplitSize": {
+					"$ref": "task.settings.common.schema.json#/definitions/batchSplitSize"
+				},
+				"transactionTuning": {
+					"$ref": "task.settings.common.schema.json#/definitions/transactionTuning-TotalMemoryFalse"
+				},
+				"transactionalApply": {
+					"$ref": "task.settings.common.schema.json#/definitions/transactionalApply"
+				}
+			},
+			"additionalProperties": false
+		},
+		"characterSubstitution": {
+			"$ref": "task.settings.common.schema.json#/definitions/characterSubstitution"
+		},
+		"moreOptions": {
+			"$ref": "task.settings.common.schema.json#/definitions/moreOptions"
+		},
+		"fileAttributes": {
+			"type": "object",
+			"description": "File attributes",
+			"additionalProperties": false,
+			"properties": {
+				"general": {
+					"$ref": "task.settings.common.schema.json#/definitions/fileAttributesGeneral-Replication"
+				}
+			}
+		},
+		"catalogSettings": {
+			"type": "object",
+			"description": "Catalog settings",
+			"properties": {
+				"publish": {
+					"type": "boolean",
+					"description": "Whether to publish datasets to catalog",
+					"enum": [true, false],
+					"default": false
+				},
+				"tags": {
+					"type": "array",
+					"description": "Tags for catalog settings",
+					"items": {
+						"type": "string",
+						"description": "Tag value for catalog"
+					}
+				}
+			},
+			"additionalProperties": false
+		},
+		"ddlHandlingPolicy": {
+			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+		}
+	}
+}

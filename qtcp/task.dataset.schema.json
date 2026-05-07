@@ -1,0 +1,1125 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.dataset.schema.json",
+	"title": "Task Dataset Configuration",
+	"description": "Schema for task dataset configuration",
+	"type": "object",
+	"required": ["properties"],
+	"properties": {
+		"properties": {
+			"type": "object",
+			"description": "Basic properties",
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "Dataset unique identifier, to be used in other tasks",
+					"examples": ["orders"]
+				},
+				"name": {
+					"type": "string",
+					"description": "Dataset Display name",
+					"examples": ["Orders"]
+				},
+				"type": {
+					"type": "string",
+					"description": "Dataset type used by the task",
+					"enum": ["STORAGE", "LANDING", "CUSTOM", "DIMENSION", "FACT", "EXTERNAL_TABLE", "DATAFLOW", "TRANSFORM_MODEL_BASED", "DIRECTORY", "DOCUMENT_SCHEMA", "STREAMING_LANDING", "ICEBERG_TRANSFORM"]
+				},
+				"description": {
+					"type": "string",
+					"description": "Dataset description"
+				},
+				"inputDatasets": {
+					"type": "array",
+					"description": "Array of input datasets, for task types other than landing, lake landing, landing_streaming and registered",
+					"items": {
+						"type": "object",
+						"description": "Input dataset item",
+						"properties": {
+							"type": {
+								"type": "string",
+								"description": "Source dataset data object type",
+								"enum": ["NONE", "TABLE", "VIEW"],
+								"default": "TABLE"
+							},
+							"datasetId": {
+								"type": "string",
+								"description": "Source dataset ID",
+								"examples": ["$replicate$dbo_orders", "$replicate$dbo_customers"]
+							},
+							"name": {
+								"type": "string",
+								"description": "Source dataset Name",
+								"examples": ["Orders"]
+							},
+							"projectId": {
+								"type": "string",
+								"description": "Source dataset project ID (for cross-project datasets)"
+							},
+							"taskId": {
+								"type": "string",
+								"description": "Source dataset task ID",
+								"examples": ["replication-fbwa"]
+							},
+							"schema": {
+								"type": "string",
+								"description": "Dataset schema",
+								"examples": ["dbo"]
+							},
+							"database": {
+								"type": "string",
+								"description": "Database name"
+							}
+						},
+						"required": [],
+						"additionalProperties": false
+					}
+				},
+				"landingDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to landing datasets",
+					"additionalProperties": false,
+					"properties": {
+						"loadOrder": {
+							"type": "string",
+							"description": "Load order",
+							"enum": ["NONE", "LOWEST", "LOWER", "LOW", "NORMAL", "HIGH", "HIGHER", "HIGHEST"],
+							"default": "NORMAL"
+						},
+						"loadParallelSettings": {
+							"type": "object",
+							"description": "Parallel loading configuration",
+							"additionalProperties": false,
+							"properties": {
+								"loadParallel": {
+									"type": "string",
+									"description": "Parallel loading mode",
+									"enum": ["NONE", "SEGMENTATION", "PARTITIONS"],
+									"default": "NONE"
+								},
+								"segmentationSettings": {
+									"type": "object",
+									"description": "Segmentation configuration for parallel loading",
+									"additionalProperties": false,
+									"properties": {
+										"columnNames": {
+											"type": "array",
+											"description": "Column names used for segmentation",
+											"items": {
+												"type": "string"
+											},
+											"example": ["CategoryID", "CategoryName"]
+										},
+										"splitPoints": {
+											"type": "array",
+											"description": "Split points for segmentation",
+											"items": {
+												"type": "object",
+												"additionalProperties": false,
+												"properties": {
+													"values": {
+														"type": "array",
+														"description": "Values defining the split point",
+														"items": {
+															"type": "string"
+														},
+														"example": ["1", "a"]
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"datasetAttributes": {
+					"type": "object",
+					"description": "Attributes specific to storage tasks",
+					"additionalProperties": false,
+					"properties": {
+						"materialized": {
+							"type": "string",
+							"description": "Materialization setting",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
+						},
+						"hasHistory": {
+							"type": "string",
+							"description": "History tracking setting",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
+						},
+						"hasLiveViews": {
+							"type": "string",
+							"description": "Live views setting",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
+						},
+						"hasChanges": {
+							"type": "string",
+							"description": "Change tracking setting",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
+						},
+						"hasStandardViewsWithHeaders": {
+							"type": "string",
+							"description": "Standard views with headers setting",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
+						},
+						"watermarkIncrementalSettings": {
+							"type": "string",
+							"description": "Watermark incremental settings",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
+						},
+						"createExternalArtifacts": {
+							"type": "string",
+							"description": "Create external artifacts",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
+						}
+					}
+				},
+				"tableDef": {
+					"$ref": "#/$defs/TableDef"
+				},
+				"dimensionDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to datamart datasets",
+					"additionalProperties": false,
+					"properties": {
+						"type": {
+							"type": "string",
+							"description": "Dimension handling type",
+							"enum": ["TYPE1", "TYPE2"],
+							"default": "TYPE1"
+						},
+						"rootDataEntityId": {
+							"$ref": "#/$defs/DataEntityReference"
+						},
+						"mapping": {
+							"type": "object",
+							"description": "Column mapping configuration for model-based datasets",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"description": "Mapped output columns",
+									"items": {
+										"$ref": "#/$defs/DatasetMappingColumn"
+									}
+								}
+							},
+							"additionalProperties": false
+						},
+						"fullyType2Sources": {
+							"type": "boolean",
+							"description": "Whether all source datasets should be treated as type 2 sources",
+							"enum": [true, false],
+							"default": false
+						},
+						"subtype": {
+							"type": "string",
+							"description": "Dimension source subtype",
+							"enum": ["MODEL_BASED"],
+							"default": "MODEL_BASED"
+						},
+						"materializedSource": {
+							"type": "boolean",
+							"description": "Whether the source for this dimension is materialized",
+							"enum": [true, false],
+							"default": false
+						}
+					}
+				},
+				"factDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to fact datasets",
+					"additionalProperties": false,
+					"properties": {
+						"type": {
+							"type": "string",
+							"description": "Fact dataset behavior type",
+							"enum": ["TRANSACTIONAL"],
+							"default": "TRANSACTIONAL"
+						},
+						"rootDataEntityId": {
+							"$ref": "#/$defs/DataEntityReference"
+						},
+						"entityRelationshipPath": {
+							"type": "array",
+							"description": "Relationship path from the root entity to the fact entity",
+							"items": {
+								"type": "string"
+							},
+							"examples": [["sur2-xnwp"]]
+						},
+						"mapping": {
+							"type": "object",
+							"description": "Column mapping configuration for model-based fact datasets",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"description": "Mapped fact output columns",
+									"items": {
+										"$ref": "#/$defs/DatasetMappingColumn"
+									}
+								}
+							},
+							"additionalProperties": false
+						},
+						"subtype": {
+							"type": "string",
+							"description": "Fact source subtype",
+							"enum": ["MODEL_BASED"],
+							"default": "MODEL_BASED"
+						},
+						"materializedSource": {
+							"type": "boolean",
+							"description": "Whether the source for this fact dataset is materialized",
+							"enum": [true, false],
+							"default": false
+						}
+					}
+				},
+				"documentDataEntitySettings": {
+					"type": "object",
+					"description": "Settings specific to knowledge mart document-schema datasets",
+					"additionalProperties": false,
+					"properties": {
+						"repeatedDataEntities": {
+							"type": "array",
+							"description": "Repeated data entities included in the document schema",
+							"items": {
+								"type": "string"
+							}
+						},
+						"type": {
+							"type": "string",
+							"description": "Document entity handling type",
+							"enum": ["TYPE1", "TYPE2"],
+							"default": "TYPE1"
+						},
+						"rootDataEntityId": {
+							"$ref": "#/$defs/DataEntityReference"
+						},
+						"entityRelationshipPath": {
+							"type": "array",
+							"description": "Relationship path from the root entity to the document entity",
+							"items": {
+								"type": "string"
+							}
+						},
+						"mapping": {
+							"type": "object",
+							"description": "Column mapping configuration for model-based document datasets",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"description": "Mapped document output columns",
+									"items": {
+										"$ref": "#/$defs/DatasetMappingColumn"
+									}
+								}
+							},
+							"additionalProperties": false
+						},
+						"fullyType2Sources": {
+							"type": "boolean",
+							"description": "Whether all source datasets should be treated as type 2 sources",
+							"enum": [true, false],
+							"default": false
+						},
+						"checkedTreeNodesForDisplay": {
+							"type": "array",
+							"description": "Tree nodes selected for display in the document schema",
+							"items": {
+								"type": "string"
+							}
+						},
+						"subtype": {
+							"type": "string",
+							"description": "Document source subtype",
+							"enum": ["MODEL_BASED"],
+							"default": "MODEL_BASED"
+						},
+						"materializedSource": {
+							"type": "boolean",
+							"description": "Whether the source for this document dataset is materialized",
+							"enum": [true, false],
+							"default": false
+						}
+					}
+				},
+				"customDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to custom SQL datasets",
+					"additionalProperties": false,
+					"properties": {
+						"customSql": {
+							"$ref": "#/$defs/Expression"
+						},
+						"incremental": {
+							"type": "boolean",
+							"description": "Whether the custom SQL dataset is incremental",
+							"enum": [true, false],
+							"default": false
+						}
+					}
+				},
+				"dataflowDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to dataflow datasets",
+					"additionalProperties": false,
+					"properties": {
+						"dataflowId": {
+							"type": "string",
+							"description": "Identifier or expression referencing the backing dataflow"
+						},
+						"targetId": {
+							"type": "string",
+							"description": "Identifier of the selected dataflow target"
+						},
+						"dataflowTargetState": {
+							"type": "string",
+							"description": "Validation state of the selected dataflow target",
+							"enum": ["NOT_VALID", "VALID"],
+							"default": "NOT_VALID"
+						},
+						"incremental": {
+							"type": "boolean",
+							"description": "Whether the dataflow dataset runs incrementally",
+							"enum": [true, false],
+							"default": false
+						}
+					}
+				},
+				"streamingLandingDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to streaming landing datasets",
+					"additionalProperties": false,
+					"properties": {
+						"inputEntities": {
+							"type": "object",
+							"description": "Input entities configuration with patterns and explicit selections",
+							"additionalProperties": false,
+							"properties": {
+								"includePatterns": {
+									"type": "array",
+									"description": "Array of include patterns for entity selection",
+									"items": {
+										"type": "string"
+									}
+								},
+								"explicitlySelected": {
+									"type": "array",
+									"description": "Array of explicitly selected entities",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"generalSettings": {
+							"type": "object",
+							"description": "General settings for entity processing",
+							"additionalProperties": false,
+							"properties": {
+								"entityFolderRetentionSettings": {
+									"type": "object",
+									"description": "Folder retention settings for entities",
+									"additionalProperties": false,
+									"properties": {
+										"attributeSourceValue": {
+											"type": "string",
+											"description": "Source value for the attribute",
+											"enum": ["INHERIT", "CUSTOM"]
+										},
+										"folderRetentionSettings": {
+											"type": "object",
+											"additionalProperties": false,
+											"properties": {
+												"type": {
+													"type": "string",
+													"enum": ["NONE", "DELETE", "RETENTION"]
+												},
+												"daysOfRetention": {
+													"type": "integer",
+													"minimum": 0,
+													"default": 1
+												}
+											}
+										}
+									}
+								},
+								"entityStartReadDataFrom": {
+									"type": "object",
+									"description": "Configuration for where to start reading data",
+									"additionalProperties": false,
+									"properties": {
+										"attributeSourceValue": {
+											"type": "string",
+											"enum": ["INHERIT", "CUSTOM"]
+										},
+										"startReadDataFrom": {
+											"type": "string",
+											"enum": ["EARLIEST_EVENT", "NOW"],
+											"default": "EARLIEST_EVENT"
+										}
+									}
+								},
+								"entityProcessFilesFromPastSettings": {
+									"type": "object",
+									"description": "Settings for processing past files",
+									"additionalProperties": false,
+									"properties": {
+										"attributeSourceValue": {
+											"type": "string",
+											"enum": ["INHERIT", "CUSTOM"]
+										},
+										"processPastFilesSettings": {
+											"type": "object",
+											"additionalProperties": false,
+											"properties": {
+												"timeAmount": {
+													"type": "integer",
+													"minimum": 0,
+													"default": 1
+												},
+												"timeUnit": {
+													"type": "string",
+													"enum": ["MINUTES", "HOURS", "DAYS"],
+													"default": "DAYS"
+												}
+											}
+										}
+									}
+								},
+								"entityDeleteFilesInSourceSettings": {
+									"type": "object",
+									"description": "Settings for deleting files in source after load",
+									"additionalProperties": false,
+									"properties": {
+										"attributeSourceValue": {
+											"type": "string",
+											"enum": ["INHERIT", "CUSTOM"]
+										},
+										"deleteFilesInSourceAfterLoad": {
+											"type": "boolean",
+											"default": false
+										}
+									}
+								},
+								"entityStrategy": {
+									"type": "string",
+									"description": "Entity processing strategy",
+									"enum": ["SIMPLE", "COMPLEX"]
+								}
+							}
+						},
+						"runtimeSettings": {
+							"type": "object",
+							"description": "Runtime settings for the streaming dataset",
+							"additionalProperties": false,
+							"properties": {
+								"numberOfReadersSettings": {
+									"type": "object",
+									"description": "Settings for number of concurrent readers",
+									"additionalProperties": false,
+									"properties": {
+										"numberOfReaders": {
+											"type": "integer",
+											"minimum": 0,
+											"description": "Number of concurrent readers (0 = auto)"
+										},
+										"attributeSourceValue": {
+											"type": "string",
+											"enum": ["INHERIT", "CUSTOM"]
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"icebergTransformDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to iceberg transform datasets",
+					"additionalProperties": false,
+					"properties": {
+						"generalSettings": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"entityLoadSettings": {
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"loadMode": {
+											"type": "string",
+											"enum": ["APPEND_ONLY", "MERGE"],
+											"default": "APPEND_ONLY"
+										},
+										"mergeSettings": {
+											"type": "object",
+											"additionalProperties": false,
+											"properties": {
+												"softDelete": {
+													"type": "boolean",
+													"default": false
+												},
+												"hasHistory": {
+													"type": "boolean",
+													"default": false
+												}
+											}
+										}
+									}
+								},
+								"entityPartitionSettings": {
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"partitionColumnSettings": {
+											"type": "array",
+											"items": {
+												"type": "object"
+											}
+										}
+									}
+								},
+								"retentionSettings": {
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"type": {
+											"type": "string",
+											"enum": ["NONE", "RETENTION"],
+											"default": "NONE"
+										},
+										"days": {
+											"type": "integer",
+											"minimum": 1,
+											"default": 1
+										}
+									}
+								},
+								"sortSettings": {
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"columns": {
+											"type": "array",
+											"items": {
+												"type": "object"
+											}
+										}
+									}
+								},
+								"snapshotSettings": {
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"expirationValue": {
+											"type": "integer",
+											"minimum": 1,
+											"default": 2
+										},
+										"durationType": {
+											"type": "string",
+											"enum": ["NONE", "MINUTE", "HOUR", "DAY"],
+											"default": "HOUR"
+										}
+									}
+								},
+								"nestedFieldsHandling": {
+									"type": "string",
+									"enum": ["KEEP_NESTED_FIELDS", "EXPAND_NESTED_FIELDS"],
+									"default": "EXPAND_NESTED_FIELDS"
+								}
+							}
+						}
+					}
+				},
+				"virtualDataset": {
+					"type": "boolean",
+					"description": "Indicates if this is a virtual dataset",
+					"enum": [true, false],
+					"default": false
+				}
+			},
+			"required": ["name"],
+			"additionalProperties": false
+		},
+		"sourceTable": {
+			"type": "object",
+			"description": "Source table, for task types of landing, lake landing, landing_streaming and registered",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Dataset Display name",
+					"examples": ["orders"]
+				},
+				"tableDef": {
+					"$ref": "#/$defs/SourceTableDef"
+				},
+				"schema": {
+					"type": "string",
+					"description": "Dataset schema",
+					"examples": ["dbo"]
+				},
+				"database": {
+					"type": "string",
+					"description": "Database name. valid for registered data tasks"
+				}
+			},
+			"additionalProperties": false
+		},
+		"transformations": {
+			"type": "object",
+			"description": "Transformation rules to be applied to the dataset",
+			"properties": {
+				"newTableName": {
+					"type": "string",
+					"description": "The new name for the transformed dataset",
+					"examples": ["Orders1"]
+				},
+				"columnTransformations": {
+					"type": "array",
+					"description": "An array of column transformation rules",
+					"items": {
+						"type": "object",
+						"description": "An object representing a column transformation rule",
+						"properties": {
+							"action": {
+								"type": "string",
+								"description": "The type of transformation action to perform on the column",
+								"enum": ["NONE", "KEEP", "DROP", "ADD"]
+							},
+							"columnName": {
+								"type": "string",
+								"description": "The name of the column being transformed",
+								"examples": ["ShipCountry", "newCol1"]
+							},
+							"newDataType": {
+								"type": "object",
+								"description": "The new data type definition for the column",
+								"properties": {
+									"type": {
+										"type": "string",
+										"description": "The data type of the column",
+										"enum": ["UNSPECIFIED", "BOOLEAN", "BYTES", "DATE", "TIME", "DATETIME", "INT1", "INT2", "INT4", "INT8", "REAL4", "REAL8", "UINT1", "UINT2", "UINT4", "UINT8", "NUMERIC", "STRING", "WSTRING", "BLOB", "CLOB", "NCLOB", "JSON"],
+										"default": "UNSPECIFIED"
+									},
+									"length": {
+										"type": "integer",
+										"description": "The length of the data type",
+										"default": 0
+									},
+									"precision": {
+										"type": "integer",
+										"description": "The precision of the data type",
+										"default": 0
+									},
+									"scale": {
+										"type": "integer",
+										"description": "The scale of the data type",
+										"default": 0
+									},
+									"originalTypeFull": {
+										"type": "string",
+										"description": "The original full type description"
+									}
+								},
+								"required": ["type"],
+								"additionalProperties": false
+							},
+							"primaryKeyOrdinal": {
+								"type": "integer",
+								"description": "The ordinal position in the primary key",
+								"default": 0
+							},
+							"ordinal": {
+								"type": "integer",
+								"description": "The ordinal position of the column",
+								"default": 0
+							},
+							"nullable": {
+								"type": "boolean",
+								"description": "Whether the column allows null values",
+								"enum": [true, false],
+								"default": true
+							},
+							"markAsMetadata": {
+								"type": "boolean",
+								"description": "Whether to mark the column as metadata",
+								"enum": [true, false],
+								"default": false
+							},
+							"hash": {
+								"type": "boolean",
+								"description": "Whether to hash the column",
+								"enum": [true, false],
+								"default": false
+							}
+						},
+						"required": ["action"],
+						"allOf": [
+							{
+								"if": {"properties": {"action": {"const": "ADD"}}},
+								"then": {
+									"properties": {
+										"action": true,
+										"columnName": true,
+										"newDataType": true,
+										"primaryKeyOrdinal": true,
+										"ordinal": true,
+										"nullable": true,
+										"markAsMetadata": true,
+										"hash": true,
+										"expression": {"$ref": "#/$defs/Expression"},
+										"addedColumnId": {
+											"type": "string",
+											"description": "A unique identifier for the added column (applicable for ADD action)",
+											"examples": ["5d94131f-d4dc-455b-b6e1-318f9ea100ec"]
+										}
+									},
+									"required": ["columnName", "newDataType"],
+									"additionalProperties": false
+								}
+							},
+							{
+								"if": {"properties": {"action": {"const": "DROP"}}},
+								"then": {
+									"properties": {
+										"action": true,
+										"columnName": true
+									},
+									"required": ["columnName"],
+									"additionalProperties": false
+								}
+							},
+							{
+								"if": {"properties": {"action": {"const": "KEEP"}}},
+								"then": {
+									"properties": {
+										"action": true,
+										"columnName": true,
+										"newColumnName": {
+											"type": "string",
+											"description": "The new name for the column when renaming it (applicable for KEEP action)",
+											"examples": ["ShipPostalCode-ren"]
+										},
+										"primaryKeyOrdinal": true,
+										"newDataType": true,
+										"ordinal": true,
+										"nullable": true,
+										"markAsMetadata": true,
+										"hash": true,
+										"expression": {"$ref": "#/$defs/Expression"}
+									},
+									"required": ["columnName"],
+									"additionalProperties": false
+								}
+							}
+						]
+					}
+				}
+			},
+			"required": [],
+			"additionalProperties": false
+		},
+		"mappings": {
+			"type": "object",
+			"description": "Mappings for transform and custom datasets",
+			"properties": {
+				"mappings": {
+					"type": "array",
+					"description": "List of source-to-target mapping definitions",
+					"items": {
+						"type": "object",
+						"properties": {
+							"sourceDataEntityKey": {
+								"type": "object",
+								"properties": {
+									"type": {
+										"type": "string",
+										"enum": ["NONE", "TABLE", "VIEW"],
+										"default": "NONE"
+									},
+									"datasetId": {
+										"type": "string"
+									},
+									"name": {
+										"type": "string"
+									},
+									"projectId": {
+										"type": "string"
+									},
+									"taskId": {
+										"type": "string"
+									}
+								},
+								"additionalProperties": false
+							},
+							"mappingFields": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"columnId": {
+											"type": "string"
+										},
+										"expression": {
+											"$ref": "#/$defs/Expression"
+										}
+									},
+									"additionalProperties": false
+								}
+							},
+							"id": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"description": {
+								"type": "string"
+							}
+						},
+						"additionalProperties": false
+					}
+				}
+			},
+			"additionalProperties": false
+		}
+	},
+	"$defs": {
+		"SourceTableDef": {
+			"type": "object",
+			"description": "Detailed source table definition",
+			"properties": {
+				"columns": {
+					"type": "array",
+					"description": "Source table column definitions",
+					"items": {
+						"$ref": "#/$defs/TableColumn"
+					}
+				},
+				"datasetId": {
+					"type": "string",
+					"description": "Source dataset identifier"
+				},
+				"dbTableId": {
+					"type": "string",
+					"description": "Underlying database table identifier"
+				},
+				"entityId": {
+					"type": "string",
+					"description": "Entity identifier"
+				},
+				"secureQri": {
+					"type": "string"
+				},
+				"fullLoadOnly": {
+					"type": "boolean"
+				}
+			},
+			"additionalProperties": false
+		},
+		"TableColumn": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"ordinal": {
+					"type": "integer"
+				},
+				"nullable": {
+					"type": "boolean"
+				},
+				"primaryKeyOrdinal": {
+					"type": "integer"
+				},
+				"datatype": {
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string"
+						},
+						"length": {
+							"type": "integer"
+						},
+						"precision": {
+							"type": "integer"
+						},
+						"scale": {
+							"type": "integer"
+						},
+						"originalType": {
+							"type": "string"
+						},
+						"originalTypeFull": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false
+				},
+				"id": {
+					"type": "string"
+				},
+				"flags": {
+					"type": "string"
+				},
+				"properties": {
+					"type": "object",
+					"properties": {
+						"documentMetadata": {
+							"type": "boolean"
+						},
+						"streamingProperties": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"nesting": {
+									"type": "string",
+									"enum": ["NONE", "TOPLEVEL", "INARRAY", "NESTED"],
+									"default": "TOPLEVEL"
+								},
+								"childrenIds": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"hash": {
+									"type": "boolean",
+									"default": false
+								}
+							}
+						}
+					},
+					"additionalProperties": false
+				}
+			},
+			"additionalProperties": false
+		},
+		"DataEntityReference": {
+			"type": "object",
+			"description": "Reference to a source data entity",
+			"properties": {
+				"type": {
+					"type": "string",
+					"description": "Reference type",
+					"enum": ["NONE", "TABLE", "VIEW"],
+					"default": "NONE"
+				},
+				"entityId": {
+					"type": "string",
+					"description": "Referenced entity identifier",
+					"examples": ["sql1-xnwq"]
+				},
+				"name": {
+					"type": "string",
+					"description": "Referenced entity name",
+					"examples": ["sql1"]
+				},
+				"projectId": {
+					"type": "string",
+					"description": "Referenced project identifier",
+					"examples": ["{{ref(project.current.projectId)}}"]
+				},
+				"dataAppId": {
+					"type": "string",
+					"description": "Referenced task or data app identifier",
+					"examples": ["transform1-xnwk"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"DatasetMappingColumn": {
+			"type": "object",
+			"description": "Mapped output column definition",
+			"properties": {
+				"columnName": {
+					"type": "string",
+					"description": "Output column name"
+				},
+				"type": {
+					"type": "string",
+					"description": "Column role in the mapping",
+					"enum": ["NONE", "ROOT_PK"],
+					"default": "NONE"
+				},
+				"expression": {
+					"$ref": "#/$defs/Expression"
+				}
+			},
+			"additionalProperties": false
+		},
+		"TableDef": {
+			"type": "object",
+			"description": "Table definition for the dataset",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Table name"
+				},
+				"columns": {
+					"type": "array",
+					"description": "Table column definitions",
+					"items": {
+						"$ref": "#/$defs/TableColumn"
+					}
+				},
+				"entityId": {
+					"type": "string"
+				},
+				"secureQri": {
+					"type": "string"
+				},
+				"fullLoadOnly": {
+					"type": "boolean"
+				}
+			},
+			"additionalProperties": false
+		},
+		"Expression": {
+			"type": "object",
+			"description": "The expression used for the column value (applicable for ADD action)",
+			"properties": {
+				"expressionStatement": {
+					"type": "string",
+					"description": "The SQL-like expression statement"
+				},
+				"alias": {
+					"type": "array",
+					"description": "An array of aliases for the expression",
+					"items": {
+						"type": "object",
+						"description": "mapping of an alias to value",
+						"properties": {
+							"name": {
+								"type": "string",
+								"description": "The alias name",
+								"examples": ["key1"]
+							},
+							"value": {
+								"type": "string",
+								"description": "The alias value",
+								"examples": ["value1"]
+							}
+						},
+						"additionalProperties": false
+					}
+				}
+			},
+			"required": ["expressionStatement"],
+			"additionalProperties": false
+		}
+	},
+	"additionalProperties": false
+}

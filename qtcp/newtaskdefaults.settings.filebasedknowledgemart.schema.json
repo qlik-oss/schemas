@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.filebasedknowledgemart.schema.json",
+  "title": "Defaults for new File-Based Knowledge Mart Task",
+  "description": "Schema for file-based knowledge mart task default configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskRuntime": {
+      "type": "object",
+      "description": "Runtime configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+         "warehouseSelection": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/warehouseSelection"
+        }
+      }
+    },
+    "indexArtifactsLocation": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/indexArtifactsLocation"
+    },
+    "taskRunSchedule": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/taskRunSchedule-TimeBased"
+    },
+    "vectorDbTargetType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/vectorDbTargetType"
+    },
+    "vectorDbConnection": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/vectorDbConnection"
+    },
+    "llmConnection": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/llmConnection"
+    },
+    "llmSettings": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/llmSettings"
+    }
+  }
+}

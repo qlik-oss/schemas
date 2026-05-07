@@ -1,0 +1,74 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.settings.mirror.schema.json",
+	"title": "Mirror Task Settings",
+	"description": "Schema for Mirror task settings configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"ddlHandlingPolicy": {
+			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+		},
+		"artifactsSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-Standard"
+		},
+		"artifactsLocation": {
+			"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"
+		},
+		"taskRuntime": {
+			"type": "object",
+			"description": "Task runtime configuration",
+			"additionalProperties": false,
+			"properties": {
+				"tableUpdateConcurrency": {
+					"$ref": "task.settings.common.schema.json#/definitions/tableUpdateConcurrency"
+				},
+				"warehouseSelection": {
+					"$ref": "task.settings.common.schema.json#/definitions/warehouseSelection"
+				}
+			}
+		},
+		"catalogIntegration": {
+			"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+		},
+		"viewType": {
+			"$ref": "task.settings.common.schema.json#/definitions/viewType"
+		},
+		"platformConfig": {
+			"type": "object",
+			"description": "Platform settings",
+			"additionalProperties": false,
+			"properties": {
+				"platformType": {
+					"type": "string",
+					"description": "Platform type",
+					"enum": ["SNOWFLAKE", "QLIK_OPEN_LAKEHOUSE"]
+				},
+				"connection": {
+					"type": "string",
+					"description": "conenction reference"
+				},
+				"snowflakeIcebergSettings": {
+					"type": "object",
+					"description": "Snowflake iceberg settings",
+					"additionalProperties": false,
+					"properties": {
+						"snowflakeExternalVolume": {
+							"type": "string",
+							"description": "Snowflake external volume"
+						},
+						"snowflakeCatalogIntegration": {
+							"type": "string",
+							"description": "Snowflake catalog integration"
+						},
+						"refreshMethod": {
+							"type": "string",
+							"description": "Refresh method",
+							"enum": ["QLIK_MANAGED_REFRESH", "AUTO_REFRESH"]
+						}
+					}
+				}
+			}
+		}
+	}
+}

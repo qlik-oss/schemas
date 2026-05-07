@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",	
+  "$id": "task.settings.icebergstorage.schema.json",  
+  "title": "Iceberg Storage Task Settings",
+	"description": "Schema for Iceberg Storage task settings configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "artifactsLocation": {
+      "$ref": "task.settings.common.schema.json#/definitions/artifactsLocation"
+    },
+		"artifactsSettings": {
+      "$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-Standard"
+    },
+		"storageLocationSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/locationSettings"
+		},
+		"catalogIntegration": {
+      "$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+    },
+		"ddlHandlingPolicy": {
+      "$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+    },
+		"taskRuntime": {
+      "type": "object",
+      "description": "Runtime configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+        "lakehouseCluster": {
+					"type": "string",
+					"description": "Name of the lakehouse cluster to use"
+        }
+      }
+    }
+  }
+}

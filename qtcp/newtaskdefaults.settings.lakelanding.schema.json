@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "newtaskdefaults.settings.lakelanding.schema.json",
+  "title": "Defaults for new Lake Landing Task",
+  "description": "Schema for lake landing task default configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskRuntime": {
+      "type": "object",
+      "description": "Runtime configuration for the task",
+      "additionalProperties": false,
+      "properties": {
+        "tableLoadInParallel": {
+          "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableLoadInParallel"
+        }
+      }
+    },
+    "folderLocationType": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/folderLocationType"
+    },
+    "specificFolder": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/specificFolder"
+    }
+  }
+}

@@ -1,0 +1,439 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.transformationrules.schema.json",
+	"title": "Task transformation Configuration",
+	"description": "Schema for task transformation configuration",
+	"type": "object",
+	"required": ["rules"],
+	"additionalProperties": false,
+	"properties": {
+		"rules": {
+			"type": "array",
+			"description": "Transformation rules array",
+			"items": {
+				"type": "object",
+				"description": "Local transformations to be applied to the task",
+        		"properties": {
+					"ordinal": {
+						"type": "integer",
+						"description": "Execution order of the rule",
+						"default": 0
+					},
+					"enabled": {
+						"type": "boolean",
+						"description": "Indicates whether the rule is active and should be applied",
+						"enum": [true, false],
+						"default": true
+					},
+					"internalRule": {
+						"type": "boolean",
+						"description": "Indicates if the rule is system-internal (not user created)",
+						"enum": [true, false],
+						"default": false
+					},
+					"name": {
+						"type": "string",
+						"description": "Rule display name",
+						"example": "Rule_1"
+					},
+					"id": {
+						"type": "string",
+						"description": "Rule internal ID",
+						"example": "rule-hogc"
+					},
+					"description": {
+						"type": "string",
+						"description": "Rule description"
+					},
+					"actionType": {
+						"type": "string",
+						"description": "The type of transformation action to perform",
+						"enum": ["RENAME_TABLE", "RENAME_COLUMN", "ADD_COLUMN", "DROP_COLUMN", "REPLACE_COLUMN_VALUE", "CHANGE_COLUMN_DATA_TYPE"]
+					},
+					"scopeType": {
+						"type": "string",
+						"description": "The scope type",
+						"enum": ["COLUMN", "NONE"],
+						"default": "COLUMN"
+					},
+					"scope": {
+						"type": "object",
+						"description": "Criteria for defining the objects to which the rule applies",
+						"additionalProperties": false,
+						"required": [],
+						"properties": {
+							"whereOwnerName": {
+								"type": "string",
+								"description": "Schema name pattern (may include wildcards)",
+								"example": "%a"
+							},
+							"whereTableName": {
+								"type": "string",
+								"description": "Table name pattern (may include wildcards)",
+								"example": "%b"
+							},
+							"whereColumnName": {
+								"type": "string",
+								"description": "Column name pattern (may include wildcards)",
+								"example": "%c"
+							},
+							"whereDatatype": {
+								"type": "string",
+								"description": "Column datatype attribute filter",
+								"enum": ["UNSPECIFIED", "BOOLEAN", "BYTES", "DATE", "TIME", "DATETIME", "INT1", "INT2", "INT4", "INT8", "REAL4", "REAL8", "UINT1", "UINT2", "UINT4", "UINT8", "NUMERIC", "STRING", "WSTRING", "BLOB", "CLOB", "NCLOB", "JSON"],
+								"default": "UNSPECIFIED"
+							},
+							"whereColumnKeyAttribute": {
+								"type": "string",
+								"description": "Column key attribute filter",
+								"enum": ["ANY", "PK_ONLY", "NOT_PK_ONLY"],
+								"default": "ANY"
+							},
+							"whereColumnNullability": {
+								"type": "string",
+								"description": "Column nullability filter",
+								"enum": ["ANY", "NULLABLE_ONLY", "NOT_NULLABLE_ONLY"],
+								"default": "ANY"
+							}
+						}
+					},
+					"action": {
+						"type": "object",
+						"description": "Transformation action to apply",
+						"required": [],
+						"additionalProperties": true,
+						"properties": {
+							"renameType": {
+								"type": "string",
+								"description": "Type of rename operation",
+								"enum": ["RENAME", "ADD_PREFIX", "REMOVE_SUFFIX", "REPLACE_PREFIX", "TO_LOWER", "TO_UPPER", "EXPRESSION", "NAME_MAPPING"]
+							},
+							"applyColumnDatatype": {
+								"type": "boolean",
+								"description": "Indicates whether to apply the provided datatype to the column after action",
+								"enum": [true, false],
+								"default": false
+							},
+							"column": {
+								"type": "object",
+								"description": "Column definition used when applying datatype changes",
+								"additionalProperties": false,
+								"required": [],
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "The column name"
+									},
+									"ordinal": {
+										"type": "integer",
+										"description": "The ordinal position of the column",
+										"default": 0
+									},
+									"nullable": {
+										"type": "boolean",
+										"description": "Whether the column allows null values",
+										"enum": [true, false],
+										"default": true
+									},
+									"primaryKeyOrdinal": {
+										"type": "integer",
+										"description": "The ordinal position in the primary key",
+										"default": 0
+									},
+									"datatype": {
+										"type": "object",
+										"description": "The new data type definition for the column",
+										"additionalProperties": false,
+										"required": ["type"],
+										"properties": {
+											"type": {
+												"type": "string",
+												"description": "The data type of the column",
+												"enum": ["UNSPECIFIED", "BOOLEAN", "BYTES", "DATE", "TIME", "DATETIME", "INT1", "INT2", "INT4", "INT8", "REAL4", "REAL8", "UINT1", "UINT2", "UINT4", "UINT8", "NUMERIC", "STRING", "WSTRING", "BLOB", "CLOB", "NCLOB", "JSON"],
+												"default": "UNSPECIFIED"
+											},
+											"length": {
+												"type": "integer",
+												"description": "The length of the data type",
+
+												"default": 0
+											},
+											"precision": {
+												"type": "integer",
+												"description": "The precision of the data type",
+												"default": 0
+											},
+											"scale": {
+												"type": "integer",
+												"description": "The scale of the data type",
+												"default": 0
+											},
+											"originalTypeFull": {
+												"type": "string",
+												"description": "The original full type description"
+											}
+										}
+									},
+									"flags": {
+										"type": "string",
+										"description": "Miscellaneous flags",
+										"enum": ["NONE"],
+										"default": "NONE"
+									}
+								}
+							}
+						}
+					}
+				},
+				"required": ["actionType"],
+				"allOf": [
+					{
+						"if": {
+							"anyOf": [
+								{
+									"properties": { 
+										"actionType": { 
+											"const": "RENAME_TABLE" 
+										} 
+									}, 
+									"required": ["actionType"] 
+								},
+								{
+									"properties": { 
+										"actionType": { 
+											"const": "RENAME_COLUMN" 
+										} 
+									}, 
+									"required": ["actionType"] 
+								}
+							]
+						},
+						"then": {
+							"properties": {
+								"ordinal":true,
+								"enabled": true,
+								"internalRule": true,
+								"name":true,
+								"id": true,
+								"description": true,
+								"actionType":true,
+								"scopeType": true,
+								"scope": true,
+								"action": {
+									"type": "object",
+									"properties": {
+										"renameType": {
+											"type": "string",
+											"description": "Type of rename operation",
+											"enum": ["RENAME", "ADD_PREFIX", "REMOVE_SUFFIX", "REPLACE_PREFIX", "TO_LOWER", "TO_UPPER", "EXPRESSION", "NAME_MAPPING"]
+										},
+										"value": {"$ref": "#/$defs/Value"},
+										"applyColumnDatatype": true,
+										"column": true
+									},
+									"allOf": [
+										{
+											"if": {
+												"properties": {
+													"renameType": { "const": "EXPRESSION" }
+												},
+												"required": ["renameType"]
+											},
+											"then": {
+												"properties": {
+													"renameType":true,
+													"value": {"$ref": "#/$defs/Value"},
+													"applyColumnDatatype": true,
+													"column": true,
+													"expression": {"$ref": "#/$defs/Expression"}
+												},
+												"additionalProperties": false
+											}
+										},
+										{
+											"if": {
+												"properties": {
+													"renameType": { "const": "NAME_MAPPING" }
+												},
+												"required": ["renameType"]
+											},
+											"then": {
+												"properties": {
+													"renameType":true,
+													"value": {"$ref": "#/$defs/Value"},
+													"applyColumnDatatype": true,
+													"column": true,
+													"valueMapping": {
+														"type": "object",
+														"description": "Dynamic key-value mapping where keys are variable property names",
+														"additionalProperties": {
+															"type": "string",
+															"description": "Mapped value for the key"
+														},
+														"examples": [
+															{"key1": "value1", "key2": "value2"}
+														]
+													}
+												},
+												"additionalProperties": false
+											}
+										},
+										{
+											"if": {
+												"properties": {
+													"renameType": { "const": "REPLACE_PREFIX" }
+												},
+												"required": ["renameType"]
+											},
+											"then": {
+												"properties": {
+													"renameType": true,
+													"value": {"$ref": "#/$defs/Value"},
+													"oldValue": {
+														"type": "string",
+														"description": "Value to replace"
+													},
+													"column": true
+												},
+												"additionalProperties": false
+											}
+										}
+									]
+								}
+							},
+							"additionalProperties": false
+						}
+					},
+					{
+						"if": {
+							"properties": { 
+								"actionType": { 
+									"const": "REPLACE_COLUMN_VALUE" 
+								} 
+							}, 
+							"required": ["actionType"] 
+						},
+						"then": {
+							"properties": {
+								"action": {
+									"properties": {
+										"renameType":true,
+										"applyColumnDatatype": true,
+										"column": true,
+										"expression": {"$ref": "#/$defs/Expression"}
+									},
+									"additionalProperties": false
+								}
+							}
+						}
+					},
+					{
+						"if": {
+							"properties": { 
+								"actionType": { 
+									"const": "ADD_COLUMN" 
+								} 
+							}, 
+							"required": ["actionType"] 
+						},
+						"then": {
+							"properties": {
+								"action": {
+									"properties": {
+										"renameType":true,
+										"expression": {"$ref": "#/$defs/Expression"},
+										"applyColumnDatatype": true,
+										"column": {
+											"properties": {
+												"name": {
+													"type": "string",
+													"description": "The column name",
+													"example": ["newcol"]
+												},
+												"nullable": true,
+												"datatype": true
+											},
+											"additionalProperties": false
+										}
+									},
+									"additionalProperties": false
+								}
+							}
+						}
+					},
+					{
+						"if": {
+							"oneOf": [
+								{ 
+									"properties": { 
+										"actionType": { 
+											"const": "DROP_COLUMN" 
+										} 
+									}, 
+									"required": ["actionType"] 
+								},
+								{ 
+									"properties": { 
+										"actionType": { 
+											"const": "CHANGE_COLUMN_DATA_TYPE" 
+										} 
+									}, 
+									"required": ["actionType"] 
+								}
+							]
+						},
+						"then": {
+							"properties": {
+								"action": {
+									"properties": {
+										"renameType":true,
+										"applyColumnDatatype": true,
+										"column": true
+									},
+									"additionalProperties": false
+								}
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"$defs": {
+		"Value": {
+			"type": "string",
+			"description": "Value for the rename / new value for replace"
+		},
+		"Expression": { 
+			"type": "object",
+			"description": "The expression used for the column value",
+			"properties": {
+				"expressionStatement": {
+					"type": "string",
+					"description": "The SQL-like expression statement"
+				},
+				"alias": {
+					"type": "array",
+					"description": "An array of mapping aliases for the expression",
+					"items": {
+						"type": "object",
+						"description": "Mapping alias",
+						"properties": {
+							"name": {
+								"type": "string",
+								"description": "Parameter name to replace"
+							},
+							"value": {
+								"type": "string",
+								"description": "New value"
+							}
+						},
+						"additionalProperties": false
+					}
+				}
+			},
+			"required": ["expressionStatement"],
+			"additionalProperties": false
+		}
+	}
+}

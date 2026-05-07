@@ -1,0 +1,154 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "task.sourceselection.schema.json",
+	"title": "Task SourceSelection Configuration",
+	"description": "Schema for task sourceSelection configuration",
+	"type": "object",
+	"properties": {
+		"sourceConnection": {
+			"type": "string",
+			"description": "Source connection ID"
+		},
+		"includePatterns": {
+			"type": "array",
+			"description": "List of tables/views patterns to include from the source",
+			"items": {
+				"type": "object",
+				"description": "Include pattern item",
+				"properties": {
+					"sourceProject": {
+						"type": "string",
+						"description": "source project (for cross-project datasets)"
+					},
+					"sourceTask": {
+						"type": "string",
+						"description": "source task",
+						"examples": ["landing_cdc"]
+					},
+					"tablePattern": {
+						"type": "string",
+						"description": "Pattern for table names",
+						"examples": ["%customers"]
+					},
+					"schemaPattern": {
+						"type": "string",
+						"description": "Pattern for schema names",
+						"examples": ["%", "dbo"]
+					},
+					"type": {
+						"type": "string",
+						"description": "Type of data object (TABLE and View are used for a database source, RELOAD and CDC are for web application)",
+						"enum": ["NONE", "TABLE", "VIEW", "TABLE_AND_VIEW", "RELOAD", "CDC"],
+						"default": "TABLE"
+					}
+				},
+				"required": ["tablePattern"],
+				"additionalProperties": false
+			},
+			"examples": [
+				[
+					{
+						"tablePattern": "%customers",
+						"schemaPattern": "dbo",
+						"type": "TABLE"
+					}
+				]
+			]
+		},
+		"excludePatterns": {
+			"type": "array",
+			"description": "List of tables/views patterns to exclude from the source",
+			"items": {
+				"type": "object",
+				"description": "Exclude pattern item",
+				"properties": {
+					"tablePattern": {
+						"type": "string",
+						"description": "Pattern for table names",
+						"examples": ["%customers"]
+					},
+					"schemaPattern": {
+						"type": "string",
+						"description": "Pattern for schema names",
+						"examples": ["%", "dbo"]
+					},
+					"type": {
+						"type": "string",
+						"description": "Type of data object",
+						"enum": ["TABLE", "VIEW"],
+						"default": "TABLE"
+					}
+				},
+				"required": ["type", "tablePattern"],
+				"additionalProperties": false
+			},
+			"examples": [
+				[
+					{
+						"tablePattern": "%customers",
+						"schemaPattern": "dbo",
+						"type": "TABLE"
+					}
+				]
+			]
+		},
+		"explicitlySelected": {
+			"type": "array",
+			"description": "List of explicitly selected tables/views",
+			"items": {
+				"type": "object",
+				"description": "Explicitly selected item",
+				"properties": {
+					"sourceProject": {
+						"type": "string",
+						"description": "source project (for cross-project datasets)"
+					},
+					"sourceTask": {
+						"type": "string",
+						"description": "source task",
+						"examples": ["landing_cdc"]
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the table or view",
+						"examples": ["Employees", "Categories"]
+					},
+					"schema": {
+						"type": "string",
+						"description": "Schema name",
+						"examples": ["dbo"]
+					},
+					"type": {
+						"type": "string",
+						"description": "Type of data object (TABLE is for datasets that support CDC, VIEW is for full load only datasets)",
+						"enum": ["NONE", "CONNECTOR", "TABLE", "VIEW", "TABLE_AND_VIEW", "PRECOG", "DIRECTORY"],
+						"default": "TABLE"
+					},
+					"sourceTableId": {
+						"type": "string",
+						"description": "Table identifier, to be used from other tasks",
+						"examples": ["$replicate$dbo_employees"]
+					},
+					"database": {
+						"type": "string",
+						"description": "Database name. valid for registered data tasks"
+					}
+				},
+				"required": ["sourceTableId"],
+				"additionalProperties": false
+			},
+			"examples": [
+				[
+					{
+						"name": "Employees",
+						"schema": "dbo",
+						"type": "TABLE",
+						"sourceTableId": "$replicate$dbo_employees"
+					}
+				]
+			]
+		}
+	},
+	"required": [],
+	"additionalProperties": false
+}

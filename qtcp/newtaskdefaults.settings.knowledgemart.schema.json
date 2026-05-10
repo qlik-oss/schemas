@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "newtaskdefaults.settings.knowledgemart.schema.json",
   "title": "Defaults for new Knowledge Mart Task",
-  "description": "Schema for knowledge mart task default configuration",
+  "description": "Schema for Knowledge Mart task default configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

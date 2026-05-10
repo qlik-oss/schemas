@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.settings.registered.schema.json",
-  "title": "Defaults for new Registered Task",
-  "description": "Schema for registered task default configuration",
+  "$id": "newtaskdefaults.settings.registereddata.schema.json",
+  "title": "Defaults for new Registered Data Task",
+  "description": "Schema for Registered Tata task default configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

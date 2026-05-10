@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "newtaskdefaults.settings.storage.schema.json",
   "title": "Defaults for new Storage Task",
-  "description": "Schema for storage task default configuration",
+  "description": "Schema for Storage task default configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

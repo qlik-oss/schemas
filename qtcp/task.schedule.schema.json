@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.schedule.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.schedule.schema.json",
 	"title": "Task Schedule Configuration",
 	"description": "Schema for task scheduling configuration",
 	"type": "object",

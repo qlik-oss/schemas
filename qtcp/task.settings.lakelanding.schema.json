@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.settings.lakelanding.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.lakelanding.schema.json",
 	"title": "Lake Landing Task Configuration (Replication)",
 	"description": "Schema for Lake Landing task configuration",
 	"type": "object",

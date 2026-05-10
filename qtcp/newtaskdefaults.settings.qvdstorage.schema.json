@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.settings.qvdstorage.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.settings.qvdstorage.schema.json",
   "title": "Defaults for new QVD Storage Task",
   "description": "Schema for QVD Storage task default configuration",
   "type": "object",

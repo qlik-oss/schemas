@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.settings.lakelanding.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.settings.lakelanding.schema.json",
   "title": "Defaults for new Lake Landing Task",
   "description": "Schema for Lake Landing task default configuration",
   "type": "object",

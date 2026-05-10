@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "task.settings.filebasedknowledgemart.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.filebasedknowledgemart.schema.json",
   "title": "File Based Knowledge Mart Task Settings",
   "description": "Schema for File Based Knowledge Mart task settings configuration",
   "type": "object",

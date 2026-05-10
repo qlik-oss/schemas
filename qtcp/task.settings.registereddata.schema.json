@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.settings.registereddata.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.registereddata.schema.json",
 	"title": "Registered Data Task Settings",
 	"description": "Schema for Registered Data task settings configuration",
 	"type": "object",

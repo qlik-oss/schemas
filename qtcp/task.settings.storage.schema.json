@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "task.settings.storage.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.storage.schema.json",
   "title": "Storage Task Settings",
   "description": "Schema for Storage task settings configuration",
   "type": "object",

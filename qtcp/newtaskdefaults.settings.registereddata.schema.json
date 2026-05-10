@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.settings.registereddata.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.settings.registereddata.schema.json",
   "title": "Defaults for new Registered Data Task",
   "description": "Schema for Registered Tata task default configuration",
   "type": "object",

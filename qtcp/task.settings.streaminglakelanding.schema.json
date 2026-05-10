@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.settings.streaminglakelanding.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.streaminglakelanding.schema.json",
 	"title": "Streaming Lake Landing Task Settings",
 	"description": "Schema for Streaming Lake Landing task settings configuration",
 	"type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.settings.common.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.settings.common.schema.json",
   "title": "Common Task Settings Definitions",
   "description": "Shared definitions for task settings schemas to promote reusability and consistency",
   "definitions": {

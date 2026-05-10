@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "project.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/project.schema.json",
   "title": "Project Configuration",
   "description": "Schema for project configuration",
   "type": "object",

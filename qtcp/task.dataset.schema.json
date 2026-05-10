@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.dataset.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.dataset.schema.json",
 	"title": "Task Dataset Configuration",
 	"description": "Schema for task dataset configuration",
 	"type": "object",

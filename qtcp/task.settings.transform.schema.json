@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.settings.transform.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.transform.schema.json",
 	"title": "Transform Task Settings",
 	"description": "Schema for Transform task settings configuration",
 	"type": "object",

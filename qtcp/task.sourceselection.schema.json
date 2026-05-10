@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.sourceselection.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.sourceselection.schema.json",
 	"title": "Task SourceSelection Configuration",
 	"description": "Schema for task sourceSelection configuration",
 	"type": "object",

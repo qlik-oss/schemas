@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.schema.json",
   "title": "New Task Defaults Configuration",
   "description": "Schema for new task (added from the UI) defaults configurations",
   "type": "object",

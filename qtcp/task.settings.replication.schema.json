@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.settings.replication.schema.json",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.replication.schema.json",
 	"title": "Replication Task Configuration (Replication)",
 	"description": "Schema for Replication task configuration",
 	"type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.settings.transform.schema.json",
+  "$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.settings.transform.schema.json",
   "title": "Defaults for new Transform Task",
   "description": "Schema for Transform task default configuration",
   "type": "object",

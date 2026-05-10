@@ -1,0 +1,276 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "bindings.schema.json",
+  "title": "Bindings Configuration",
+  "description": "Schema for bindings mapping",
+  "type": "object",
+  "properties": {
+    "variables": {
+      "type": "object",
+      "description": "Variable bindings for project, task-type, and task-specific configurations",
+      "properties": {
+        "cloudStagingConnection": {
+          "type": ["string", "null"],
+          "description": "Cloud staging connection identifier, used in the project configuration"
+        },
+        "platformConnection": {
+          "type": ["string", "null"],
+          "description": "Platform connection identifier, used in the project configuration"
+        },
+        "projectName": {
+          "type": "string",
+          "description": "Name of the project, used in the project configuration"
+        },
+        "project.current.prefixSchema": {
+          "type": "string",
+          "description": "Prefix schema for the current project, used in the project configuration"
+        }
+      },
+      "patternProperties": {
+        "^project\\.[^.]+\\.projectId$": {
+          "type": "string",
+          "description": "referenced project identifier, used in the source selection configuration"
+        },
+        "^task-type\\.[^.]+\\.databaseName$": {
+          "type": "string",
+          "description": "Database name for each task type"
+        },
+        "^task-type\\.[^.]+\\.databaseSelectionMethod$": {
+          "type": "string",
+          "description": "Database selection method for each task type"
+        },
+        "^task-type\\.[^.]+\\.warehouseName$": {
+          "type": "string",
+          "description": "Warehouse name for each task type"
+        },
+        "^task-type\\.[^.]+\\.warehouseSelectionMethod$": {
+          "type": "string",
+          "description": "Warehouse selection method for each task type"
+        },
+        "^task-type\\.[^.]+\\.databricksVectorSearchEndpoint$": {
+          "type": "string",
+          "description": "Databricks vector search endpoint for knowledgeMart and fileBasedKnowledgeMart task types"
+        },
+        "^task-type\\.[^.]+\\.indexDatabase$": {
+          "type": "string",
+          "description": "Index database for knowledgeMart and fileBasedKnowledgeMart task types"
+        },
+        "^task-type\\.[^.]+\\.indexDatabaseSelectionMethod$": {
+          "type": "string",
+          "description": "Index database selection method for knowledgeMart and fileBasedKnowledgeMart task types"
+        },
+        "^task-type\\.[^.]+\\.llmConnection$": {
+          "type": ["string", "null"],
+          "description": "LLM connection for knowledgeMart and fileBasedKnowledgeMart task types"
+        },
+        "^task-type\\.[^.]+\\.vectorDbConnection$": {
+          "type": ["string", "null"],
+          "description": "Vector database connection for knowledgeMart and fileBasedKnowledgeMart task types"
+        },
+        "^task-type\\.[^.]+\\.vectorDbTargetType$": {
+          "type": "string",
+          "description": "Vector database target type for knowledgeMart and fileBasedKnowledgeMart task types"
+        },
+        "^task-type\\.[^.]+\\.lakehouseCluster$": {
+          "type": ["string", "null"],
+          "description": "Lakehouse cluster identifier for streaming storage task types"
+        },
+        "^task\\.[^.]+\\.warehouseName$": {
+          "type": "string",
+          "description": "Task-specific warehouse name"
+        },
+        "^task\\.[^.]+\\.warehouseSelectionMethod$": {
+          "type": "string",
+          "description": "Task-specific warehouse selection method"
+        },
+        "^task\\.[^.]+\\.databaseName$": {
+          "type": "string",
+          "description": "Task-specific database name"
+        },
+        "^task\\.[^.]+\\.databaseSelectionMethod$": {
+          "type": "string",
+          "description": "Task-specific database selection method"
+        },
+        "^task\\.[^.]+\\.snowflakeExternalVolume$": {
+          "type": "string",
+          "description": "Task-specific Snowflake external volume name"
+        },
+        "^task\\.[^.]+\\.snowflakeOpenCatalog$": {
+          "type": "string",
+          "description": "Task-specific Snowflake open catalog name"
+        },
+        "^task\\.[^.]+\\.taskSchema$": {
+          "type": "string",
+          "description": "Task-specific schema name"
+        },
+        "^task\\.[^.]+\\.sourceConnection$": {
+          "type": "string",
+          "description": "Task-specific source connection identifier"
+        },
+        "^task\\.[^.]+\\.targetConnection$": {
+          "type": "string",
+          "description": "Task-specific target connection identifier"
+        },
+        "^task\\.[^.]+\\.database$": {
+          "type": "string",
+          "description": "Task-specific database name, for registered tasks"
+        },
+        "^task\\.[^.]+\\.schema$": {
+          "type": "string",
+          "description": "Task-specific schema name"
+        },
+        "^task\\.[^.]+\\.internalSchema$": {
+          "type": "string",
+          "description": "Task-specific internal schema name"
+        },
+        "^task\\.[^.]+\\.schemaPattern$": {
+          "type": "string",
+          "description": "Task-specific schema pattern"
+        },
+        "^task\\.[^.]+\\.targetSchema$": {
+          "type": "string",
+          "description": "Task-specific target schema name"
+        },
+        "^task\\.[^.]+\\.targetStorageConnection$": {
+          "type": ["string", "null"],
+          "description": "Task-specific target storage connection identifier"
+        },
+        "^task\\.[^.]+\\.targetControlTableSchema$": {
+          "type": "string",
+          "description": "Task-specific target control table schema name"
+        },
+        "^task\\.[^.]+\\.vectorDbConnection$": {
+          "type": "string",
+          "description": "Task-specific vector database connection identifier"
+        },
+        "^task\\.[^.]+\\.llmConnection$": {
+          "type": "string",
+          "description": "Task-specific LLM connection identifier"
+        },
+        "^task\\.[^.]+\\.indexName$": {
+          "type": "string",
+          "description": "Task-specific index name"
+        },
+        "^task\\.[^.]+\\.indexSchema$": {
+          "type": "string",
+          "description": "Task-specific index schema name"
+        },
+        "^task\\.[^.]+\\.indexDatabase$": {
+          "type": "string",
+          "description": "Task-specific index database name"
+        },
+        "^task\\.[^.]+\\.maxNumberOfRecords$": {
+          "type": "string",
+          "description": "Task-specific maximum number of records"
+        },
+        "^task\\.[^.]+\\.databricksVectorSearchEndpoint$": {
+          "type": "string",
+          "description": "Task-specific Databricks vector search endpoint"
+        },
+        "^task\\.[^.]+\\.vectorDbTargetType$": {
+          "type": "string",
+          "description": "Task-specific vector database target type"
+        },
+        "^task\\.[^.]+\\.snowflakeStorageIntegration$": {
+          "type": "string",
+          "description": "Task-specific Snowflake storage integration"
+        },
+        "^task\\.[^.]+\\.cloudStagingConnection$": {
+          "type": "string",
+          "description": "Task-specific cloud staging connection"
+        },
+        "^task\\.[^.]+\\.platformConnection$": {
+          "type": "string",
+          "description": "Task-specific platform connection"
+        },
+        "^task\\.[^.]+\\.indexDatabaseSelectionMethod$": {
+          "type": "string",
+          "description": "Task-specific index database selection method"
+        },
+        "^task\\.[^.]+\\.lakehouseCluster$": {
+          "type": "string",
+          "description": "Task-specific lakehouse cluster identifier"
+        },
+            "^task\\.[^.]+\\.redshiftExternalSchema$": {
+          "type": "string",
+          "description": "Task-specific Redshift external schema"
+        }
+      },
+      "additionalProperties": false
+    },
+    "nameToIdMap": {
+      "type": "object",
+      "description": "Mapping of placeholder names to actual IDs",
+      "patternProperties": {
+        "^\\{\\{id\\(": {
+          "type": "string",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[0-9a-fA-F]{24})$",
+          "description": "UUID identifier (36 chars with hyphens) or 24-character hex string identifier"
+        }
+      },
+      "additionalProperties": false
+    },
+    "connectionProperties": {
+      "type": "object",
+      "description": "Connection-specific properties and metadata",
+      "patternProperties": {
+        "^task\\.[^.]+\\.sourceConnection$": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Connection type identifier"
+            },
+            "kindId": {
+              "type": "string",
+              "description": "Connection kind identifier (for external data providers)"
+            }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        "^task\\.[^.]+\\.targetConnection$": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Connection type identifier"
+            },
+            "kindId": {
+              "type": "string",
+              "description": "Connection kind identifier (for external data providers)"
+            }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "taskProperties": {
+      "type": "object",
+      "description": "Task metadata including type and display name",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["DATAMART","FILE_BASED_KNOWLEDGE_MART","ICEBERG_STORAGE","ICEBERG_TRANSFORM","KNOWLEDGE_MART","LAKE_LANDING","LANDING_SAAS_MANAGED","MIRROR","QVD_STORAGE","REGISTERED_DATA","REPLICATION","STORAGE","STREAMING_LANDING","TRANSFORM"],
+              "description": "Type of the task"
+            },
+            "name": {
+              "type": "string",
+              "description": "Display name of the task"
+            }
+          },
+          "required": ["type", "name"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["variables"],
+  "additionalProperties": false
+}

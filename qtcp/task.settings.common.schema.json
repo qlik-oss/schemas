@@ -77,13 +77,13 @@
         },
         "addColumnRoot": {
             "type": "string",
-            "description": "Policy for adding root columns (for iceberg transform task only)",
+            "description": "Policy for adding root columns (for streaming transform task only)",
             "enum": ["APPLY_TO_TARGET", "IGNORE", "SUSPEND_TABLE", "STOP_TASK"],
             "default": "APPLY_TO_TARGET"
         },
         "addColumnStruct": {
             "type": "string",
-            "description": "Policy for adding struct columns (for iceberg transform task only)",
+            "description": "Policy for adding struct columns (for streaming transform task only)",
             "enum": ["APPLY_TO_TARGET", "IGNORE", "SUSPEND_TABLE", "STOP_TASK"],
             "default": "APPLY_TO_TARGET"
         }

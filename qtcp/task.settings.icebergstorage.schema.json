@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",	
   "$id": "task.settings.icebergstorage.schema.json",  
-  "title": "Iceberg Storage Task Settings",
-	"description": "Schema for Iceberg Storage task settings configuration",
+  "title": "Streaming Storage Task Settings",
+	"description": "Schema for Streaming Storage task settings configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

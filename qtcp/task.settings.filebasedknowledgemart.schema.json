@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "task.settings.filebasedknowledgemart.schema.json",
-  "title": "Knowledge Mart Task Settings",
-  "description": "Schema for Knowledge Mart task settings configuration",
+  "title": "File Based Knowledge Mart Task Settings",
+  "description": "Schema for File Based Knowledge Mart task settings configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

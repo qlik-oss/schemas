@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "newtaskdefaults.settings.datamart.schema.json",
   "title": "Defaults for new Datamart Task",
-  "description": "Schema for datamart task default configuration",
+  "description": "Schema for Datamart task default configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

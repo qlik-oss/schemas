@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",	
   "$id": "task.settings.qvdstorage.schema.json",  
   "title": "QVD Storage Task Settings",
-  "description": "Schema for QVD storage task settings configuration",
+  "description": "Schema for QVD Storage task settings configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

@@ -33,14 +33,14 @@
     "transform": {
       "$ref": "./newtaskdefaults.settings.transform.schema.json"
     },
-    "icebergStorage": {
-      "$ref": "./newtaskdefaults.settings.icebergstorage.schema.json"
+    "lakehouseStorage": {
+      "$ref": "./newtaskdefaults.settings.lakehousestorage.schema.json"
     },
-    "icebergTransform": {
-      "$ref": "./newtaskdefaults.settings.icebergtransform.schema.json"
+    "streamingTransform": {
+      "$ref": "./newtaskdefaults.settings.streamingtransform.schema.json"
     },
-    "streamingLanding": {
-      "$ref": "./newtaskdefaults.settings.streaminglanding.schema.json"
+    "streamingLakeLanding": {
+      "$ref": "./newtaskdefaults.settings.streaminglakelanding.schema.json"
     }
   }
 }

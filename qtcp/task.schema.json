@@ -35,10 +35,10 @@
 				"properties": {
 					"allOf": [
 						{ "$ref": "#/$defs/BaseProperties" },
-						{	"properties": {"type": { "const": "ICEBERG_STORAGE" }}}
+						{	"properties": {"type": { "const": "LAKEHOUSE_STORAGE" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.icebergstorage.schema.json" }
+				"settings": { "$ref": "task.settings.lakehousestorage.schema.json" }
 			},
 			"additionalProperties": false
 		},
@@ -47,10 +47,10 @@
 				"properties": {
 					"allOf": [
 						{ "$ref": "#/$defs/BaseProperties" },
-						{	"properties": {"type": { "const": "ICEBERG_TRANSFORM" }}}
+						{	"properties": {"type": { "const": "STREAMING_TRANSFORM" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.icebergtransform.schema.json" }
+				"settings": { "$ref": "task.settings.streamingtransform.schema.json" }
 			},
 			"additionalProperties": false
 		},
@@ -83,7 +83,7 @@
 				"properties": {
 					"allOf": [
 						{ "$ref": "#/$defs/BaseProperties" },
-						{	"properties": {"type": { "const": "LANDING_SAAS_MANAGED" }}}
+						{	"properties": {"type": { "const": "LANDING" }}}
 					]
 				},
 				"settings": { "$ref": "task.settings.landing.schema.json" }
@@ -95,10 +95,10 @@
 				"properties": {
 					"allOf": [
 						{ "$ref": "#/$defs/BaseProperties" },
-						{	"properties": {"type": { "const": "MIRROR" }}}
+						{	"properties": {"type": { "const": "LAKEHOUSE_MIRROR" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.mirror.schema.json" }
+				"settings": { "$ref": "task.settings.lakehousemirror.schema.json" }
 			},
 			"additionalProperties": false
 		},
@@ -155,10 +155,10 @@
 				"properties": {
 					"allOf": [
 						{ "$ref": "#/$defs/BaseProperties" },
-						{	"properties": {"type": { "const": "STREAMING_LANDING" }}}
+						{	"properties": {"type": { "const": "STREAMING_LAKE_LANDING" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.streaminglanding.schema.json" }
+				"settings": { "$ref": "task.settings.streaminglakelanding.schema.json" }
 			},
 			"additionalProperties": false
 		},
@@ -198,7 +198,7 @@
 				"type": {
 					"type": "string",
 					"description": "Task type",
-					"enum": ["DATAMART","FILE_BASED_KNOWLEDGE_MART","ICEBERG_STORAGE","ICEBERG_TRANSFORM","KNOWLEDGE_MART","LAKE_LANDING","LANDING_SAAS_MANAGED","MIRROR","QVD_STORAGE","REGISTERED_DATA","REPLICATION","STORAGE","STREAMING_LANDING","TRANSFORM"]
+					"enum": ["DATAMART","FILE_BASED_KNOWLEDGE_MART","LAKEHOUSE_STORAGE","STREAMING_TRANSFORM","KNOWLEDGE_MART","LAKE_LANDING","LANDING","LAKEHOUSE_MIRROR","QVD_STORAGE","REGISTERED_DATA","REPLICATION","STORAGE","STREAMING_LAKE_LANDING","TRANSFORM"]
 				}
 			}
 		}

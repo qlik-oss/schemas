@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.settings.icebergtransform.schema.json",  
+	"$id": "task.settings.streamingtransform.schema.json",  
 	"title": "Streaming Transform Task Settings",
 	"description": "Schema for Streaming Transform task settings configuration",
 	"type": "object",

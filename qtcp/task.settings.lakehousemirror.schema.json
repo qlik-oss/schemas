@@ -1,8 +1,8 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "task.settings.mirror.schema.json",
-	"title": "Mirror Task Settings",
-	"description": "Schema for Mirror task settings configuration",
+	"$id": "task.settings.lakehousemirror.schema.json",
+	"title": "Lakehouse Mirror Task Settings",
+	"description": "Schema for Lakehouse Mirror task settings configuration",
 	"type": "object",
 	"additionalProperties": false,
 	"properties": {

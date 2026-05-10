@@ -1,8 +1,8 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"$id": "task.settings.landing.schema.json",	
-	"title": "Landing CDC Task Settings",
-	"description": "Schema for Landing CDC task settings configuration",
+	"title": "Landing Task Settings",
+	"description": "Schema for Landing task settings configuration",
 	"type": "object",
 	"additionalProperties": false,
 	"properties": {

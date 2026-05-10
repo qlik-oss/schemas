@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "newtaskdefaults.settings.streaminglanding.schema.json",
-  "title": "Defaults for new Streaming Landing Task",
-  "description": "Schema for streaming landing task default configuration",
+  "$id": "newtaskdefaults.settings.streaminglakelanding.schema.json",
+  "title": "Defaults for new Streaming Lake Landing Task",
+  "description": "Schema for streaming lake landing task default configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {

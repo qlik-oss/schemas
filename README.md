@@ -9,7 +9,7 @@ Schemas are distributed via CDN for direct consumption by tools and pipelines.
 
 ## Purpose
 
-These schemas define the structure and validation rules for **QTCP** (Qlik Transformation and Connectivity Platform) project and task configurations. They are intended as a reference for:
+These schemas define the structure and validation rules for **QTCP** (Qlik Talend Cloud Platform) project and task configurations. They are intended as a reference for:
 
 - **Customers and partners** building or automating data integration projects via API or tooling
 - **Tool authors** who need schemas for validation, autocompletion, or code generation
@@ -27,12 +27,13 @@ All schemas live in [`qtcp/`](qtcp/) and conform to [JSON Schema draft-07](https
 |--------|-------------|
 | `project.schema.json` | Top-level project configuration (Data Movement or Data Pipeline) |
 | `task.schema.json` | Task configuration with type-discriminated routing to settings schemas |
-| `task.schedule.schema.json` | Task scheduling — time-based (RFC-5545 RRULE), event-based, data-event-based |
+| `task.schedule.schema.json` | Task scheduling |
 | `task.dataset.schema.json` | Dataset definitions within tasks, including cross-project references |
 | `task.model.schema.json` | Data model entity relationships |
 | `task.sourceselection.schema.json` | Source table and view pattern selection |
 | `task.transformationrules.schema.json` | Declarative transformation rules (rename, add/drop columns, type changes, value replacement) |
-| `task.transformationdataflow.schema.json` | Transformation flow definitions |
+| `task.transformationdataflow.schema.json` | Transformation data flow definitions |
+| `newtaskdefaults.schema.json` | Default configurations for creating new tasks (via the UI) |
 
 ## License
 

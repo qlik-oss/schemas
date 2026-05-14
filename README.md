@@ -2,6 +2,9 @@
 
 JSON Schema definitions for Qlik data integration projects and tasks. This repository is the versioned, auditable reference for the schemas used to configure and build data integration pipelines programmatically with Qlik.
 
+> [!NOTE]
+> Qlik may add other resource schemas in future. If you're interested only in Qlik Data Integration schemas, load only from the `qtcp` directory.
+
 Schemas are distributed via CDN for direct consumption by tools and pipelines.
 
 ## Purpose
@@ -30,7 +33,6 @@ All schemas live in [`qtcp/`](qtcp/) and conform to [JSON Schema draft-07](https
 | `task.sourceselection.schema.json` | Source table and view pattern selection |
 | `task.transformationrules.schema.json` | Declarative transformation rules (rename, add/drop columns, type changes, value replacement) |
 | `task.transformationdataflow.schema.json` | Transformation flow definitions |
-
 
 ## License
 

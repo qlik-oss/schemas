@@ -31,43 +31,6 @@ All schemas live in [`qtcp/`](qtcp/) and conform to [JSON Schema draft-07](https
 | `task.transformationrules.schema.json` | Declarative transformation rules (rename, add/drop columns, type changes, value replacement) |
 | `task.transformationdataflow.schema.json` | Transformation flow definitions |
 
-### Task Settings
-
-Each task type has a corresponding `task.settings.{type}.schema.json`. Shared definitions reused across types are consolidated in `task.settings.common.schema.json`.
-
-| Task Type | Description |
-|-----------|-------------|
-| `landing` | Land raw data from source systems |
-| `lakelanding` | Land data into a data lake |
-| `streaminglakelanding` | Streaming data lake landing |
-| `storage` | Store processed data |
-| `qvdstorage` | QVD-format data storage |
-| `lakehousestorage` | Lakehouse storage (Iceberg) |
-| `lakehousemirror` | Lakehouse mirroring |
-| `replication` | Data replication |
-| `transform` | Batch data transformation |
-| `streamingtransform` | Streaming data transformation |
-| `datamart` | Data mart creation |
-| `knowledgemart` | Knowledge mart for AI/LLM workloads |
-| `filebasedknowledgemart` | File-based knowledge mart |
-| `registereddata` | Registered data assets |
-
-### New Task Defaults
-
-`newtaskdefaults.schema.json` and its type-specific companions (`newtaskdefaults.settings.{type}.schema.json`) define the default values applied when a new task of each type is created.
-
-### Supported Target Platforms
-
-Schemas support configuration targeting:
-
-- Qlik Open Lakehouse
-- Snowflake
-- BigQuery
-- Azure Synapse / Microsoft Fabric
-- Databricks
-- Amazon Redshift
-- SQL Server
-- QVD
 
 ## License
 

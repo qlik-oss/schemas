@@ -652,6 +652,12 @@
 			"type": "object",
 			"description": "Source table, for task types of landing, lake landing, landing_streaming and registered",
 			"properties": {
+				"type": {
+					"type": "string",
+					"description": "Type",
+					"enum": ["NONE","TABLE","VIEW","DIRECTORY"],
+					"default": "NONE"
+				}
 				"name": {
 					"type": "string",
 					"description": "Dataset Display name",
@@ -670,6 +676,7 @@
 					"description": "Database name. valid for registered data tasks"
 				}
 			},
+			"required": ["type","name","schema"],
 			"additionalProperties": false
 		},
 		"transformations": {

@@ -64,7 +64,7 @@ Based on the user's task selection:
 
 ✅ Create root folder: `<ProjectName>/`
 ✅ Create minimal `<ProjectName>/qtcp_project.yaml` with the correct project type
-✅ Create minimal `<ProjectName>/bindingsTemplate.json` with empty variables: `{ "variables": {} }`
+✅ Create minimal `<ProjectName>/qtcp_bindings_definition.json` with empty variables: `{ "variables": {} }`
 ✅ Create empty subfolder `<ProjectName>/qtcp_tasks`
 
 **STEP 5: Ask for Task Name**
@@ -368,7 +368,7 @@ explicitlySelected: []
 
 ## Variable Naming Conventions
 
-When working with `bindingsTemplate.json`, follow these conventions:
+When working with `qtcp_bindings_definition.json`, follow these conventions:
 
 - `task.<task-id>.<property>` - Task-specific properties (e.g., `task.landing_cdc-0001.sourceConnection`)
 - `task.<task-id>:null$_$<schema>.<property>` - Schema-specific properties (e.g., `task.landing_cdc-0001:null$_$dbo.schema`)
@@ -376,11 +376,11 @@ When working with `bindingsTemplate.json`, follow these conventions:
 - `project.current.<property>` - Project-level references (e.g., `project.current.projectId`)
 
 **Binding variable rules:**
-- Whenever a `{{...}}` binding variable is used in any project file, add it to `bindingsTemplate.json` `variables` with a blank value (`""`)
+- Whenever a `{{...}}` binding variable is used in any project file, add it to `qtcp_bindings_definition.json` `variables` with a blank value (`""`)
 - If the variable refers to a **connection property** (variable name ends with `Connection`, e.g., `sourceConnection`, `targetConnection`, `targetStorageConnection`), also add it to the `connectionProperties` section with a `type` property indicating the connection type
   - If the connection type is not known, omit the `type` property for that variable — do not guess
 
-**Example bindingsTemplate.json with variables and connectionProperties:**
+**Example qtcp_bindings_definition.json with variables and connectionProperties:**
 ```json
 {
   "variables": {

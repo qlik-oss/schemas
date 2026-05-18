@@ -134,7 +134,7 @@
 						"description": "Database name. valid for registered data tasks"
 					}
 				},
-				"required": ["sourceTableId"],
+				"required": [],
 				"additionalProperties": false
 			},
 			"examples": [

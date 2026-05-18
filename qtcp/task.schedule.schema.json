@@ -26,7 +26,7 @@
 						"type": "boolean",
 						"description": "Indicates if the schedule is enabled",
 						"enum": [true, false],
-						"default": true
+						"default": false
 					},
 					"schedulingType": {
 						"type": "string",

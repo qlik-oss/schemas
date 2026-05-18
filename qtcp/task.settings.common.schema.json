@@ -1029,11 +1029,13 @@
           "properties": {
             "dataAssetSchema": {
               "type": "string",
-              "description": "Data asset schema"
+              "description": "Data asset schema reference",
+              "example": "{{task.landing3-xnxl.dataAssetSchema}}"
             },
             "database": {
               "type": "string",
-              "description": "Database name"
+              "description": "Database name",
+							"example": "{{task.landing3-xnxl.databaseName}}"
             }
           }
         }

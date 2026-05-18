@@ -185,7 +185,7 @@
 						}
 					}
 				},
-				"required": ["actionType"],
+				"required": ["name","actionType"],
 				"allOf": [
 					{
 						"if": {
@@ -196,7 +196,7 @@
 											"const": "RENAME_TABLE" 
 										} 
 									}, 
-									"required": ["actionType"] 
+									"required": ["name","actionType"] 
 								},
 								{
 									"properties": { 
@@ -204,7 +204,7 @@
 											"const": "RENAME_COLUMN" 
 										} 
 									}, 
-									"required": ["actionType"] 
+									"required": ["name","actionType"] 
 								}
 							]
 						},
@@ -311,7 +311,7 @@
 									"const": "REPLACE_COLUMN_VALUE" 
 								} 
 							}, 
-							"required": ["actionType"] 
+							"required": ["name","actionType"] 
 						},
 						"then": {
 							"properties": {
@@ -334,7 +334,7 @@
 									"const": "ADD_COLUMN" 
 								} 
 							}, 
-							"required": ["actionType"] 
+							"required": ["name","actionType"] 
 						},
 						"then": {
 							"properties": {
@@ -370,7 +370,7 @@
 											"const": "DROP_COLUMN" 
 										} 
 									}, 
-									"required": ["actionType"] 
+									"required": ["name","actionType"] 
 								},
 								{ 
 									"properties": { 
@@ -378,7 +378,7 @@
 											"const": "CHANGE_COLUMN_DATA_TYPE" 
 										} 
 									}, 
-									"required": ["actionType"] 
+									"required": ["name","actionType"] 
 								}
 							]
 						},

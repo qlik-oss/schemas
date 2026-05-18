@@ -20,11 +20,6 @@
 					"description": "Dataset Display name",
 					"examples": ["Orders"]
 				},
-				"type": {
-					"type": "string",
-					"description": "Dataset type used by the task",
-					"enum": ["STORAGE", "LANDING", "CUSTOM", "DIMENSION", "FACT", "EXTERNAL_TABLE", "DATAFLOW", "TRANSFORM_MODEL_BASED", "DIRECTORY", "DOCUMENT_SCHEMA", "STREAMING_LANDING", "ICEBERG_TRANSFORM"]
-				},
 				"description": {
 					"type": "string",
 					"description": "Dataset description"
@@ -71,7 +66,7 @@
 								"description": "Database name"
 							}
 						},
-						"required": [],
+						"required": ["taskId"],
 						"additionalProperties": false
 					}
 				},
@@ -650,7 +645,7 @@
 					"default": false
 				}
 			},
-			"required": ["name"],
+			"required": ["name","id","inputDatasets"],
 			"additionalProperties": false
 		},
 		"sourceTable": {

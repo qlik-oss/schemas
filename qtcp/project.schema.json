@@ -66,8 +66,7 @@
 							"type": {
 								"const": "DATA_MOVEMENT"
 							}
-						},
-						"required": ["type"]
+						}
 					}
 				}
 			},
@@ -86,14 +85,15 @@
 							"type": {
 								"const": "DATA_PIPELINE"
 							}
-						},
-						"required": ["type"]
+						}
 					}
 				}
 			},
 			"then": {
 				"properties": {
-					"properties": true,
+					"properties": {
+						"required": ["type", "platformType"]
+					},
 					"settings": {
 						"type": "object",
 						"description": "Additional settings (valid for DATA_PIPELINE projects)",

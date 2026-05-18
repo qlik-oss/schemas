@@ -38,7 +38,7 @@
 							"type": {
 								"type": "string",
 								"description": "Type",
-								"enum": ["NONE","CONNECTOR","TABLE","REPLICATE_TABLE","VIEW","REPLICATE_VIEW","TABLE_AND_VIEW","REPLICATE_BOTH","PRECOG,DIRECTORY"],
+								"enum": ["NONE","TABLE","VIEW","TABLE_AND_VIEW","DIRECTORY"],
 								"default": "NONE"
 							},
 							"name": {

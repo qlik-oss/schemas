@@ -657,7 +657,7 @@
 					"description": "Type",
 					"enum": ["NONE","TABLE","VIEW","DIRECTORY"],
 					"default": "NONE"
-				}
+				},
 				"name": {
 					"type": "string",
 					"description": "Dataset Display name",

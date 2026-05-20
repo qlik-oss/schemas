@@ -377,6 +377,8 @@ When working with `qtcp_bindings_definition.json`, follow these conventions:
 
 **Binding variable rules:**
 - Whenever a `{{...}}` binding variable is used in any project file, add it to `qtcp_bindings_definition.json` `variables` with a blank value (`""`)
+- When adding variables to `qtcp_bindings_definition.json`, also add the same variables to a sibling `bindings.json` file if that file already exists
+- Do not create `bindings.json` if it does not exist
 - If the variable refers to a **connection property** (variable name ends with `Connection`, e.g., `sourceConnection`, `targetConnection`, `targetStorageConnection`), also add it to the `connectionProperties` section with a `type` property indicating the connection type
   - If the connection type is not known, omit the `type` property for that variable — do not guess
 

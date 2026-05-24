@@ -5,6 +5,7 @@
 	"description": "Schema for Replication task configuration",
 	"type": "object",
 	"additionalProperties": false,
+	"required": ["taskSettings"],
 	"properties": {
 		"fullLoadOnly": {
 			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"
@@ -85,6 +86,32 @@
 					"default": false
 				}
 			},
+			"anyOf": [
+				{
+					"required": ["fullLoad"],
+					"properties": {
+						"fullLoad": {
+							"const": true
+						}
+					}
+				},
+				{
+					"required": ["applyChanges"],
+					"properties": {
+						"applyChanges": {
+							"const": true
+						}
+					}
+				},
+				{
+					"required": ["storeChanges"],
+					"properties": {
+						"storeChanges": {
+							"const": true
+						}
+					}
+				}
+			],
 			"additionalProperties": false
 		},
 		"fullLoadOptions": {

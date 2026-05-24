@@ -30,7 +30,11 @@
 							"default": "AUTOMATIC"
 						}
 					}
-				}
+				},
+				"lakehouseClusterId": {
+					"type": "string",
+					"description": "Name of the lakehouse cluster to use"
+        }
       }
     },
 		"folderRetentionSettings": {

@@ -101,6 +101,23 @@
 		},
 		"catalogIntegration": {
 			"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+		},
+		"viewDefinitionSettings": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"standardViewHeaders": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"hdrFromTimestamp": {
+							"type": "boolean",
+							"enum": [true, false],
+							"default": false
+						}
+					}
+				}
+			}
 		}
 	}
 }

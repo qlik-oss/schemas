@@ -132,6 +132,10 @@
 					"database": {
 						"type": "string",
 						"description": "Database name. valid for registered data tasks"
+					},
+					"outputDatasetName": {
+						"type": "string",
+						"description": "output dataset name. valid for streaming landing tasks"
 					}
 				},
 				"required": [],

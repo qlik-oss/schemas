@@ -9,7 +9,13 @@
     "taskRuntime": {
       "type": "object",
       "description": "Runtime configuration for the task",
-      "additionalProperties": false
+      "additionalProperties": false,
+			"properties": {
+				"lakehouseClusterId": {
+					"type": "string",
+					"description": "Name of the lakehouse cluster to use"
+        }
+			}
     },
     "catalogIntegration": {
       "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/catalogIntegration"
@@ -19,6 +25,23 @@
     },
     "specificFolder": {
       "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/specificFolder"
-    }
+    },
+		"viewDefinitionSettings": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"standardViewHeaders": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"hdrFromTimestamp": {
+							"type": "boolean",
+							"enum": [true, false],
+							"default": false
+						}
+					}
+				}
+			}
+		}
   }
 }

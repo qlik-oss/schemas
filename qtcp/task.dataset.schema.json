@@ -24,6 +24,11 @@
 					"type": "string",
 					"description": "Dataset description"
 				},
+				"type": {
+					"type": "string",
+					"description": "dataset type",
+					"enum": ["NONE","STORAGE","LANDING","CUSTOM","DIMENSION","FACT","EXTERNAL_TABLE","DATAFLOW","TRANSFORM_MODEL_BASED","DIRECTORY","DOCUMENT_SCHEMA","STREAMING_LANDING","ICEBERG_TRANSFORM"]
+				},
 				"inputDatasets": {
 					"type": "array",
 					"description": "Array of input datasets, for task types other than landing, lake landing, landing_streaming and registered",
@@ -510,7 +515,7 @@
 								"entityStrategy": {
 									"type": "string",
 									"description": "Entity processing strategy",
-									"enum": ["SIMPLE", "COMPLEX"]
+									"enum": ["NONE", "SIMPLE", "COMPLEX"]
 								}
 							}
 						},
@@ -633,6 +638,33 @@
 									"type": "string",
 									"enum": ["KEEP_NESTED_FIELDS", "EXPAND_NESTED_FIELDS"],
 									"default": "EXPAND_NESTED_FIELDS"
+								}
+							}
+						},
+						"viewDefinitionSettings": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"standardViewHeadersSettings": {
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"attributeSourceValue": {
+											"type": "string",
+											"enum": ["INHERIT", "CUSTOM"]
+										},
+										"standardViewHeaders": {
+											"type": "object",
+											"additionalProperties": false,
+											"properties": {
+												"hdrFromTimestamp": {
+													"type": "boolean",
+													"enum": [true, false],
+													"default": false
+												}
+											}
+										}
+									}
 								}
 							}
 						}
@@ -1119,7 +1151,7 @@
 					}
 				}
 			},
-			"required": ["expressionStatement"],
+			"required": [],
 			"additionalProperties": false
 		}
 	},

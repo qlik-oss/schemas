@@ -136,6 +136,7 @@
 				},
 				"settings": { "$ref": "task.settings.replication.schema.json" }
 			},
+			"required": ["properties","settings"],
 			"additionalProperties": false
 		},
 		{

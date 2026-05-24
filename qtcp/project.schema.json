@@ -157,10 +157,24 @@
 								"description": "Transformation settings for open lakehouse project",
 								"required": [],
 								"properties": {
-									"hashSaltString": { 
-										"type": "string", 
-										"description": "hash salt string",
-										"default": ""
+									"hashSaltStringSettings": {
+										"type": "object",
+										"description": "hash salt string settings",
+										"required": [],
+										"properties": {
+											"mode": {
+												"type": "string", 
+												"description": "hash salt string mode",
+												"enum": ["DEFAULT", "CUSTOM"],
+												"default": "DEFAULT"
+											},
+											"hashSaltString": { 
+												"type": "string", 
+												"description": "hash salt string",
+												"default": ""
+											}
+										},
+										"additionalProperties": false
 									}
 								},
 								"additionalProperties": false

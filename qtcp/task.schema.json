@@ -16,6 +16,7 @@
 				},
 				"settings": { "$ref": "task.settings.datamart.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -28,6 +29,7 @@
 				},
 				"settings": { "$ref": "task.settings.filebasedknowledgemart.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -40,6 +42,7 @@
 				},
 				"settings": { "$ref": "task.settings.lakehousestorage.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -52,6 +55,7 @@
 				},
 				"settings": { "$ref": "task.settings.streamingtransform.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -64,6 +68,7 @@
 				},
 				"settings": { "$ref": "task.settings.knowledgemart.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -76,6 +81,7 @@
 				},
 				"settings": { "$ref": "task.settings.lakelanding.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -88,6 +94,7 @@
 				},
 				"settings": { "$ref": "task.settings.landing.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -100,6 +107,7 @@
 				},
 				"settings": { "$ref": "task.settings.lakehousemirror.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -124,6 +132,7 @@
 				},
 				"settings": { "$ref": "task.settings.registereddata.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -136,7 +145,7 @@
 				},
 				"settings": { "$ref": "task.settings.replication.schema.json" }
 			},
-			"required": ["properties","settings"],
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -149,6 +158,7 @@
 				},
 				"settings": { "$ref": "task.settings.storage.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -161,6 +171,7 @@
 				},
 				"settings": { "$ref": "task.settings.streaminglakelanding.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		},
 		{
@@ -173,6 +184,7 @@
 				},
 				"settings": { "$ref": "task.settings.transform.schema.json" }
 			},
+			"required": ["properties", "settings"],
 			"additionalProperties": false
 		}
 	],

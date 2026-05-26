@@ -5,7 +5,7 @@
 	"description": "Schema for Replication task configuration",
 	"type": "object",
 	"additionalProperties": false,
-	"required": ["taskSettings"],
+	"required": ["taskSettings", "targetEndpoint"],
 	"properties": {
 		"fullLoadOnly": {
 			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"

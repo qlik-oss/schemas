@@ -5,6 +5,7 @@
 	"description": "Schema for Transform task settings configuration",
 	"type": "object",
 	"additionalProperties": false,
+	"required": ["artifactsLocation", "taskRuntime"],
 	"properties": {
 		"fullLoadOnly": {
 			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True"
@@ -19,6 +20,7 @@
       "type": "object",
       "description": "Task runtime configuration",
       "additionalProperties": false,
+      "required": ["warehouseSelection"],
       "properties": {
         "tableUpdateConcurrency": {
           "$ref": "task.settings.common.schema.json#/definitions/tableUpdateConcurrency"

@@ -24,7 +24,7 @@
     "qvdStorage": {
       "$ref": "./newtaskdefaults.settings.qvdstorage.schema.json"
     },
-    "registered": {
+    "registeredData": {
       "$ref": "./newtaskdefaults.settings.registereddata.schema.json"
     },
     "storage": {

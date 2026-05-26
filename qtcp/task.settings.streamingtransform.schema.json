@@ -5,11 +5,13 @@
 	"description": "Schema for Streaming Transform task settings configuration",
 	"type": "object",
 	"additionalProperties": false,
+	"required": ["generalSettings", "runtimeSettings"],
 	"properties": {
 		"generalSettings": {
 			"type": "object",
 			"description": "General settings",
 			"additionalProperties": false,
+			"required": ["artifactsLocation"],
 			"properties": {
 				"artifactsLocation": {
 					"$ref": "task.settings.common.schema.json#/definitions/artifactsLocation"
@@ -89,6 +91,7 @@
 			"type": "object",
 			"description": "Runtime configuration for the task",
 			"additionalProperties": false,
+			"required": ["lakehouseClusterId"],
 			"properties": {
 				"lakehouseClusterId": {
 					"type": "string",

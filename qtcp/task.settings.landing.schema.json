@@ -5,6 +5,7 @@
 	"description": "Schema for Landing task settings configuration",
 	"type": "object",
 	"additionalProperties": false,
+	"required": ["landingDwSettings"],
 	"properties": {
 		"fullLoadOnly": {
 			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True"

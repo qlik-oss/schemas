@@ -5,6 +5,7 @@
 	"description": "Schema for Lakehouse Storage task settings configuration",
   "type": "object",
   "additionalProperties": false,
+  "required": ["artifactsLocation", "taskRuntime"],
   "properties": {
     "artifactsLocation": {
       "$ref": "task.settings.common.schema.json#/definitions/artifactsLocation"
@@ -25,6 +26,7 @@
       "type": "object",
       "description": "Runtime configuration for the task",
       "additionalProperties": false,
+      "required": ["lakehouseCluster"],
       "properties": {
         "lakehouseCluster": {
 					"type": "string",

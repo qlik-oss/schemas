@@ -106,6 +106,7 @@
       "type": "object",
       "description": "Location for artifacts with database",
       "additionalProperties": false,
+      "required": ["internalSchema", "taskSchema", "databaseName"],
       "properties": {
         "internalSchema": {
           "type": "string",
@@ -137,6 +138,7 @@
       "type": "object",
       "description": "Location for artifacts (without database)",
       "additionalProperties": false,
+      "required": ["internalSchema", "taskSchema"],
       "properties": {
         "internalSchema": {
           "type": "string",
@@ -250,6 +252,7 @@
       "type": "object",
       "description": "Warehouse selection configuration",
       "additionalProperties": false,
+      "required": ["warehouseName"],
       "properties": {
         "warehouseName": {
           "type": "string",
@@ -1021,11 +1024,13 @@
       "type": "object",
       "description": "Landing data warehouse settings",
       "additionalProperties": false,
+      "required": ["landingArtifactsLocation"],
       "properties": {
         "landingArtifactsLocation": {
           "type": "object",
           "description": "Location for landing artifacts",
           "additionalProperties": false,
+          "required": ["dataAssetSchema"],
           "properties": {
             "dataAssetSchema": {
               "type": "string",

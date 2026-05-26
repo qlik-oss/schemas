@@ -5,6 +5,7 @@
   "description": "Schema for File Based Knowledge Mart task settings configuration",
   "type": "object",
   "additionalProperties": false,
+  "required": ["taskRuntime"],
   "properties": {
 		"fullLoadOnly": {
       "$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"
@@ -13,6 +14,7 @@
       "type": "object",
       "description": "Task runtime configuration",
       "additionalProperties": false,
+      "required": ["warehouseSelection"],
       "properties": {
         "chunkSize": {
           "type": "integer",

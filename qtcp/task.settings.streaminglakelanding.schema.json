@@ -5,6 +5,7 @@
 	"description": "Schema for Streaming Lake Landing task settings configuration",
 	"type": "object",
 	"additionalProperties": false,
+	"required": ["taskRuntime"],
 	"properties": {
 		"generalSettings": {
 			"type": "object",
@@ -193,6 +194,7 @@
 			"type": "object",
 			"description": "Runtime configuration for the task",
 			"additionalProperties": false,
+			"required": ["lakehouseClusterId"],
 			"properties": {
 				"numberOfReadersTaskSettings": {
 					"type": "object",

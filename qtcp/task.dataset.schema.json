@@ -1066,6 +1066,21 @@
 					"description": "Referenced project identifier",
 					"examples": ["{{ref(project.current.projectId)}}"]
 				},
+				"taskId": {
+					"type": "string",
+					"description": "Referenced task identifier",
+					"examples": ["transform--hgk"]
+				},
+				"datasetId": {
+					"type": "string",
+					"description": "Referenced dataset identifier",
+					"examples": ["transform--saa"]
+				},
+				"projectId": {
+					"type": "string",
+					"description": "Referenced project identifier",
+					"examples": ["{{ref(project.current.projectId)}}"]
+				},
 				"dataAppId": {
 					"type": "string",
 					"description": "Referenced task or data app identifier",

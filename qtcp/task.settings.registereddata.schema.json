@@ -5,6 +5,7 @@
 	"description": "Schema for Registered Data task settings configuration",
 	"type": "object",
 	"additionalProperties": false,
+	"required": ["artifactsLocation"],
 	"properties": {
 		"fullLoadOnly": {
 			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"

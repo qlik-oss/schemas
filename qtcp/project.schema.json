@@ -134,11 +134,6 @@
 										"description": "Suffix used for internal schema names",
 										"default": "__internal"
 									},
-									"prefixHeaderColumns": { 
-										"type": "string", 
-										"description": "Prefix applied to header columns in change tables",
-										"default": "hdr__"
-									},
 									"prefixSchema": { 
 										"type": "string", 
 										"description": "Prefix used when creating schemas for tasks"

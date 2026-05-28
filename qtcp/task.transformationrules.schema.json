@@ -53,8 +53,7 @@
 					"scopeType": {
 						"type": "string",
 						"description": "The scope type",
-						"enum": ["COLUMN", "NONE"],
-						"default": "COLUMN"
+						"enum": ["NONE", "TABLE", "COLUMN"]
 					},
 					"scope": {
 						"type": "object",
@@ -106,7 +105,7 @@
 							"renameType": {
 								"type": "string",
 								"description": "Type of rename operation",
-								"enum": ["RENAME", "ADD_PREFIX", "REMOVE_SUFFIX", "REPLACE_PREFIX", "TO_LOWER", "TO_UPPER", "EXPRESSION", "NAME_MAPPING"]
+								"enum": ["NONE", "RENAME", "ADD_PREFIX", "REMOVE_PREFIX", "ADD_SUFFIX", "REMOVE_SUFFIX", "REPLACE_PREFIX", "REPLACE_SUFFIX", "TO_UPPER", "TO_LOWER", "EXPRESSION", "NAME_MAPPING"]
 							},
 							"applyColumnDatatype": {
 								"type": "boolean",
@@ -225,7 +224,7 @@
 										"renameType": {
 											"type": "string",
 											"description": "Type of rename operation",
-											"enum": ["RENAME", "ADD_PREFIX", "REMOVE_SUFFIX", "REPLACE_PREFIX", "TO_LOWER", "TO_UPPER", "EXPRESSION", "NAME_MAPPING"]
+											"enum": ["NONE", "RENAME", "ADD_PREFIX", "REMOVE_PREFIX", "ADD_SUFFIX", "REMOVE_SUFFIX", "REPLACE_PREFIX", "REPLACE_SUFFIX", "TO_UPPER", "TO_LOWER", "EXPRESSION", "NAME_MAPPING"]
 										},
 										"value": {"$ref": "#/$defs/Value"},
 										"applyColumnDatatype": true,

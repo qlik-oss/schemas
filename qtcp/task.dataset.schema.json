@@ -31,7 +31,7 @@
 				},
 				"inputDatasets": {
 					"type": "array",
-					"description": "Array of input datasets, for task types other than landing, lake landing, landing_streaming and registered",
+					"description": "Array of input datasets, mandatory for task types other than landing, lake landing, landing_streaming and registered",
 					"items": {
 						"type": "object",
 						"description": "Input dataset item",
@@ -677,7 +677,7 @@
 					"default": false
 				}
 			},
-			"required": ["name","id","inputDatasets"],
+			"required": ["name","id"],
 			"additionalProperties": false
 		},
 		"sourceTable": {

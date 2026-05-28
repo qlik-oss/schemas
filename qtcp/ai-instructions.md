@@ -1,19 +1,22 @@
 # AI Assistant Guide: Data Projects
 
-## Overview
-
 This guide provides comprehensive instructions for AI assistants to build data projects using YAML configuration files. All workflows, templates, and examples are consolidated here for efficient reference.
 
 **Project Types:**
-- **Replication Projects** (`DATA_MOVEMENT`) - For replication tasks
-- **Data Pipeline Projects** (`DATA_PIPELINE`) - For pipeline tasks and Qlik Open Lakehouse tasks
+- **Replication Projects** (`DATA_MOVEMENT`) - Use case: Replication
+- **Data Pipeline Projects** (`DATA_PIPELINE`) - Use case: Data pipeline
   - Note: Qlik Open Lakehouse is a logical category but uses `DATA_PIPELINE` as the project type
+
+
+## General
 
 **Note on Minimal Properties:** Task templates should follow schema requirements. Schemas are published on [SchemaStore](https://www.schemastore.org) and automatically applied by the YAML language server when files match the expected paths (see Schema Reference section below).
 
 **No Comments in Generated Files:**
 - ❌ **DO NOT** add comments (`#` in YAML, `//` or `/* */` in JSON) to any generated project files
 - YAML and JSON files in this project must contain only data — no inline comments, no block comments, no explanatory annotations
+
+**Bindings Guidance:** Follow the canonical rules in the **Variable Naming Conventions** section below (single source of truth).
 
 ---
 
@@ -27,51 +30,66 @@ This guide provides comprehensive instructions for AI assistants to build data p
 
 ✅ Once provided, create a root folder with that name. All project files will be created inside this folder.
 
-**STEP 2: Ask for Task Type (Not Project Type)**
+**STEP 2: Ask for Use Case**
 
-When asked to create a new project, present ALL available task types:
+❓ **ASK:** "What is the use case for this project?"
 
-❓ **ASK:** "What type of task would you like to create?
+Present exactly these options:
+1. Replication
+2. Data pipeline
 
-**Replication Tasks:**
-1. REPLICATION - Replicate data from supported data sources to any supported target
-2. LAKE_LANDING - Land data to a data lake
+**STEP 3: Set Project Type from Use Case**
 
-**Data Pipeline Tasks:**
-3. LANDING - Copy data from a data source to a landing area (supports CDC or scheduled reloads)
-4. STORAGE - Create ready to consume datasets in a cloud data warehouse or Qlik Cloud
-5. QVD_STORAGE - Create QVD datasets in Qlik Cloud
-6. REGISTERED_DATA - Register data that already exists on the data platform
-7. TRANSFORM - Create reusable data transformations based on rules and custom SQL
-8. DATAMART - Create data marts from Storage or Transform tasks
-9. KNOWLEDGE_MART - Create vector database knowledge marts for RAG applications
-10. FILE_BASED_KNOWLEDGE_MART - Create file-based knowledge marts
+Based on the selected use case:
+- **Replication** → Create project type `DATA_MOVEMENT`
+- **Data pipeline** → Create project type `DATA_PIPELINE`
 
-**Qlik Open Lakehouse Tasks:**
-11. LAKEHOUSE_STORAGE - Store data in Apache Iceberg format
-12. LAKEHOUSE_MIRROR - Mirror tables to cloud data warehouse without data duplication
-13. STREAMING_LAKE_LANDING - Stream data to a data lake
-14. STREAMING_TRANSFORM - Create streaming data transformations
+**STEP 4: For `DATA_PIPELINE` Projects, Determine `platformType`**
 
-**STEP 3: Infer Project Type from Task Selection**
+- **If the project includes (or the user is simultaneously requesting) a `LAKE_LANDING` task** → automatically set `platformType` to `Snowflake`. Do not ask the user.
+- **Otherwise** → ❓ **ASK:** "Which `platformType` should I use?" and present only the enum values currently defined in the active schema for `properties.platformType`.
 
-Based on the user's task selection:
-- Tasks **1-2** → Create **Replication Project** (type: `DATA_MOVEMENT`)
-- Tasks **3-10** → Create **Data Pipeline Project** (type: `DATA_PIPELINE`)
-- Tasks **11-14** → Create **Qlik Open Lakehouse Project** (type: `DATA_PIPELINE`)
+❌ **DO NOT:** Ask for `platformType` as unrestricted free text when schema values are known
 
-**STEP 4: Create Project with Appropriate Type**
+**STEP 4b: For `Snowflake` platformType, Determine Landing Target**
+
+When `platformType` is Snowflake:
+
+- **If the project includes (or the user is simultaneously requesting) a `LAKE_LANDING` task** → automatically treat the landing target as `files in cloud storage`. Do not ask the user.
+- **Otherwise** → ❓ **ASK:** "What is the landing target?"
+  - `tables in Snowflake` — data lands as tables directly in Snowflake
+  - `files in cloud storage` — data lands as files in cloud storage
+
+If the landing target is **`files in cloud storage`** (whether chosen or inferred from a LAKE_LANDING task):
+- Add `snowflakeStorageIntegration: '{{snowflakeStorageIntegration}}'` under `properties` in `qtcp_project.yaml`
+- Ensure `snowflakeStorageIntegration` is added to `qtcp_bindings_definition.json` under `variables`
+
+If the landing target is **`tables in Snowflake`**: no additional properties are needed.
+
+❌ **DO NOT:** Create `sourceSelection.yaml` unless user has specified data sources
+❌ **DO NOT:** Create `schedule.yaml` automatically
+❌ **DO NOT:** Create `transformationRules.yaml` automatically
+❌ **DO NOT:** Create sample datasets automatically
+
+**STEP 5: Create Project with Appropriate Type**
 
 ✅ Create root folder: `<ProjectName>/`
 ✅ Create minimal `<ProjectName>/qtcp_project.yaml` with the correct project type
 ✅ Create minimal `<ProjectName>/qtcp_bindings_definition.json` with empty variables: `{ "variables": {} }`
 ✅ Create empty subfolder `<ProjectName>/qtcp_tasks`
 
-**STEP 5: Ask for Task Name**
+**STEP 6: Suggest Creating a Task**
+
+❓ **ASK:** "Would you like me to create a task now?"
+
+If yes, ask for task type and only present allowed options for that project type:
+- For `DATA_MOVEMENT` projects: `REPLICATION`, `LAKE_LANDING`
+- For `DATA_PIPELINE` projects: all supported task types except `REPLICATION`
+  - `LAKE_LANDING` is allowed in both project types
+
+**STEP 7: Ask for Task Name and Create the Task**
 
 ❓ **ASK:** "What would you like to name this task?"
-
-**STEP 6: Create the Task**
 
 ✅ Create the task directory: `<ProjectName>/qtcp_tasks/<TaskName>/`
 ✅ Create minimal `task.yaml` with required fields only
@@ -81,33 +99,22 @@ Based on the user's task selection:
 - Preferred default: generate `NNNN` as 4 random digits (for example: `4821`)
 - Alternative when explicitly requested: use 4-digit sequential numbering (`0001`, `0002`, ...)
 
-**STEP 7: For `DATA_PIPELINE` Projects, Ask for `platformType` After Creation**
-
-❓ **ASK (after project + task files are created):** "Which `platformType` should I use?"
-
-`platformType` is mandatory for `DATA_PIPELINE` and is an enum.
-- Present only the enum values currently defined in the active schema for `properties.platformType`
-- Update `<ProjectName>/qtcp_project.yaml` with the selected `properties.platformType`
-
-❌ **DO NOT:** Delay project/task creation while waiting for `platformType`
-❌ **DO NOT:** Ask for `platformType` as unrestricted free text when schema values are known
-
-❌ **DO NOT:** Create `sourceSelection.yaml` unless user has specified data sources
-❌ **DO NOT:** Create `schedule.yaml` automatically
-❌ **DO NOT:** Create `transformationRules.yaml` automatically
-❌ **DO NOT:** Create sample datasets automatically
-
 **STEP 8: Ask About Additional Configuration**
 
 💬 **After creation, ask:**
-- For Replication tasks: "Would you like me to:
+- "Would you like me to:
   - Add data sources to this task?
-  - Add transformation rules to this task?"
+  - Add transformation rules to this task?
+  - Add a schedule to this task?" (only if the task type supports scheduling)
 
-- For Pipeline tasks: "Would you like me to:
-  - Add data sources to this task?
-  - Create a schedule for this task?
-  - Add transformation rules to this task?"
+---
+
+## Task Type Availability by Project Type
+
+| Project Type | Allowed Task Types |
+|---|---|
+| DATA_MOVEMENT | REPLICATION, LAKE_LANDING |
+| DATA_PIPELINE | All supported task types except REPLICATION (LAKE_LANDING is allowed) |
 
 ---
 
@@ -119,9 +126,9 @@ Based on the user's task selection:
 
 | Task Type | Allowed Scheduling |
 |---|---|
-| LANDING, STORAGE, QVD_STORAGE, LAKEHOUSE_STORAGE | `TIME_BASED` only |
-| REGISTERED_DATA | ❌ No scheduling — do not create `schedule.yaml` |
-| All other DATA_PIPELINE tasks (TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM) | `TIME_BASED` or `EVENT_BASED` — ask the user which type |
+| STORAGE, QVD_STORAGE, LAKEHOUSE_STORAGE | `TIME_BASED` only |
+| LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REGISTERED_DATA, REPLICATION | ❌ No scheduling — do not create `schedule.yaml` |
+| TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM | `TIME_BASED` or `EVENT_BASED` — ask the user which type |
 
 **Schedule Creation Workflow:**
 
@@ -146,21 +153,201 @@ Based on the user's task selection:
   - If there are **multiple** distinct source tasks → ❓ **ASK:** "Which of these source tasks should trigger this schedule?" and list them
   - Populate `triggerApps` with the selected task(s).
 
-**Minimal qtcp_project.yaml:**
+**Schedule Modification Workflow:**
+
+When the user asks to **change** an existing `schedule.yaml` (e.g., update timing, change scheduling type, add/remove trigger tasks):
+After applying the change, check the `enabled` field on the scheduling entry that was modified:
+- If `enabled` is missing or `false` → 💬 **INFORM AND ASK:** "The schedule is currently disabled. Would you like me to enable it as well?"
+  - If yes → update `schedule.yaml` and set `enabled: true`
+  - If no → leave `enabled` as-is (keep `false` if present, do not add it if absent)
+
+---
+
+**Minimal qtcp_project.yaml**
 ```yaml
 properties:
   type: DATA_PIPELINE
   platformType: <PLATFORM_TYPE>
+  platformConnection: '{{platformConnection}}'
+  cloudStagingConnection: '{{cloudStagingConnection}}'
+settings:
+  artifactsNaming:
+    prefixSchema: '{{project.current.prefixSchema}}'
 ```
 
-**Minimal task.yaml:**
-All Data Pipeline task types require `properties.name`, `properties.id`, and `properties.type` fields.
+**Minimal task.yaml per task type:**
+All task types require `properties.name`, `properties.id`, and `properties.type`. Most task types also require `settings` with specific fields. Use the templates below as the starting point for each task type.
 
+**Minimal task.yaml (LANDING):**
 ```yaml
 properties:
   name: <TaskName>
   id: <task-id>
-  type: <TASK_TYPE>
+  type: LANDING
+settings:
+  landingDwSettings:
+    landingArtifactsLocation:
+      dataAssetSchema: '{{task.<task-id>.taskSchema}}'
+```
+
+**Minimal task.yaml (STORAGE):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: STORAGE
+settings:
+  artifactsLocation:
+    internalSchema: '{{task.<task-id>.internalSchema}}'
+    taskSchema: '{{task.<task-id>.taskSchema}}'
+    databaseName: '{{task.<task-id>.databaseName}}'
+  taskRuntime:
+    warehouseSelection:
+      warehouseName: '{{task.<task-id>.warehouseName}}'
+```
+
+**Minimal task.yaml (TRANSFORM):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: TRANSFORM
+settings:
+  artifactsLocation:
+    internalSchema: '{{task.<task-id>.internalSchema}}'
+    taskSchema: '{{task.<task-id>.taskSchema}}'
+    databaseName: '{{task.<task-id>.databaseName}}'
+  taskRuntime:
+    warehouseSelection:
+      warehouseName: '{{task.<task-id>.warehouseName}}'
+```
+
+**Minimal task.yaml (DATAMART):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: DATAMART
+settings:
+  artifactsLocation:
+    internalSchema: '{{task.<task-id>.internalSchema}}'
+    taskSchema: '{{task.<task-id>.taskSchema}}'
+    databaseName: '{{task.<task-id>.databaseName}}'
+  taskRuntime:
+    warehouseSelection:
+      warehouseName: '{{task.<task-id>.warehouseName}}'
+```
+
+**Minimal task.yaml (REGISTERED_DATA):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: REGISTERED_DATA
+settings:
+  artifactsLocation:
+    internalSchema: '{{task.<task-id>.internalSchema}}'
+    taskSchema: '{{task.<task-id>.taskSchema}}'
+    databaseName: '{{task.<task-id>.databaseName}}'
+```
+
+**Minimal task.yaml (LAKE_LANDING in DATA_PIPELINE):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: LAKE_LANDING
+settings:
+  landingDwSettings:
+    landingArtifactsLocation:
+      dataAssetSchema: '{{task.<task-id>.taskSchema}}'
+```
+
+**Minimal task.yaml (LAKEHOUSE_STORAGE):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: LAKEHOUSE_STORAGE
+settings:
+  artifactsLocation:
+    internalSchema: '{{task.<task-id>.internalSchema}}'
+    taskSchema: '{{task.<task-id>.taskSchema}}'
+  taskRuntime:
+    lakehouseCluster: '{{task.<task-id>.lakehouseCluster}}'
+```
+
+**Minimal task.yaml (LAKEHOUSE_MIRROR):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: LAKEHOUSE_MIRROR
+settings:
+  artifactsLocation:
+    internalSchema: '{{task.<task-id>.internalSchema}}'
+    taskSchema: '{{task.<task-id>.taskSchema}}'
+    databaseName: '{{task.<task-id>.databaseName}}'
+  platformConfig:
+    connection: '{{task.<task-id>.targetConnection}}'
+  taskRuntime:
+    warehouseSelection:
+      warehouseName: '{{task.<task-id>.warehouseName}}'
+```
+
+**Minimal task.yaml (STREAMING_LAKE_LANDING):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: STREAMING_LAKE_LANDING
+settings:
+  taskRuntime:
+    lakehouseClusterId: '{{task.<task-id>.lakehouseCluster}}'
+```
+
+**Minimal task.yaml (STREAMING_TRANSFORM):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: STREAMING_TRANSFORM
+settings:
+  generalSettings:
+    artifactsLocation:
+      internalSchema: '{{task.<task-id>.internalSchema}}'
+      taskSchema: '{{task.<task-id>.taskSchema}}'
+  runtimeSettings:
+    lakehouseClusterId: '{{task.<task-id>.lakehouseCluster}}'
+```
+
+**Minimal task.yaml (KNOWLEDGE_MART):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: KNOWLEDGE_MART
+settings:
+  artifactsLocation:
+    internalSchema: '{{task.<task-id>.internalSchema}}'
+    taskSchema: '{{task.<task-id>.taskSchema}}'
+    databaseName: '{{task.<task-id>.databaseName}}'
+  taskRuntime:
+    maxNumberOfRecords: '{{task.<task-id>.maxNumberOfRecords}}'
+    warehouseSelection:
+      warehouseName: '{{task.<task-id>.warehouseName}}'
+```
+
+**Minimal task.yaml (FILE_BASED_KNOWLEDGE_MART):**
+```yaml
+properties:
+  name: <TaskName>
+  id: <task-id>
+  type: FILE_BASED_KNOWLEDGE_MART
+settings:
+  taskRuntime:
+    warehouseSelection:
+      warehouseName: '{{task.<task-id>.warehouseName}}'
 ```
 
 **Minimal schedule.yaml (Time-based):**
@@ -196,22 +383,11 @@ scheduling:
           dataAppId: <source-task-id>
 ```
 
-**RRULE Schedule Examples:**
-
-Hourly:
-```yaml
-- 'RRULE:FREQ=HOURLY;INTERVAL=1'
-```
-
-Every 6 hours:
-```yaml
-- 'RRULE:FREQ=HOURLY;INTERVAL=6'
-```
-
 **Important Notes:**
 - **Only ONE schedule** allowed per task — if `schedule.yaml` already exists, inform the user
 - Always set `enabled: true` when creating new `schedule.yaml`
 - Task directory names are customizable — task type is defined in `task.yaml`
+- RRULE format: `RRULE:FREQ=<DAILY|HOURLY|WEEKLY|MONTHLY>;INTERVAL=<N>` — only `FREQ` and `INTERVAL` are used
 
 ---
 
@@ -221,6 +397,10 @@ Every 6 hours:
 - Task types: `REPLICATION`, `LAKE_LANDING`
 - **Schedules NOT supported** - do not create `schedule.yaml`
 - No `settings.artifactsNaming` in project.yaml
+- For `REPLICATION` tasks, always set both `fullLoad: true` and `applyChanges: true` under `settings.taskSettings` by default
+- Only deviate from this default if the user explicitly specifies different modes; the valid modes are `fullLoad`, `applyChanges`, and `storeChanges`
+- Write these mode flags only under `settings.taskSettings` (never directly under `settings`)
+- Only write the selected mode flag(s) as `true`; do not add unselected mode flags with `false`
 
 **Minimal qtcp_project.yaml:**
 ```yaml
@@ -228,7 +408,7 @@ properties:
   type: DATA_MOVEMENT
 ```
 
-**Example minimal task.yaml (REPLICATION):**
+**Minimal task.yaml (REPLICATION):**
 ```yaml
 properties:
   name: <TaskName>
@@ -236,34 +416,54 @@ properties:
   type: REPLICATION
 
 settings:
+  taskSettings:
+    fullLoad: true
+    applyChanges: true
   targetEndpoint:
     targetConnection: '{{task.<task-id>.targetConnection}}'
-    targetSchema: ''
+    targetSchema: '{{task.<task-id>.targetSchema}}'
     targetStorageConnection: '{{task.<task-id>.targetStorageConnection}}'
-    targetControlTableSchema: ''
 ```
 
-**Example minimal task.yaml (LAKE_LANDING):**
+**Minimal task.yaml (LAKE_LANDING in DATA_MOVEMENT):**
 ```yaml
 properties:
   name: <TaskName>
   id: <task-id>
   type: LAKE_LANDING
+
+settings:
+  targetEndpoint:
+    targetConnection: '{{task.<task-id>.targetConnection}}'
 ```
+
+- For `LAKE_LANDING` tasks in a `DATA_MOVEMENT` project, always include `settings.targetEndpoint.targetConnection`
+- ❌ **DO NOT** add `settings.targetEndpoint.targetConnection` to `LAKE_LANDING` tasks in a `DATA_PIPELINE` project
+- For `LAKE_LANDING` tasks in a `DATA_PIPELINE` project (open lake house platform), use `settings.landingDwSettings.landingArtifactsLocation.dataAssetSchema` — see the template in the Data Pipeline section above
 
 ---
 
-## Dataset Creation Workflow
+## Source Selection Workflow
 
-When asked to add datasets or data sources:
+When the user asks to **"add source"**, **"add table"**, **"add view"**, **"add dataset"**, or provides database/schema/name/type values → **update or create `sourceSelection.yaml` only**.
+
+❌ **DO NOT** create a dataset file (`datasets/*.yaml`) unless the user explicitly asks for dataset-level transformations.
+
+**Intent Resolution (highest priority, apply before any file creation):**
+- If user says: "add source", "add table", "add view", or gives `database/schema/name/type` values: create or update `sourceSelection.yaml`.
+- If user says only "add dataset": treat it as source-selection intent by default and update `sourceSelection.yaml`.
+- Create `datasets/*.yaml` only when user explicitly says "create dataset file", "create dataset yaml", or asks for dataset-level transformation modeling.
+- If ambiguity remains, ask one concise clarification and do not create files until clarified.
 
 **STEP 1: Determine Target Task**
-- ❓ **IF task not specified:** "Which task should this dataset be added to?" (List available tasks from `qtcp_tasks/` folder)
+- ❓ **IF task not specified:** "Which task should this source be added to?" (List available tasks from `qtcp_tasks/` folder)
 - ✅ **IF task is known:** Proceed to next step
 
 **STEP 2: Identify task type and follow the correct workflow**
+- **Mandatory task-type gate (MUST):** Read the target task's `task.yaml` and branch strictly by `properties.type` before creating or updating `sourceSelection.yaml`.
+- **Do not cross-apply templates (MUST NOT):** Never apply Landing or Non-Landing sourceSelection templates to `REGISTERED_DATA` tasks.
 
-There are two distinct workflows depending on the task type:
+There are three distinct workflows depending on the task type:
 
 ---
 
@@ -294,9 +494,9 @@ explicitlySelected:
 
 #### Using Include/Exclude Patterns (Optional, Landing Tasks Only)
 
-For bulk table selection, you can use patterns instead of explicitly listing each table:
+For bulk table selection, you can use patterns instead of explicitly listing each table.
+Pattern syntax: `%` matches any characters; exact strings match literally. Case sensitivity depends on the source database.
 
-Include tables starting with "dim_" or "fact_", exclude "temp_" and "archive_":
 ```yaml
 sourceConnection: '{{task.<task-id>.sourceConnection}}'
 includePatterns:
@@ -310,20 +510,12 @@ excludePatterns:
   - tablePattern: 'temp_%'
     schemaPattern: 'dbo'
     type: TABLE
-  - tablePattern: 'archive_%'
-    schemaPattern: 'dbo'
-    type: TABLE
 explicitlySelected: []
 ```
 
-**Pattern Syntax:**
-- `%` - Wildcard matching any characters
-- Exact match - No wildcards, match exact name
-- Case sensitivity depends on source database
-
 ---
 
-### Non-Landing Tasks (STORAGE, QVD_STORAGE, TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_STORAGE, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM, REGISTERED_DATA)
+### Non-Landing Tasks (STORAGE, QVD_STORAGE, TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_STORAGE, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM)
 
 Non-landing tasks read **from an upstream task**, not directly from a data source connection. The user must provide:
 1. **Source task** (the upstream task that provides the data)
@@ -350,6 +542,7 @@ includePatterns:
     type: TABLE
 excludePatterns: []
 explicitlySelected: []
+```
 
 **When creating dataset YAML files** for non-landing tasks, use `properties.inputDatasets` to reference the upstream task and dataset.
 - `taskId` MUST be the upstream task's `properties.id`
@@ -359,10 +552,44 @@ explicitlySelected: []
 
 ---
 
-❌ **DO NOT:** Create separate dataset YAML files in `datasets/` folder unless explicitly requested
-❌ **DO NOT:** Add example or sample tables
+### Registered Data Tasks (REGISTERED_DATA)
 
-**Important:** Source selection is defined in the `sourceSelection.yaml` file's `explicitlySelected` array, not as separate files.
+`REGISTERED_DATA` tasks register **pre-existing data assets** by specifying their exact location (database, schema, name). They do not read from a live connection or from an upstream task. The user must provide:
+1. **Database name**
+2. **Schema**
+3. **Table name**
+
+**Prompting:**
+- ❓ **ASK:** "Please provide the database, schema, and table names you want to register"
+- ❓ **IF database not specified:** "What is the database for these tables?"
+- ❓ **IF schema not specified:** "What is the schema for this table?"
+- ❓ **IF table/view name not specified:** "What are the table or view names to register?"
+- ❓ **IF type not specified:** "What is the source type: table or view?"
+- **If any required location value is missing (`database`, `schema`, `name`, `type`), ask follow-up questions and do not write `sourceSelection.yaml` yet.**
+
+**Add entries to the task's `sourceSelection.yaml`.**
+- ❌ **DO NOT** include `sourceConnection` — `REGISTERED_DATA` tasks do not use a data source connection
+- ❌ **DO NOT** include `sourceTask` — `REGISTERED_DATA` tasks do not read from an upstream task
+- ❌ **DO NOT** use `includePatterns` / wildcard patterns as a fallback for `REGISTERED_DATA` requests such as "add source"
+- Each `explicitlySelected` item must specify `database`, `schema`, `name`, and `type`
+- If the request uses the word "dataset" without explicitly saying "dataset file"/"dataset yaml", still treat it as source-selection intent and update `sourceSelection.yaml`.
+
+**Completion check (REGISTERED_DATA, MUST pass before final response):**
+1. `sourceSelection.yaml` contains no `sourceConnection`.
+2. `sourceSelection.yaml` contains no `sourceTask`.
+3. Every `explicitlySelected` item includes `database`, `schema`, `name`, and `type`.
+4. No wildcard fallback was used to bypass missing required values.
+
+**Minimal sourceSelection.yaml (REGISTERED_DATA tasks):**
+```yaml
+includePatterns: []
+excludePatterns: []
+explicitlySelected:
+  - database: <DatabaseName>
+    schema: <SchemaName>
+    name: <TableName>
+    type: TABLE
+```
 
 ---
 
@@ -375,12 +602,12 @@ When working with `qtcp_bindings_definition.json`, follow these conventions:
 - `task-type.<type>.<property>` - Default values for task types (e.g., `task-type.landing.databaseName`)
 - `project.current.<property>` - Project-level references (e.g., `project.current.projectId`)
 
-**Binding variable rules:**
+**Mandatory Binding variable rules (MUST):**
 - Whenever a `{{...}}` binding variable is used in any project file, add it to `qtcp_bindings_definition.json` `variables` with a blank value (`""`)
-- When adding variables to `qtcp_bindings_definition.json`, also add the same variables to a sibling `bindings.json` file if that file already exists
-- Do not create `bindings.json` if it does not exist
 - If the variable refers to a **connection property** (variable name ends with `Connection`, e.g., `sourceConnection`, `targetConnection`, `targetStorageConnection`), also add it to the `connectionProperties` section with a `type` property indicating the connection type
   - If the connection type is not known, omit the `type` property for that variable — do not guess
+- **Mandatory synchronization gate (MUST):** Before finalizing any response, extract every `{{...}}` variable from all changed project files and ensure each variable exists in `qtcp_bindings_definition.json` under `variables`.
+- **Completion criteria:** Do not state task completion until binding synchronization is performed and verified.
 
 **Example qtcp_bindings_definition.json with variables and connectionProperties:**
 ```json
@@ -506,6 +733,7 @@ transformations:
   columnTransformations:
     - action: DROP
       columnName: old_column
+```
 
 **Example 3: KEEP with rename**
 ```yaml
@@ -518,8 +746,8 @@ properties:
 transformations:
   columnTransformations:
     - action: KEEP
-        columnName: old_name
-        newColumnName: new_name
+      columnName: old_name
+      newColumnName: new_name
 ```
 
 **Example 4: KEEP with expression**
@@ -535,24 +763,12 @@ transformations:
     - action: KEEP
       columnName: price
       expression:
-          expressionStatement: ${price} * 1.1
+        expressionStatement: ${price} * 1.1
 ```
 
 ❌ **DO NOT:** Modify `transformationRules.yaml` for dataset-level transformations
 ❌ **DO NOT:** Create transformation rules automatically
 ❌ **DO NOT:** Use action types other than ADD, DROP, or KEEP for dataset-level transformations
-
----
-
-### Data Types Reference
-
-**Common data types for ADD_COLUMN transformations:**
-- INT4, INT8 - Integer types
-- WSTRING, STRING - Text types
-- NUMERIC - Decimal numbers
-- DATE, TIME, DATETIME - Date/time types
-- BLOB, CLOB, NCLOB - Large objects
-- JSON - JSON documents
 
 ---
 
@@ -567,10 +783,10 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 | Dataset definition | `**/qtcp_tasks/*/datasets/*.yaml` | [task.dataset.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.dataset.schema.json) |
 | Schedule | `**/qtcp_tasks/*/schedule.yaml` | [task.schedule.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.schedule.schema.json) |
 | Data model | `**/qtcp_tasks/*/model.yaml` | [task.model.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.model.schema.json) |
-| Source selection | `**/qtcp_tasks/*/sourceselection.yaml` | [task.sourceselection.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.sourceselection.schema.json) |
-| Transformation rules | `**/qtcp_tasks/*/transformationrules.yaml` | [task.transformation.rules.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.transformation.rules.schema.json) |
-| Transformation data flow | `**/qtcp_tasks/*/transformationdataflow/*.yaml` | [task.transformationdataflow.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.transformationdataflow.schema.json) |
-| New task defaults | `**/qtcp_tasks/newtaskdefaults.yaml` | [newtaskdefaults.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.schema.json) |
+| Source selection | `**/qtcp_tasks/*/sourceSelection.yaml` | [task.sourceselection.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.sourceselection.schema.json) |
+| Transformation rules | `**/qtcp_tasks/*/transformationRules.yaml` | [task.transformation.rules.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.transformation.rules.schema.json) |
+| Transformation data flow | `**/qtcp_tasks/*/transformationDataFlows/*.yaml` | [task.transformationdataflow.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.transformationdataflow.schema.json) |
+| New task defaults | `**/qtcp_tasks/newTaskDefaults.yaml` | [newtaskdefaults.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.schema.json) |
 
 ---
 

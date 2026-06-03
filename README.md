@@ -37,4 +37,4 @@ All schemas live in [`qtcp/`](qtcp/) and conform to [JSON Schema draft-07](https
 
 ## License
 
-[MIT](LICENSE)
+[Apache 2](LICENSE)

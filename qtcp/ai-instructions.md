@@ -46,14 +46,14 @@ Based on the selected use case:
 
 **STEP 4: For `DATA_PIPELINE` Projects, Determine `platformType`**
 
-- **If the project includes (or the user is simultaneously requesting) a `LAKE_LANDING` task** → automatically set `platformType` to `Snowflake`. Do not ask the user.
+- **If the project includes (or the user is simultaneously requesting) a `LAKE_LANDING` task** → automatically set `platformType` to `SNOWFLAKE`. Do not ask the user.
 - **Otherwise** → ❓ **ASK:** "Which `platformType` should I use?" and present only the enum values currently defined in the active schema for `properties.platformType`.
 
 ❌ **DO NOT:** Ask for `platformType` as unrestricted free text when schema values are known
 
-**STEP 4b: For `Snowflake` platformType, Determine Landing Target**
+**STEP 4b: For `SNOWFLAKE` platformType, Determine Landing Target**
 
-When `platformType` is Snowflake:
+When `platformType` is SNOWFLAKE:
 
 - **If the project includes (or the user is simultaneously requesting) a `LAKE_LANDING` task** → automatically treat the landing target as `files in cloud storage`. Do not ask the user.
 - **Otherwise** → ❓ **ASK:** "What is the landing target?"
@@ -86,6 +86,10 @@ If yes, ask for task type and only present allowed options for that project type
 - For `DATA_MOVEMENT` projects: `REPLICATION`, `LAKE_LANDING`
 - For `DATA_PIPELINE` projects: all supported task types except `REPLICATION`
   - `LAKE_LANDING` is allowed in both project types
+
+❌ **DO NOT create `DATAMART` or `KNOWLEDGE_MART` tasks from scratch.** If the user requests either, redirect them to create the task in the QTC UI and commit back.
+
+**Source-matches-platform rule:** When the user wants to ingest data whose source is the **same platform as the project's `platformType`** (e.g., reading from Snowflake in a SNOWFLAKE project), use a `REGISTERED_DATA` task instead of a `LANDING` task. `LANDING` is for external/heterogeneous sources only.
 
 **STEP 7: Ask for Task Name and Create the Task**
 
@@ -222,21 +226,7 @@ settings:
       warehouseName: '{{task.<task-id>.warehouseName}}'
 ```
 
-**Minimal task.yaml (DATAMART):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: DATAMART
-settings:
-  artifactsLocation:
-    internalSchema: '{{task.<task-id>.internalSchema}}'
-    taskSchema: '{{task.<task-id>.taskSchema}}'
-    databaseName: '{{task.<task-id>.databaseName}}'
-  taskRuntime:
-    warehouseSelection:
-      warehouseName: '{{task.<task-id>.warehouseName}}'
-```
+**DATAMART:** ❌ **DO NOT create from scratch.** If asked, inform the user: *"DATAMART tasks must be created in the QTC UI. Once created, use 'Commit Changes' to push the YAML to the repo, then pull."*
 
 **Minimal task.yaml (REGISTERED_DATA):**
 ```yaml
@@ -321,22 +311,7 @@ settings:
     lakehouseClusterId: '{{task.<task-id>.lakehouseCluster}}'
 ```
 
-**Minimal task.yaml (KNOWLEDGE_MART):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: KNOWLEDGE_MART
-settings:
-  artifactsLocation:
-    internalSchema: '{{task.<task-id>.internalSchema}}'
-    taskSchema: '{{task.<task-id>.taskSchema}}'
-    databaseName: '{{task.<task-id>.databaseName}}'
-  taskRuntime:
-    maxNumberOfRecords: '{{task.<task-id>.maxNumberOfRecords}}'
-    warehouseSelection:
-      warehouseName: '{{task.<task-id>.warehouseName}}'
-```
+**KNOWLEDGE_MART:** ❌ **DO NOT create from scratch.** If asked, inform the user: *"KNOWLEDGE_MART tasks must be created in the QTC UI. Once created, use 'Commit Changes' to push the YAML to the repo, then pull."*
 
 **Minimal task.yaml (FILE_BASED_KNOWLEDGE_MART):**
 ```yaml
@@ -447,7 +422,7 @@ settings:
 
 When the user asks to **"add source"**, **"add table"**, **"add view"**, **"add dataset"**, or provides database/schema/name/type values → **update or create `sourceSelection.yaml` only**.
 
-❌ **DO NOT** create a dataset file (`datasets/*.yaml`) unless the user explicitly asks for dataset-level transformations.
+❌ **DO NOT** create a dataset file (`datasets/*.yaml`) unless the user explicitly asks for dataset-level transformations, **except** when an explicit source is added to a Non-Landing Task — in that case, always create a dataset file for each explicitly selected source.
 
 **Intent Resolution (highest priority, apply before any file creation):**
 - If user says: "add source", "add table", "add view", or gives `database/schema/name/type` values: create or update `sourceSelection.yaml`.
@@ -484,11 +459,9 @@ Landing tasks read **directly from a data source connection**. The user must pro
 **Minimal sourceSelection.yaml (landing tasks):**
 ```yaml
 sourceConnection: '{{task.<task-id>.sourceConnection}}'
-includePatterns: []
-excludePatterns: []
 explicitlySelected:
   - name: <TableName>
-    schema: '{{task.<task-id>:null$_$<schema>.schema}}'
+    schema: '{{task.<task-id>:<database>$_$<schema>.schema}}'
     type: TABLE
 ```
 
@@ -510,7 +483,6 @@ excludePatterns:
   - tablePattern: 'temp_%'
     schemaPattern: 'dbo'
     type: TABLE
-explicitlySelected: []
 ```
 
 ---
@@ -534,21 +506,85 @@ Non-landing tasks read **from an upstream task**, not directly from a data sourc
 - Always use the plain task ID string (e.g., `storage1-3742`)
 - ❌ DO NOT use `{{ref(...)}}` or any template variable syntax for `sourceTask`
 
+**Minimal sourceSelection.yaml (non-landing tasks, explicitly selected tables):**
+```yaml
+explicitlySelected:
+  - name: <upstream-dataset-name>
+    sourceTask: <upstream-task-id>
+    type: TABLE
+    sourceTableId: <upstream-dataset-id>
+```
+
 **Minimal sourceSelection.yaml (non-landing tasks, all tables via pattern):**
 ```yaml
 includePatterns:
   - tablePattern: '%'
-    sourceTask: 'storage1-3742'
+    sourceTask: <upstream-task-id>
     type: TABLE
-excludePatterns: []
-explicitlySelected: []
 ```
 
 **When creating dataset YAML files** for non-landing tasks, use `properties.inputDatasets` to reference the upstream task and dataset.
 - `taskId` MUST be the upstream task's `properties.id`
-- `datasetId` MUST be the upstream dataset's `properties.id` from a dataset file under that same upstream task
+- `datasetId` MUST be the upstream dataset's `properties.id` from a dataset file under that same upstream task — **if no dataset file exists for the upstream task (e.g., a LANDING task), use the dataset name as the `datasetId` instead. Never reference a `datasetId` that does not exist.**
+- `name` MUST be provided as the reference name for the input dataset within this file
 - Refer to the `dataset` schema (`task.dataset.schema.json`) for the required properties per task type — the schema describes which fields are mandatory based on the dataset `type`
 - ❌ **DO NOT** hardcode property lists — always consult the schema for current requirements
+
+**TRANSFORM tasks require an explicit `datasets/<TableName>.yaml` for every output table.** There are three patterns:
+
+**Pattern 1: Passthrough (simple copy)**
+```yaml
+properties:
+  name: <DatasetName>
+  id: <dataset-id>
+  inputDatasets:
+    - taskId: <upstream-task-id>
+      datasetId: <upstream-dataset-id>
+      name: <upstream-dataset-name>
+mappings:
+  mappings: []
+```
+
+**Pattern 2: Custom SQL** — use for JOINs, aggregations, or calculated columns. Requires an `alias` array mapping SQL placeholders to dataset references.
+```yaml
+properties:
+  id: customerorders-ab12
+  name: customerOrders
+  inputDatasets:
+    - datasetId: customers--4w3
+      name: customers
+      taskId: onboarding_storage--4w0
+    - datasetId: orders--4w6
+      name: orders
+      taskId: onboarding_storage--4w0
+   customDatasetSettings:
+    customSql:
+      expressionStatement: "SELECT c.[customer_id], ...\nFROM ${customers} AS c\nINNER JOIN ${orders} AS o ON c.[customer_id] = o.[customer_id]"
+      alias:
+        - name: customers
+          value: '{{ref(project.current.projectId)}}$_$onboarding_storage--4w0$_$customers--4w3'
+        - name: orders
+          value: '{{ref(project.current.projectId)}}$_$onboarding_storage--4w0$_$orders--4w6'
+      incremental: false
+```
+Key rules:
+- SQL uses `${alias}` placeholders — alias must match `inputDatasets[].name` AND `alias[].name`
+- `alias[].value` format: `{{ref(project.current.projectId)}}$_$<taskId>$_$<datasetId>`
+
+**Pattern 3: Data Flow** — visual canvas JOINs. ❌ **DO NOT generate or edit Pattern 3 files.** The graph JSON contains UUID cross-references that are error-prone to hand-author. If the user asks for a data flow dataset, inform them: *"Data flow datasets must be created in the QTC UI."*
+
+> **Recommendation for TRANSFORM datasets generally:** Configure output datasets in QTC UI, use "Commit Changes" to push generated YAML back, then pull. This avoids ID mismatches — QTC generates IDs like `customers-xah-` that must be referenced exactly in downstream tasks.
+
+**Minimal dataset.yaml (non-landing, non-TRANSFORM tasks):**
+```yaml
+properties:
+  name: <DatasetName>
+  id: <dataset-id>
+  inputDatasets:
+    - taskId: <upstream-task-id>
+      datasetId: <upstream-dataset-id>
+      name: <upstream-dataset-name>
+```
 
 ---
 
@@ -582,8 +618,6 @@ explicitlySelected: []
 
 **Minimal sourceSelection.yaml (REGISTERED_DATA tasks):**
 ```yaml
-includePatterns: []
-excludePatterns: []
 explicitlySelected:
   - database: <DatabaseName>
     schema: <SchemaName>
@@ -598,14 +632,63 @@ explicitlySelected:
 When working with `qtcp_bindings_definition.json`, follow these conventions:
 
 - `task.<task-id>.<property>` - Task-specific properties (e.g., `task.landing_cdc-0001.sourceConnection`)
-- `task.<task-id>:null$_$<schema>.<property>` - Schema-specific properties (e.g., `task.landing_cdc-0001:null$_$dbo.schema`)
+- `task.<task-id>:<database>$_$<schema>.<property>` - Schema-specific properties, where `<database>` is the database name or `null` if not specified (e.g., `task.landing_cdc-0001:null$_$dbo.schema`)
 - `task-type.<type>.<property>` - Default values for task types (e.g., `task-type.landing.databaseName`)
 - `project.current.<property>` - Project-level references (e.g., `project.current.projectId`)
 
+**Task-type-defaulted properties:**
+
+The following properties use a two-level binding when added to a task:
+
+- `warehouseName`
+- `databaseName`
+- `databricksVectorSearchEndpoint`
+- `indexDatabase`
+- `vectorDbTargetType`
+- `vectorDbConnection`
+- `llmConnection`
+- `databaseSelectionMethod`
+- `warehouseSelectionMethod`
+- `indexDatabaseSelectionMethod`
+- `lakehouseCluster`
+- `folder`
+- `snowflakeExternalVolume`
+- `snowflakeOpenCatalog`
+
+For these properties, instead of adding a blank value in `qtcp_bindings_definition.json`, set the task-level variable's value to a `task-type` reference, and also add the corresponding `task-type` variable with a blank value.
+
+**Task type name mapping** (for the `task-type` key):
+
+| Task type (in task.yaml) | task-type key segment |
+|---|---|
+| LANDING | `landing` |
+| STORAGE | `storage` |
+| TRANSFORM | `transform` |
+| REGISTERED_DATA | `registered` |
+| LAKE_LANDING | `lakeLanding` |
+| LAKEHOUSE_STORAGE | `icebergStorage` |
+| LAKEHOUSE_MIRROR | `mirror` |
+| STREAMING_LAKE_LANDING | `streamingLanding` |
+| STREAMING_TRANSFORM | `icebergTransform` |
+| DATAMART | `datamart` |
+| KNOWLEDGE_MART | `knowledgeMart` |
+| FILE_BASED_KNOWLEDGE_MART | `fileBasedKnowledgeMart` |
+| REPLICATION | `replication` |
+
+**Example:** For a `LANDING` task with id `landing-1234` and property `databaseName`, add to `qtcp_bindings_definition.json`:
+```json
+{
+  "task.landing-1234.databaseName": "{{task-type.landing.databaseName}}",
+  "task-type.landing.databaseName": ""
+}
+```
+If `task-type.landing.databaseName` already exists in `variables` (from a previous task of the same type), do not add a duplicate — leave the existing entry as-is.
+
+**Ordering:** All `task-type.*` variables must appear at the top of the `variables` object, before any `task.*` or other variables. When adding a new `task-type.*` variable, insert it at the top of the list. When adding a `task.*` variable whose value references a `task-type.*` variable, place it after all `task-type.*` entries.
+
 **Mandatory Binding variable rules (MUST):**
-- Whenever a `{{...}}` binding variable is used in any project file, add it to `qtcp_bindings_definition.json` `variables` with a blank value (`""`)
-- If the variable refers to a **connection property** (variable name ends with `Connection`, e.g., `sourceConnection`, `targetConnection`, `targetStorageConnection`), also add it to the `connectionProperties` section with a `type` property indicating the connection type
-  - If the connection type is not known, omit the `type` property for that variable — do not guess
+- Whenever a `{{...}}` binding variable is used in any project file, add it to `qtcp_bindings_definition.json` `variables` with a blank value (`""`) — **except** for task-type-defaulted properties (see above), which follow the two-level binding rule instead
+- If the variable refers to a **connection property** (variable name ends with `Connection`, e.g., `sourceConnection`, `targetConnection`, `targetStorageConnection`), add it to the `connectionProperties` section **only if** the `type` or `kindId` are known — do not guess or add an empty entry
 - **Mandatory synchronization gate (MUST):** Before finalizing any response, extract every `{{...}}` variable from all changed project files and ensure each variable exists in `qtcp_bindings_definition.json` under `variables`.
 - **Completion criteria:** Do not state task completion until binding synchronization is performed and verified.
 
@@ -618,7 +701,7 @@ When working with `qtcp_bindings_definition.json`, follow these conventions:
     "projectName": "",
     "task-type.landing.databaseName": "",
     "task.landing_cdc-0001.sourceConnection": "",
-    "task.landing_cdc-0001.taskSchema": "",
+    "task.landing_cdc-0001.databaseName": "{{task-type.landing.databaseName}}",
     "task.landing_cdc-0001:null$_$dbo.schema": ""
   },
   "connectionProperties": {

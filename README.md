@@ -27,13 +27,15 @@ All schemas live in [`qtcp/`](qtcp/) and conform to [JSON Schema draft-07](https
 |--------|-------------|
 | `project.schema.json` | Top-level project configuration (Data Movement or Data Pipeline) |
 | `task.schema.json` | Task configuration with type-discriminated routing to settings schemas |
+| `task.settings.*.schema.json` | Task configuration per task type |
 | `task.schedule.schema.json` | Task scheduling |
 | `task.dataset.schema.json` | Dataset definitions within tasks, including cross-project references |
 | `task.model.schema.json` | Data model entity relationships |
 | `task.sourceselection.schema.json` | Source table and view pattern selection |
 | `task.transformationrules.schema.json` | Declarative transformation rules (rename, add/drop columns, type changes, value replacement) |
 | `task.transformationdataflow.schema.json` | Transformation data flow definitions |
-| `newtaskdefaults.schema.json` | Default configurations for creating new tasks (via the UI) |
+| `newtaskdefaults.schema.json` | Default configurations for creating new tasks (via the UI) with type-discriminated routing to settings schemas |
+| `newtaskdefaults.settings.*.schema.json` | Default configuration for creating new tasks per task type |
 
 ## License
 

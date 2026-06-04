@@ -1,6 +1,6 @@
 # AI Assistant Guide: Data Projects
 
-This guide provides comprehensive instructions for AI assistants to build data projects using YAML configuration files. All workflows, templates, and examples are consolidated here for efficient reference.
+This guide provides comprehensive instructions for AI assistants to build Qlik Talend Cloud Platform (QTCP) data projects using YAML configuration files. All workflows, templates, and examples are consolidated here for efficient reference.
 
 **Project Types:**
 - **Replication Projects** (`DATA_MOVEMENT`) - Use case: Replication
@@ -525,7 +525,7 @@ includePatterns:
 
 **When creating dataset YAML files** for non-landing tasks, use `properties.inputDatasets` to reference the upstream task and dataset.
 - `taskId` MUST be the upstream task's `properties.id`
-- `datasetId` MUST be the upstream dataset's `properties.id` from a dataset file under that same upstream task — **if no dataset file exists for the upstream task (e.g., a LANDING task), use the dataset name as the `datasetId` instead. Never reference a `datasetId` that does not exist.**
+- `datasetId` MUST be the upstream dataset's `properties.id` from a dataset file under that same upstream task — **if no dataset file exists for the upstream task (e.g., a LANDING task), convert the dataset name to a `datasetId` using these rules: letters and digits are kept as-is and lowercased; separators (any separator constant, `_`, or whitespace) are replaced with `_`; any other special character is encoded as `$HH$` where `HH` is the character's uppercase hex code (e.g., `@` → `$40$`, `!` → `$21$`). Examples: `"My App!"` → `my_app$21$`, `"hello world"` → `hello_world`, `"foo@bar"` → `foo$40$bar`. Never reference a `datasetId` that does not exist.**
 - `name` MUST be provided as the reference name for the input dataset within this file
 - Refer to the `dataset` schema (`task.dataset.schema.json`) for the required properties per task type — the schema describes which fields are mandatory based on the dataset `type`
 - ❌ **DO NOT** hardcode property lists — always consult the schema for current requirements

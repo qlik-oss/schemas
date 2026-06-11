@@ -37,7 +37,9 @@
 				"platformType": {
 					"type": "string",
 					"description": "Target platform type",
-					"enum": ["QLIK_OPEN_LAKEHOUSE", "SNOWFLAKE", "BIGQUERY", "SYNAPSE", "QVD", "DATABRICKS", "REDSHIFT", "MSSQL", "FABRIC"]
+					"enum": ["QLIK_OPEN_LAKEHOUSE", "SNOWFLAKE", "BIGQUERY", "SYNAPSE", "QVD", "DATABRICKS", "REDSHIFT", "MSSQL", "FABRIC"],
+					"enumDescriptions": ["Qlik Open Lakehouse","Snowflake","Google BigQuery","Azure Synapse Analytics","Qlik Cloud","Databricks","Amazon Redshift","Microsoft SQL Server","Microsoft Fabric"]
+					
 				},
 				"platformConnection": {
 					"type": "string",

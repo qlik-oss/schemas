@@ -47,7 +47,7 @@ Based on the selected use case:
 **STEP 4: For `DATA_PIPELINE` Projects, Determine `platformType`**
 
 - **If the project includes (or the user is simultaneously requesting) a `LAKE_LANDING` task** → automatically set `platformType` to `SNOWFLAKE`. Do not ask the user.
-- **Otherwise** → ❓ **ASK:** "Which `platformType` should I use?" and present only the enum values currently defined in the active schema for `properties.platformType`.
+- **Otherwise** → ❓ **ASK:** "Which `platformType` should I use?" and present the options using their `enumDescriptions` as display labels (from `properties.platformType.enumDescriptions` in `project.schema.json`). When the user selects one, write the corresponding `enum` value (not the display label) into the YAML.
 
 ❌ **DO NOT:** Ask for `platformType` as unrestricted free text when schema values are known
 
@@ -82,12 +82,16 @@ If the landing target is **`tables in Snowflake`**: no additional properties are
 
 ❓ **ASK:** "Would you like me to create a task now?"
 
-If yes, ask for task type and only present allowed options for that project type:
-- For `DATA_MOVEMENT` projects: `REPLICATION`, `LAKE_LANDING`
-- For `DATA_PIPELINE` projects: all supported task types except `REPLICATION`
-  - `LAKE_LANDING` is allowed in both project types
+If yes, ask for task type and only present allowed options based on project type **and** platform type:
 
-❌ **DO NOT create `DATAMART` or `KNOWLEDGE_MART` tasks from scratch.** If the user requests either, redirect them to create the task in the QTC UI and commit back.
+- For `DATA_MOVEMENT` projects: `REPLICATION`, `LAKE_LANDING`
+- For `DATA_PIPELINE` projects, allowed task types depend on `platformType` (read from `qtcp_project.yaml`):
+  - `SYNAPSE`, `FABRIC`, `MSSQL`, `REDSHIFT`, `BIGQUERY`, `DATABRICKS`, or `SNOWFLAKE` with landing target = tables in Snowflake: `LANDING`, `STORAGE`, `REGISTERED_DATA`, `TRANSFORM`
+  - `SNOWFLAKE` with landing target = files in cloud storage: `LAKE_LANDING`, `STORAGE`, `REGISTERED_DATA`, `TRANSFORM`
+  - `QLIK_OPEN_LAKEHOUSE`: `LAKE_LANDING`, `LAKEHOUSE_STORAGE`, `STREAMING_LAKE_LANDING`, `STREAMING_TRANSFORM`, `LAKEHOUSE_MIRROR`
+  - `QVD`: `LANDING`, `QVD_STORAGE`
+
+❌ Do **not** include `DATAMART`, `KNOWLEDGE_MART`, or `FILE_BASED_KNOWLEDGE_MART` in the presented list — if the user requests any of these, redirect them to create it in the QTC UI and commit back
 
 **Source-matches-platform rule:** When the user wants to ingest data whose source is the **same platform as the project's `platformType`** (e.g., reading from Snowflake in a SNOWFLAKE project), use a `REGISTERED_DATA` task instead of a `LANDING` task. `LANDING` is for external/heterogeneous sources only.
 
@@ -115,10 +119,13 @@ If yes, ask for task type and only present allowed options for that project type
 
 ## Task Type Availability by Project Type
 
-| Project Type | Allowed Task Types |
-|---|---|
-| DATA_MOVEMENT | REPLICATION, LAKE_LANDING |
-| DATA_PIPELINE | All supported task types except REPLICATION (LAKE_LANDING is allowed) |
+| Project Type | Platform Type | Allowed Task Types |
+|---|---|---|
+| DATA_MOVEMENT | (any) | REPLICATION, LAKE_LANDING |
+| DATA_PIPELINE | SYNAPSE, FABRIC, MSSQL, REDSHIFT, BIGQUERY, DATABRICKS, SNOWFLAKE (landing → tables in Snowflake) | LANDING, STORAGE, REGISTERED_DATA, TRANSFORM |
+| DATA_PIPELINE | SNOWFLAKE (landing → files in cloud storage) | LAKE_LANDING, STORAGE, REGISTERED_DATA, TRANSFORM |
+| DATA_PIPELINE | QLIK_OPEN_LAKEHOUSE | LAKE_LANDING, LAKEHOUSE_STORAGE, STREAMING_LAKE_LANDING, STREAMING_TRANSFORM, LAKEHOUSE_MIRROR |
+| DATA_PIPELINE | QVD | LANDING, QVD_STORAGE |
 
 ---
 

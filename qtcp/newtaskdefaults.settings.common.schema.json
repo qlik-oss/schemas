@@ -137,6 +137,11 @@
       "minimum": 1,
       "default": 5
     },
+		"changeProcessingInterval": {
+			"type": "integer",
+			"description": "Change processing interval",
+			"default": 60
+		},
     "icebergSettings": {
       "type": "object",
       "description": "Settings for Iceberg tables",

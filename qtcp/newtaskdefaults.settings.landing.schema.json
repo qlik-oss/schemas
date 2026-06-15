@@ -14,9 +14,18 @@
         "tableLoadInParallel": {
           "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableLoadInParallel"
         },
+				"changeProcessingInterval": {
+					"$ref": "newtaskdefaults.settings.common.schema.json#/definitions/changeProcessingInterval"
+				},
         "warehouseSelection": {
           "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/warehouseSelection"
-        }
+        },
+				"test": {
+			"type": "integer",
+			"description": "Change processing interval",
+			"minimum": 10,
+			"default": 60
+		}
       }
     },
     "proxySettings": {

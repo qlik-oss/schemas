@@ -13,7 +13,10 @@
       "properties": {
         "tableLoadInParallel": {
           "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/tableLoadInParallel"
-        }
+        },
+				"changeProcessingInterval": {
+					"$ref": "newtaskdefaults.settings.common.schema.json#/definitions/changeProcessingInterval"
+				}
       }
     },
     "folderLocationType": {

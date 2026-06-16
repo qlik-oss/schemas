@@ -19,13 +19,7 @@
 				},
         "warehouseSelection": {
           "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/warehouseSelection"
-        },
-				"test": {
-			"type": "integer",
-			"description": "Change processing interval",
-			"minimum": 10,
-			"default": 60
-		}
+        }
       }
     },
     "proxySettings": {

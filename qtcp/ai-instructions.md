@@ -74,8 +74,8 @@ If the landing target is **`tables in Snowflake`**: no additional properties are
 **STEP 5: Create Project with Appropriate Type**
 
 ✅ Create root folder: `<ProjectName>/`
-✅ Create minimal `<ProjectName>/qtcp_project.yaml` with the correct project type
-✅ Create minimal `<ProjectName>/qtcp_bindings_definition.json` with empty variables: `{ "variables": {} }`
+✅ Create `<ProjectName>/qtcp_project.yaml` using the template for the correct project type.
+✅ Create `<ProjectName>/qtcp_bindings_definition.json` — apply the **Mandatory Binding variable rules** to the project yaml just created: extract every `{{...}}` variable and add it to `variables` with a blank value `""`.
 ✅ Create empty subfolder `<ProjectName>/qtcp_tasks`
 
 **STEP 6: Suggest Creating a Task**
@@ -177,6 +177,9 @@ After applying the change, check the `enabled` field on the scheduling entry tha
 **Minimal qtcp_project.yaml**
 ```yaml
 properties:
+  exportVersion: '1.0'
+  name: '{{projectName}}'
+  space: 'ref{project.current.spaceId}'
   type: DATA_PIPELINE
   platformType: <PLATFORM_TYPE>
   platformConnection: '{{platformConnection}}'
@@ -187,150 +190,39 @@ settings:
 ```
 
 **Minimal task.yaml per task type:**
-All task types require `properties.name`, `properties.id`, and `properties.type`. Most task types also require `settings` with specific fields. Use the templates below as the starting point for each task type.
 
-**Minimal task.yaml (LANDING):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: LANDING
-settings:
-  landingDwSettings:
-    landingArtifactsLocation:
-      dataAssetSchema: '{{task.<task-id>.taskSchema}}'
-```
+All task types require `properties.name`, `properties.id`, and `properties.type`. The table below lists the required `settings` fields for each type. Use `{{task.<task-id>.<property>}}` binding variables for all values unless noted otherwise.
 
-**Minimal task.yaml (STORAGE):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: STORAGE
-settings:
-  artifactsLocation:
-    internalSchema: '{{task.<task-id>.internalSchema}}'
-    taskSchema: '{{task.<task-id>.taskSchema}}'
-    databaseName: '{{task.<task-id>.databaseName}}'
-  taskRuntime:
-    warehouseSelection:
-      warehouseName: '{{task.<task-id>.warehouseName}}'
-```
+| Task Type | Required `settings` fields |
+|---|---|
+| LANDING | `landingDwSettings.landingArtifactsLocation.dataAssetSchema` → `taskSchema` |
+| LAKE_LANDING *(DATA_PIPELINE)* | `landingDwSettings.landingArtifactsLocation.dataAssetSchema` → `taskSchema` |
+| STORAGE | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)*, `taskRuntime.warehouseSelection.warehouseName` *(two-level)* |
+| TRANSFORM | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)*, `taskRuntime.warehouseSelection.warehouseName` *(two-level)* |
+| REGISTERED_DATA | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)* |
+| LAKEHOUSE_STORAGE | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `taskRuntime.lakehouseCluster` *(two-level)* |
+| LAKEHOUSE_MIRROR | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)*, `platformConfig.platformType`, `platformConfig.connection` → `targetConnection`, `taskRuntime.warehouseSelection.warehouseName` *(two-level)* — see LAKEHOUSE_MIRROR platform notes below |
+| STREAMING_LAKE_LANDING | `taskRuntime.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
+| STREAMING_TRANSFORM | `generalSettings.artifactsLocation.internalSchema`, `generalSettings.artifactsLocation.taskSchema`, `runtimeSettings.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
+| FILE_BASED_KNOWLEDGE_MART | `taskRuntime.warehouseSelection.warehouseName` *(two-level)* |
+| REPLICATION | `taskSettings.fullLoad: true`, `taskSettings.applyChanges: true`, `targetEndpoint.targetConnection`, `targetEndpoint.targetSchema`, `targetEndpoint.targetStorageConnection` |
+| LAKE_LANDING *(DATA_MOVEMENT)* | `targetEndpoint.targetConnection` |
+| DATAMART | ❌ DO NOT create — must be created in QTC UI then committed back |
+| KNOWLEDGE_MART | ❌ DO NOT create — must be created in QTC UI then committed back |
 
-**Minimal task.yaml (TRANSFORM):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: TRANSFORM
-settings:
-  artifactsLocation:
-    internalSchema: '{{task.<task-id>.internalSchema}}'
-    taskSchema: '{{task.<task-id>.taskSchema}}'
-    databaseName: '{{task.<task-id>.databaseName}}'
-  taskRuntime:
-    warehouseSelection:
-      warehouseName: '{{task.<task-id>.warehouseName}}'
-```
+**LAKEHOUSE_MIRROR: Data Warehouse Platform**
 
-**DATAMART:** ❌ **DO NOT create from scratch.** If asked, inform the user: *"DATAMART tasks must be created in the QTC UI. Once created, use 'Commit Changes' to push the YAML to the repo, then pull."*
+When creating a `LAKEHOUSE_MIRROR` task, after asking for the task name also ask:
 
-**Minimal task.yaml (REGISTERED_DATA):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: REGISTERED_DATA
-settings:
-  artifactsLocation:
-    internalSchema: '{{task.<task-id>.internalSchema}}'
-    taskSchema: '{{task.<task-id>.taskSchema}}'
-    databaseName: '{{task.<task-id>.databaseName}}'
-```
+❓ **ASK:** "What is the Data warehouse platform?" and present the enum values from `settings.platformConfig.platformType` in the schema.
 
-**Minimal task.yaml (LAKE_LANDING in DATA_PIPELINE):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: LAKE_LANDING
-settings:
-  landingDwSettings:
-    landingArtifactsLocation:
-      dataAssetSchema: '{{task.<task-id>.taskSchema}}'
-```
+Set `platformType` under `settings.platformConfig` in `task.yaml`.
 
-**Minimal task.yaml (LAKEHOUSE_STORAGE):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: LAKEHOUSE_STORAGE
-settings:
-  artifactsLocation:
-    internalSchema: '{{task.<task-id>.internalSchema}}'
-    taskSchema: '{{task.<task-id>.taskSchema}}'
-  taskRuntime:
-    lakehouseCluster: '{{task.<task-id>.lakehouseCluster}}'
-```
+Based on the chosen `platformType`, add the corresponding settings block under `settings.platformConfig`
 
-**Minimal task.yaml (LAKEHOUSE_MIRROR):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: LAKEHOUSE_MIRROR
-settings:
-  artifactsLocation:
-    internalSchema: '{{task.<task-id>.internalSchema}}'
-    taskSchema: '{{task.<task-id>.taskSchema}}'
-    databaseName: '{{task.<task-id>.databaseName}}'
-  platformConfig:
-    connection: '{{task.<task-id>.targetConnection}}'
-  taskRuntime:
-    warehouseSelection:
-      warehouseName: '{{task.<task-id>.warehouseName}}'
-```
-
-**Minimal task.yaml (STREAMING_LAKE_LANDING):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: STREAMING_LAKE_LANDING
-settings:
-  taskRuntime:
-    lakehouseClusterId: '{{task.<task-id>.lakehouseCluster}}'
-```
-
-**Minimal task.yaml (STREAMING_TRANSFORM):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: STREAMING_TRANSFORM
-settings:
-  generalSettings:
-    artifactsLocation:
-      internalSchema: '{{task.<task-id>.internalSchema}}'
-      taskSchema: '{{task.<task-id>.taskSchema}}'
-  runtimeSettings:
-    lakehouseClusterId: '{{task.<task-id>.lakehouseCluster}}'
-```
-
-**KNOWLEDGE_MART:** ❌ **DO NOT create from scratch.** If asked, inform the user: *"KNOWLEDGE_MART tasks must be created in the QTC UI. Once created, use 'Commit Changes' to push the YAML to the repo, then pull."*
-
-**Minimal task.yaml (FILE_BASED_KNOWLEDGE_MART):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: FILE_BASED_KNOWLEDGE_MART
-settings:
-  taskRuntime:
-    warehouseSelection:
-      warehouseName: '{{task.<task-id>.warehouseName}}'
-```
+- **`SNOWFLAKE`:** add `snowflakeIcebergSettings` with properties `snowflakeExternalVolume` and `snowflakeOpenCatalog`
+- **`REDSHIFT`:** add `redshiftIcebergSettings` with property `redshiftExternalSchema`
+- **`DATABRICKS`:** add `databricksIcebergSettings` with property `databricksForeignCatalog`
 
 **Minimal schedule.yaml (Time-based):**
 ```yaml
@@ -387,37 +279,13 @@ scheduling:
 **Minimal qtcp_project.yaml:**
 ```yaml
 properties:
+  exportVersion: '1.0'
+  name: '{{projectName}}'
+  space: 'ref{project.current.spaceId}'
   type: DATA_MOVEMENT
 ```
 
-**Minimal task.yaml (REPLICATION):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: REPLICATION
-
-settings:
-  taskSettings:
-    fullLoad: true
-    applyChanges: true
-  targetEndpoint:
-    targetConnection: '{{task.<task-id>.targetConnection}}'
-    targetSchema: '{{task.<task-id>.targetSchema}}'
-    targetStorageConnection: '{{task.<task-id>.targetStorageConnection}}'
-```
-
-**Minimal task.yaml (LAKE_LANDING in DATA_MOVEMENT):**
-```yaml
-properties:
-  name: <TaskName>
-  id: <task-id>
-  type: LAKE_LANDING
-
-settings:
-  targetEndpoint:
-    targetConnection: '{{task.<task-id>.targetConnection}}'
-```
+Required settings fields for each task type are listed in the table above.
 
 - For `LAKE_LANDING` tasks in a `DATA_MOVEMENT` project, always include `settings.targetEndpoint.targetConnection`
 - ❌ **DO NOT** add `settings.targetEndpoint.targetConnection` to `LAKE_LANDING` tasks in a `DATA_PIPELINE` project
@@ -661,6 +529,8 @@ The following properties use a two-level binding when added to a task:
 - `folder`
 - `snowflakeExternalVolume`
 - `snowflakeOpenCatalog`
+- `redshiftExternalSchema`
+- `databricksForeignCatalog`
 
 For these properties, instead of adding a blank value in `qtcp_bindings_definition.json`, set the task-level variable's value to a `task-type` reference, and also add the corresponding `task-type` variable with a blank value.
 

@@ -10,6 +10,10 @@ This guide provides comprehensive instructions for AI assistants to build Qlik T
 
 ## General
 
+**Asking Questions:**
+- Always use the `AskUserQuestion` tool when asking the user a question — never ask as plain text. This renders clickable option buttons in the UI.
+- If the answer is a free-text value with no reasonable fixed options (e.g. a project name), use a single-option prompt with an "Other" fallback, or ask as part of a multi-question `AskUserQuestion` call with an open-ended option.
+
 **Note on Minimal Properties:** Task templates should follow schema requirements. Schemas are published on [SchemaStore](https://www.schemastore.org) and automatically applied by the YAML language server when files match the expected paths (see Schema Reference section below).
 
 **No Comments in Generated Files:**
@@ -137,14 +141,24 @@ If yes, ask for task type and only present allowed options based on project type
 
 | Task Type | Allowed Scheduling |
 |---|---|
-| STORAGE, QVD_STORAGE, LAKEHOUSE_STORAGE | `TIME_BASED` only |
-| LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REGISTERED_DATA, REPLICATION | ❌ No scheduling — do not create `schedule.yaml` |
-| TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM | `TIME_BASED` or `EVENT_BASED` — ask the user which type |
+| STORAGE | `TIME_BASED` always allowed; `EVENT_BASED` conditionally allowed — see STORAGE check below |
+| QVD_STORAGE, LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REGISTERED_DATA, REPLICATION | ❌ No scheduling — do not create `schedule.yaml` |
+| TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM, LAKEHOUSE_STORAGE | `TIME_BASED` or `EVENT_BASED` — ask the user which type |
+
+**STORAGE event-based eligibility check:**
+
+Before offering `EVENT_BASED` to a STORAGE task, check whether its source landing task is full-load-only:
+1. Read the current task's `sourceSelection.yaml` and find the `sourceTask` value.
+2. Search for a task whose `id` property matches that value.
+3. In that task's `task.yaml`, look under `settings` for a `fullLoadOnly` property.
+4. If `fullLoadOnly: true` → both `TIME_BASED` and `EVENT_BASED` are allowed.
+5. If `fullLoadOnly` is absent or `false` → only `TIME_BASED` is allowed.
 
 **Schedule Creation Workflow:**
 
 **STEP 1:** Check the task type against the table above.
 - If scheduling is not allowed → inform the user and do not create `schedule.yaml`
+- If the task is `STORAGE` → perform the eligibility check above to determine whether `EVENT_BASED` is also available
 - If only `TIME_BASED` is allowed → proceed directly to the time-based flow
 - If both are allowed → ❓ **ASK:** "Should this task run on a time-based schedule or be triggered by another task completing (event-based)?"
 

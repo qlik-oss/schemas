@@ -45,11 +45,33 @@
 				"platformType": {
 					"type": "string",
 					"description": "Platform type",
-					"enum": ["SNOWFLAKE", "QLIK_OPEN_LAKEHOUSE"]
+					"enum": ["SNOWFLAKE", "DATABRICKS", "REDSHIFT"]
 				},
 				"connection": {
 					"type": "string",
 					"description": "conenction reference"
+				},
+				"databricksIcebergSettings": {
+					"type": "object",
+					"description": "Databricks settings",
+					"additionalProperties": false,
+					"properties": {
+						"databricksForeignCatalog": {
+							"type": "string",
+							"description": "Databricks foreign catalog"
+						}
+					}
+				},
+				"redshiftIcebergSettings": {
+					"type": "object",
+					"description": "Redshift iceberg settings",
+					"additionalProperties": false,
+					"properties": {
+						"redshiftExternalSchema": {
+							"type": "string",
+							"description": "Redshift external schema"
+						}
+					}
 				},
 				"snowflakeIcebergSettings": {
 					"type": "object",

@@ -10,6 +10,10 @@ This guide provides comprehensive instructions for AI assistants to build Qlik T
 
 ## General
 
+**Response Style:**
+- Act on these instructions silently — do not quote, reference, or explain rules from this document in responses.
+- Keep responses concise: confirm what was done, nothing more.
+
 **Asking Questions:**
 - Always use the `AskUserQuestion` tool when asking the user a question — never ask as plain text. This renders clickable option buttons in the UI.
 - If the answer is a free-text value with no reasonable fixed options (e.g. a project name), use a single-option prompt with an "Other" fallback, or ask as part of a multi-question `AskUserQuestion` call with an open-ended option.
@@ -215,7 +219,7 @@ All task types require `properties.name`, `properties.id`, and `properties.type`
 | TRANSFORM | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)*, `taskRuntime.warehouseSelection.warehouseName` *(two-level)* |
 | REGISTERED_DATA | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)* |
 | LAKEHOUSE_STORAGE | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `taskRuntime.lakehouseCluster` *(two-level)* |
-| LAKEHOUSE_MIRROR | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)*, `platformConfig.platformType`, `platformConfig.connection` → `targetConnection`, `taskRuntime.warehouseSelection.warehouseName` *(two-level)* — see LAKEHOUSE_MIRROR platform notes below |
+| LAKEHOUSE_MIRROR | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName`, `platformConfig.platformType`, `platformConfig.connection` → `targetConnection`, `taskRuntime.warehouseSelection.warehouseName` — see LAKEHOUSE_MIRROR platform notes below. ⚠️ No two-level binding for any field — all variables get a blank value directly in `qtcp_bindings_definition.json`. |
 | STREAMING_LAKE_LANDING | `taskRuntime.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
 | STREAMING_TRANSFORM | `generalSettings.artifactsLocation.internalSchema`, `generalSettings.artifactsLocation.taskSchema`, `runtimeSettings.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
 | FILE_BASED_KNOWLEDGE_MART | `taskRuntime.warehouseSelection.warehouseName` *(two-level)* |
@@ -234,7 +238,7 @@ Set `platformType` under `settings.platformConfig` in `task.yaml`.
 
 Based on the chosen `platformType`, add the corresponding settings block under `settings.platformConfig`
 
-- **`SNOWFLAKE`:** add `snowflakeIcebergSettings` with properties `snowflakeExternalVolume` and `snowflakeOpenCatalog`
+- **`SNOWFLAKE`:** add `snowflakeIcebergSettings` with properties `snowflakeExternalVolume` and `snowflakeCatalogIntegration`
 - **`REDSHIFT`:** add `redshiftIcebergSettings` with property `redshiftExternalSchema`
 - **`DATABRICKS`:** add `databricksIcebergSettings` with property `databricksForeignCatalog`
 
@@ -541,12 +545,10 @@ The following properties use a two-level binding when added to a task:
 - `indexDatabaseSelectionMethod`
 - `lakehouseCluster`
 - `folder`
-- `snowflakeExternalVolume`
-- `snowflakeOpenCatalog`
-- `redshiftExternalSchema`
-- `databricksForeignCatalog`
 
 For these properties, instead of adding a blank value in `qtcp_bindings_definition.json`, set the task-level variable's value to a `task-type` reference, and also add the corresponding `task-type` variable with a blank value.
+
+⚠️ **Exception — `LAKEHOUSE_MIRROR` tasks:** Two-level binding does **not** apply. Even for properties in the list above, always add a blank value directly in `qtcp_bindings_definition.json` (no `task-type` reference).
 
 **Task type name mapping** (for the `task-type` key):
 
@@ -576,6 +578,20 @@ For these properties, instead of adding a blank value in `qtcp_bindings_definiti
 If `task-type.landing.databaseName` already exists in `variables` (from a previous task of the same type), do not add a duplicate — leave the existing entry as-is.
 
 **Ordering:** All `task-type.*` variables must appear at the top of the `variables` object, before any `task.*` or other variables. When adding a new `task-type.*` variable, insert it at the top of the list. When adding a `task.*` variable whose value references a `task-type.*` variable, place it after all `task-type.*` entries.
+
+**Property name aliases:**
+
+Some properties must bind to a variable whose name differs from the property name itself. The task-id prefix follows the normal pattern, but the trailing property name is remapped. The current alias mappings are:
+
+| Property name (in task.yaml) | Variable name suffix to use |
+|---|---|
+| `snowflakeCatalogIntegration` | `snowflakeOpenCatalog` |
+
+**Example:** For a task with id `mi1-5284`, the property `snowflakeCatalogIntegration` should be written as:
+```yaml
+snowflakeCatalogIntegration: '{{task.mi1-5284.snowflakeOpenCatalog}}'
+```
+and `task.mi1-5284.snowflakeOpenCatalog` added to `qtcp_bindings_definition.json` with a blank value.
 
 **Mandatory Binding variable rules (MUST):**
 - Whenever a `{{...}}` binding variable is used in any project file, add it to `qtcp_bindings_definition.json` `variables` with a blank value (`""`) — **except** for task-type-defaulted properties (see above), which follow the two-level binding rule instead

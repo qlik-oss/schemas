@@ -2,6 +2,11 @@
 
 This guide provides comprehensive instructions for AI assistants to build Qlik Talend Cloud Platform (QTCP) data projects using YAML configuration files. All workflows, templates, and examples are consolidated here for efficient reference.
 
+> ⚠️ **Read this entire document before responding to any request.** Rules are distributed throughout — do not stop at the first relevant section. Two sections are mandatory on every task:
+> - **Variable Naming Conventions** — binding rules, two-level bindings, ordering, aliases, and the Mandatory Binding variable rules / synchronization gate
+> - **Critical Rules Summary** (bottom of document) — final checklist before stating task completion
+> - When creating or editing files, these instructions are the sole source of truth for structure, templates, and conventions. Existing tasks in the workspace are examples only - never copy or infer structure from them. If a conflict exists between an existing task's structure and the instructions, the instructions win.
+
 **Project Types:**
 - **Replication Projects** (`DATA_MOVEMENT`) - Use case: Replication
 - **Data Pipeline Projects** (`DATA_PIPELINE`) - Use case: Data pipeline
@@ -84,6 +89,7 @@ If the landing target is **`tables in Snowflake`**: no additional properties are
 ✅ Create root folder: `<ProjectName>/`
 ✅ Create `<ProjectName>/qtcp_project.yaml` using the template for the correct project type.
 ✅ Create `<ProjectName>/qtcp_bindings_definition.json` — apply the **Mandatory Binding variable rules** to the project yaml just created: extract every `{{...}}` variable and add it to `variables` with a blank value `""`.
+> 🔗 Before writing any binding variable, read the **Variable Naming Conventions** section below — it defines two-level bindings, ordering requirements, property name aliases, and the mandatory synchronization gate.
 ✅ Create empty subfolder `<ProjectName>/qtcp_tasks`
 
 **STEP 6: Suggest Creating a Task**
@@ -109,6 +115,7 @@ If yes, ask for task type and only present allowed options based on project type
 
 ✅ Create the task directory: `<ProjectName>/qtcp_tasks/<TaskName>/`
 ✅ Create minimal `task.yaml` with required fields only
+✅ When creating dataset YAML files for this task, follow the **Dataset YAML Files** rules in the Dataset section below
 
 **Task ID Generation Rule (Applies to all task types):**
 - Format: `<sanitized-task-name>-<NNNN>` where `NNNN` is exactly 4 digits
@@ -210,6 +217,7 @@ settings:
 **Minimal task.yaml per task type:**
 
 All task types require `properties.name`, `properties.id`, and `properties.type`. The table below lists the required `settings` fields for each type. Use `{{task.<task-id>.<property>}}` binding variables for all values unless noted otherwise.
+> Properties marked **(two-level)** use `task-type.*` references instead of blank values — see **Variable Naming Conventions** section below. Exception: `LAKEHOUSE_MIRROR` tasks never use two-level binding.
 
 | Task Type | Required `settings` fields |
 |---|---|
@@ -417,6 +425,7 @@ includePatterns:
 ```
 
 **When creating dataset YAML files** for non-landing tasks, use `properties.inputDatasets` to reference the upstream task and dataset.
+> 🔗 Any `{{...}}` variable introduced here must be added to `qtcp_bindings_definition.json` — see **Variable Naming Conventions: Mandatory Binding variable rules** below.
 - `taskId` MUST be the upstream task's `properties.id`
 - `datasetId` MUST be the upstream dataset's `properties.id` from a dataset file under that same upstream task — **if no dataset file exists for the upstream task (e.g., a LANDING task), convert the dataset name to a `datasetId` using these rules: letters and digits are kept as-is and lowercased; separators (any separator constant, `_`, or whitespace) are replaced with `_`; any other special character is encoded as `$HH$` where `HH` is the character's uppercase hex code (e.g., `@` → `$40$`, `!` → `$21$`). Examples: `"My App!"` → `my_app$21$`, `"hello world"` → `hello_world`, `"foo@bar"` → `foo$40$bar`. Never reference a `datasetId` that does not exist.**
 - `name` MUST be provided as the reference name for the input dataset within this file
@@ -782,8 +791,13 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 
 ## Critical Rules Summary
 
+> ⚠️ Verify every item below before stating task completion.
+
 1. **Follow the Unified Project Creation Workflow** — steps 1-8 above define the full creation flow
 2. **Create minimal files** — only include required fields; consult schemas for what is required
 3. **No automatic extras** — don't create files unless explicitly requested
 4. **No comments in generated files** — YAML and JSON files must contain only data
 5. **Dataset-level transformations** — use separate dataset files, not `transformationRules.yaml`
+6. **Binding synchronization (MUST)** — extract every `{{...}}` variable from all changed files and verify each exists in `qtcp_bindings_definition.json` under `variables` before responding (→ **Variable Naming Conventions: Mandatory Binding variable rules**)
+7. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section)
+8. **Use `AskUserQuestion` tool** — never ask questions as plain text; always render clickable options

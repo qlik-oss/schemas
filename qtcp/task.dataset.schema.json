@@ -865,9 +865,9 @@
 			"required": [],
 			"additionalProperties": false
 		},
-		"mappings": {
+		"mappingSettings": {
 			"type": "object",
-			"description": "Mappings for transform and custom datasets",
+			"description": "Mappings settings for transform and custom datasets",
 			"properties": {
 				"mappings": {
 					"type": "array",

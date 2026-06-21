@@ -434,7 +434,7 @@ properties:
     - taskId: <upstream-task-id>
       datasetId: <upstream-dataset-id>
       name: <upstream-dataset-name>
-mappings:
+mappingSettings:
   mappings: []
 ```
 

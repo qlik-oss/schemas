@@ -38,13 +38,18 @@
 				"mode": {
 					"mode": "string",
 					"description": "Change data partitioning mode",
-					"enum": ["PARTITION_OFF"],
+					"enum": ["PARTITION_OFF", "PARTITION_EVERY"],
 					"default": "PARTITION_OFF"
 				},
 				"partitionEvery": {
 					"type": "integer",
 					"description": "Change data partitioning interval",
 					"default": 60
+				},
+				"partitionBaseTime": {
+					"type": "string",
+					"description": "Base time for partitioning",
+					"examples": ["2026-06-13T07:06:29.262Z"]
 				}
 			},
 			"additionalProperties": false

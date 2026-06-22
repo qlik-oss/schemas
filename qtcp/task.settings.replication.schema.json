@@ -228,11 +228,6 @@
 							"type": "integer",
 							"description": "Partition every N units",
 							"default": 60
-						},
-						"partitionBaseTime": {
-							"type": "string",
-							"description": "Base time for partitioning",
-							"examples": ["2025-11-13T07:06:29.262Z"]
 						}
 					},
 					"additionalProperties": false

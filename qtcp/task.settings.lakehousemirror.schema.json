@@ -4,8 +4,7 @@
 	"title": "Lakehouse Mirror Task Settings",
 	"description": "Schema for Lakehouse Mirror task settings configuration",
 	"type": "object",
-	"additionalProperties": false,
-	"required": ["artifactsLocation", "platformConfig", "taskRuntime"],
+	"required": ["artifactsLocation", "platformConfig"],
 	"properties": {
 		"ddlHandlingPolicy": {
 			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
@@ -16,20 +15,6 @@
 		"artifactsLocation": {
 			"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"
 		},
-		"taskRuntime": {
-			"type": "object",
-			"description": "Task runtime configuration",
-			"additionalProperties": false,
-			"required": ["warehouseSelection"],
-			"properties": {
-				"tableUpdateConcurrency": {
-					"$ref": "task.settings.common.schema.json#/definitions/tableUpdateConcurrency"
-				},
-				"warehouseSelection": {
-					"$ref": "task.settings.common.schema.json#/definitions/warehouseSelection"
-				}
-			}
-		},
 		"catalogIntegration": {
 			"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
 		},
@@ -39,8 +24,7 @@
 		"platformConfig": {
 			"type": "object",
 			"description": "Platform settings",
-			"additionalProperties": false,
-			"required": ["connection"],
+			"required": ["connection", "platformType"],
 			"properties": {
 				"platformType": {
 					"type": "string",
@@ -50,50 +34,217 @@
 				"connection": {
 					"type": "string",
 					"description": "conenction reference"
-				},
-				"databricksIcebergSettings": {
-					"type": "object",
-					"description": "Databricks settings",
-					"additionalProperties": false,
-					"properties": {
-						"databricksForeignCatalog": {
-							"type": "string",
-							"description": "Databricks foreign catalog"
-						}
+				}
+			}
+		}
+	},
+	"allOf": [
+		{
+			"if": {
+				"properties": {
+					"platformConfig": {
+						"properties": {
+							"platformType": { "const": "SNOWFLAKE" }
+						},
+						"required": ["platformType"]
 					}
 				},
-				"redshiftIcebergSettings": {
-					"type": "object",
-					"description": "Redshift iceberg settings",
-					"additionalProperties": false,
-					"properties": {
-						"redshiftExternalSchema": {
-							"type": "string",
-							"description": "Redshift external schema"
+				"required": ["platformConfig"]
+			},
+			"then": {
+				"additionalProperties": false,
+				"required": ["taskRuntime"],
+				"properties": {
+					"ddlHandlingPolicy": {
+						"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+					},
+					"artifactsSettings": {
+						"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-Standard"
+					},
+					"artifactsLocation": {
+						"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"
+					},
+					"taskRuntime": {
+						"type": "object",
+						"description": "Task runtime configuration",
+						"additionalProperties": false,
+						"required": ["warehouseSelection"],
+						"properties": {
+							"tableUpdateConcurrency": {
+								"$ref": "task.settings.common.schema.json#/definitions/tableUpdateConcurrency"
+							},
+							"warehouseSelection": {
+								"$ref": "task.settings.common.schema.json#/definitions/warehouseSelection"
+							}
+						}
+					},
+					"catalogIntegration": {
+						"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+					},
+					"viewType": {
+						"$ref": "task.settings.common.schema.json#/definitions/viewType"
+					},
+					"platformConfig": {
+						"type": "object",
+						"description": "Platform settings",
+						"additionalProperties": false,
+						"required": ["connection", "platformType"],
+						"properties": {
+							"platformType": {
+								"type": "string",
+								"description": "Platform type",
+								"const": "SNOWFLAKE"
+							},
+							"connection": {
+								"type": "string",
+								"description": "conenction reference"
+							},
+							"snowflakeIcebergSettings": {
+								"type": "object",
+								"description": "Snowflake iceberg settings",
+								"additionalProperties": false,
+								"properties": {
+									"snowflakeExternalVolume": {
+										"type": "string",
+										"description": "Snowflake external volume"
+									},
+									"snowflakeCatalogIntegration": {
+										"type": "string",
+										"description": "Snowflake catalog integration"
+									},
+									"refreshMethod": {
+										"type": "string",
+										"description": "Refresh method",
+										"enum": ["QLIK_MANAGED_REFRESH", "AUTO_REFRESH"]
+									}
+								}
+							}
 						}
 					}
+				}
+			}
+		},
+		{
+			"if": {
+				"properties": {
+					"platformConfig": {
+						"properties": {
+							"platformType": { "const": "DATABRICKS" }
+						},
+						"required": ["platformType"]
+					}
 				},
-				"snowflakeIcebergSettings": {
-					"type": "object",
-					"description": "Snowflake iceberg settings",
-					"additionalProperties": false,
-					"properties": {
-						"snowflakeExternalVolume": {
-							"type": "string",
-							"description": "Snowflake external volume"
+				"required": ["platformConfig"]
+			},
+			"then": {
+				"additionalProperties": false,
+				"properties": {
+					"ddlHandlingPolicy": {
+						"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+					},
+					"artifactsSettings": {
+						"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-Standard"
+					},
+					"artifactsLocation": {
+						"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"
+					},
+					"catalogIntegration": {
+						"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+					},
+					"viewType": {
+						"$ref": "task.settings.common.schema.json#/definitions/viewType"
+					},
+					"platformConfig": {
+						"type": "object",
+						"description": "Platform settings",
+						"additionalProperties": false,
+						"required": ["connection", "platformType"],
+						"properties": {
+							"platformType": {
+								"type": "string",
+								"description": "Platform type",
+								"const": "DATABRICKS"
+							},
+							"connection": {
+								"type": "string",
+								"description": "conenction reference"
+							},
+							"databricksIcebergSettings": {
+								"type": "object",
+								"description": "Databricks settings",
+								"additionalProperties": false,
+								"properties": {
+									"databricksForeignCatalog": {
+										"type": "string",
+										"description": "Databricks foreign catalog"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"if": {
+				"properties": {
+					"platformConfig": {
+						"properties": {
+							"platformType": { "const": "REDSHIFT" }
 						},
-						"snowflakeCatalogIntegration": {
-							"type": "string",
-							"description": "Snowflake catalog integration"
-						},
-						"refreshMethod": {
-							"type": "string",
-							"description": "Refresh method",
-							"enum": ["QLIK_MANAGED_REFRESH", "AUTO_REFRESH"]
+						"required": ["platformType"]
+					}
+				},
+				"required": ["platformConfig"]
+			},
+			"then": {
+				"additionalProperties": false,
+				"properties": {
+					"ddlHandlingPolicy": {
+						"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
+					},
+					"artifactsSettings": {
+						"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-Standard"
+					},
+					"artifactsLocation": {
+						"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"
+					},
+					"catalogIntegration": {
+						"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+					},
+					"viewType": {
+						"$ref": "task.settings.common.schema.json#/definitions/viewType"
+					},
+					"platformConfig": {
+						"type": "object",
+						"description": "Platform settings",
+						"additionalProperties": false,
+						"required": ["connection", "platformType"],
+						"properties": {
+							"platformType": {
+								"type": "string",
+								"description": "Platform type",
+								"const": "REDSHIFT"
+							},
+							"connection": {
+								"type": "string",
+								"description": "conenction reference"
+							},
+							"redshiftIcebergSettings": {
+								"type": "object",
+								"description": "Redshift iceberg settings",
+								"additionalProperties": false,
+								"properties": {
+									"redshiftExternalSchema": {
+										"type": "string",
+										"description": "Redshift external schema"
+									}
+								}
+							}
 						}
 					}
 				}
 			}
 		}
-	}
+	]
 }

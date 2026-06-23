@@ -8,7 +8,7 @@
 		"sourceConnection": {
 			"type": "string",
 			"description": "Source connection ID"
-		}
+		},
 		"includePatterns": {
 			"type": "array",
 			"description": "List of tables/views patterns to include from the source",

@@ -864,70 +864,6 @@
 			},
 			"required": [],
 			"additionalProperties": false
-		},
-		"mappingSettings": {
-			"type": "object",
-			"description": "Mappings settings for transform and custom datasets",
-			"properties": {
-				"mappings": {
-					"type": "array",
-					"description": "List of source-to-target mapping definitions",
-					"items": {
-						"type": "object",
-						"properties": {
-							"sourceDataEntityKey": {
-								"type": "object",
-								"properties": {
-									"type": {
-										"type": "string",
-										"enum": ["NONE", "TABLE", "VIEW"],
-										"default": "NONE"
-									},
-									"datasetId": {
-										"type": "string"
-									},
-									"name": {
-										"type": "string"
-									},
-									"projectId": {
-										"type": "string"
-									},
-									"taskId": {
-										"type": "string"
-									}
-								},
-								"additionalProperties": false
-							},
-							"mappingFields": {
-								"type": "array",
-								"items": {
-									"type": "object",
-									"properties": {
-										"columnId": {
-											"type": "string"
-										},
-										"expression": {
-											"$ref": "#/$defs/Expression"
-										}
-									},
-									"additionalProperties": false
-								}
-							},
-							"id": {
-								"type": "string"
-							},
-							"name": {
-								"type": "string"
-							},
-							"description": {
-								"type": "string"
-							}
-						},
-						"additionalProperties": false
-					}
-				}
-			},
-			"additionalProperties": false
 		}
 	},
 	"$defs": {
@@ -1001,6 +937,9 @@
 						}
 					},
 					"additionalProperties": false
+				},
+				"expression": {
+					"$ref": "#/$defs/Expression"
 				},
 				"id": {
 					"type": "string"
@@ -1113,19 +1052,12 @@
 			"type": "object",
 			"description": "Table definition for the dataset",
 			"properties": {
-				"name": {
-					"type": "string",
-					"description": "Table name"
-				},
 				"columns": {
 					"type": "array",
 					"description": "Table column definitions",
 					"items": {
 						"$ref": "#/$defs/TableColumn"
 					}
-				},
-				"entityId": {
-					"type": "string"
 				},
 				"secureQri": {
 					"type": "string"

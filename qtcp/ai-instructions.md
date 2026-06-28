@@ -453,7 +453,15 @@ includePatterns:
 - Refer to the `dataset` schema (`task.dataset.schema.json`) for the required properties per task type — the schema describes which fields are mandatory based on the dataset `type`
 - ❌ **DO NOT** hardcode property lists — always consult the schema for current requirements
 
-**TRANSFORM tasks require an explicit `datasets/<TableName>.yaml` for every output table.** There are three patterns:
+❌ **MANDATORY — TRANSFORM tasks: you MUST create `datasets/<TableName>.yaml` for every output table. Adding or updating `sourceSelection.yaml` alone is never sufficient. Do not consider the task complete until both files exist.**
+
+**When the user adds a wildcard pattern (e.g. `tablePattern: '%'`) or asks to add all datasets to a TRANSFORM task:**
+1. Update `sourceSelection.yaml` as requested.
+2. Then inspect the referenced upstream task for known dataset names — check its own `sourceSelection.yaml` (look at `explicitlySelected[].name`) and its `datasets/` folder for existing `.yaml` files.
+3. For every dataset name that matches the pattern, create a corresponding `datasets/<TableName>.yaml` in the current TRANSFORM task (Pattern 1 passthrough unless the user specifies otherwise). Skip any table that already has a dataset file.
+4. If no upstream dataset names can be determined (e.g. the upstream task uses a wildcard with no resolved names), note this explicitly and remind the user to add the dataset files once the table names are known.
+
+There are three patterns for TRANSFORM dataset files:
 
 **Pattern 1: Passthrough (simple copy)**
 ```yaml
@@ -486,7 +494,7 @@ properties:
           value: '{{ref(project.current.projectId)}}$_$onboarding_storage--4w0$_$customers--4w3'
         - name: orders
           value: '{{ref(project.current.projectId)}}$_$onboarding_storage--4w0$_$orders--4w6'
-      incremental: false
+    incremental: false
 ```
 Key rules:
 - SQL uses `${alias}` placeholders — alias must match `inputDatasets[].name` AND `alias[].name`

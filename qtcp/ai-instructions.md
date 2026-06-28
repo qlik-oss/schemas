@@ -626,7 +626,8 @@ and `task.mi1-5284.snowflakeOpenCatalog` added to `qtcp_bindings_definition.json
 - Whenever a `{{...}}` binding variable is used in any project file, add it to `qtcp_bindings_definition.json` `variables` with a blank value (`""`) — **except** for task-type-defaulted properties (see above), which follow the two-level binding rule instead
 - If the variable refers to a **connection property** (variable name ends with `Connection`, e.g., `sourceConnection`, `targetConnection`, `targetStorageConnection`), add it to the `connectionProperties` section **only if** the `type` or `kindId` are known — do not guess or add an empty entry
 - **Mandatory synchronization gate (MUST):** Before finalizing any response, extract every `{{...}}` variable from all changed project files and ensure each variable exists in `qtcp_bindings_definition.json` under `variables`.
-- **Completion criteria:** Do not state task completion until binding synchronization is performed and verified.
+- **Two-level binding completeness check (MUST):** For every `task.*` variable in `qtcp_bindings_definition.json` whose value is a `task-type.*` reference (e.g. `"{{task-type.replicateLanding.lakehouseCluster}}"`), verify that the corresponding `task-type.*` variable also exists in `qtcp_bindings_definition.json` with a blank value `""`. If it is missing, add it at the top of `variables`.
+- **Completion criteria:** Do not state task completion until both synchronization checks above are performed and verified.
 
 **Example qtcp_bindings_definition.json with variables and connectionProperties:**
 ```json
@@ -819,5 +820,5 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 4. **No comments in generated files** — YAML and JSON files must contain only data
 5. **Dataset-level transformations** — use separate dataset files, not `transformationRules.yaml`
 6. **Binding synchronization (MUST)** — extract every `{{...}}` variable from all changed files and verify each exists in `qtcp_bindings_definition.json` under `variables` before responding (→ **Variable Naming Conventions: Mandatory Binding variable rules**)
-7. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section)
+7. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section). After adding any two-level binding, verify that the corresponding `task-type.*` variable with a blank value also exists in `qtcp_bindings_definition.json` — the synchronization gate does **not** catch missing `task-type.*` entries automatically.
 8. **Use `AskUserQuestion` tool** — never ask questions as plain text; always render clickable options

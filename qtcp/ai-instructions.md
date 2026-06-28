@@ -472,6 +472,8 @@ properties:
     - taskId: <upstream-task-id>
       datasetId: <upstream-dataset-id>
       name: <upstream-dataset-name>
+  tableDef:
+    columns: []
 ```
 
 **Pattern 2: Custom SQL** — use for JOINs, aggregations, or calculated columns. Requires an `alias` array mapping SQL placeholders to dataset references.

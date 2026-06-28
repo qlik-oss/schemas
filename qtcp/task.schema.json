@@ -140,6 +140,19 @@
 				"properties": {
 					"allOf": [
 						{ "$ref": "#/$defs/BaseProperties" },
+						{	"properties": {"type": { "const": "REPLICATE_LANDING" }}}
+					]
+				},
+				"settings": { "$ref": "task.settings.replicatelanding.schema.json" }
+			},
+			"required": ["properties", "settings"],
+			"additionalProperties": false
+		},
+		{
+			"properties": {
+				"properties": {
+					"allOf": [
+						{ "$ref": "#/$defs/BaseProperties" },
 						{	"properties": {"type": { "const": "REPLICATION" }}}
 					]
 				},
@@ -211,7 +224,7 @@
 				"type": {
 					"type": "string",
 					"description": "Task type",
-					"enum": ["DATAMART","FILE_BASED_KNOWLEDGE_MART","LAKEHOUSE_STORAGE","STREAMING_TRANSFORM","KNOWLEDGE_MART","LAKE_LANDING","LANDING","LAKEHOUSE_MIRROR","QVD_STORAGE","REGISTERED_DATA","REPLICATION","STORAGE","STREAMING_LAKE_LANDING","TRANSFORM"]
+					"enum": ["DATAMART","FILE_BASED_KNOWLEDGE_MART","LAKEHOUSE_STORAGE","STREAMING_TRANSFORM","KNOWLEDGE_MART","LAKE_LANDING","LANDING","LAKEHOUSE_MIRROR","QVD_STORAGE","REGISTERED_DATA","REPLICATE_LANDING","REPLICATION","STORAGE","STREAMING_LAKE_LANDING","TRANSFORM"]
 				}
 			}
 		}

@@ -64,7 +64,13 @@ Based on the selected use case:
 
 ❌ **DO NOT:** Ask for `platformType` as unrestricted free text when schema values are known
 
-**STEP 4b: For `SNOWFLAKE` platformType, Determine Landing Target**
+**STEP 4b: For `QLIK_OPEN_LAKEHOUSE` platformType, Set Lakehouse Cloud Provider**
+
+When `platformType` is `QLIK_OPEN_LAKEHOUSE`, automatically add `lakehouseCloudProvider: AWS` under `properties` in `qtcp_project.yaml`. Do not ask the user.
+
+> 🔮 **Future:** When GCP is supported, replace the above with: ❓ **ASK:** "What is the lakehouse cloud provider?" with options `AWS` and `GCP`, and write the selected literal value.
+
+**STEP 4c: For `SNOWFLAKE` platformType, Determine Landing Target**
 
 When `platformType` is SNOWFLAKE:
 
@@ -78,7 +84,6 @@ If the landing target is **`files in cloud storage`** (whether chosen or inferre
 - Ensure `snowflakeStorageIntegration` is added to `qtcp_bindings_definition.json` under `variables`
 
 If the landing target is **`tables in Snowflake`**: no additional properties are needed.
-
 ❌ **DO NOT:** Create `sourceSelection.yaml` unless user has specified data sources
 ❌ **DO NOT:** Create `schedule.yaml` automatically
 ❌ **DO NOT:** Create `transformationRules.yaml` automatically
@@ -102,7 +107,7 @@ If yes, ask for task type and only present allowed options based on project type
 - For `DATA_PIPELINE` projects, allowed task types depend on `platformType` (read from `qtcp_project.yaml`):
   - `SYNAPSE`, `FABRIC`, `MSSQL`, `REDSHIFT`, `BIGQUERY`, `DATABRICKS`, or `SNOWFLAKE` with landing target = tables in Snowflake: `LANDING`, `STORAGE`, `REGISTERED_DATA`, `TRANSFORM`
   - `SNOWFLAKE` with landing target = files in cloud storage: `LAKE_LANDING`, `STORAGE`, `REGISTERED_DATA`, `TRANSFORM`
-  - `QLIK_OPEN_LAKEHOUSE`: `LAKE_LANDING`, `LAKEHOUSE_STORAGE`, `STREAMING_LAKE_LANDING`, `STREAMING_TRANSFORM`, `LAKEHOUSE_MIRROR`
+  - `QLIK_OPEN_LAKEHOUSE`: `LAKE_LANDING`, `LAKEHOUSE_STORAGE`, `STREAMING_LAKE_LANDING`, `STREAMING_TRANSFORM`, `LAKEHOUSE_MIRROR`, `REPLICATE_LANDING`
   - `QVD`: `LANDING`, `QVD_STORAGE`
 
 ❌ Do **not** include `DATAMART`, `KNOWLEDGE_MART`, or `FILE_BASED_KNOWLEDGE_MART` in the presented list — if the user requests any of these, redirect them to create it in the QTC UI and commit back
@@ -139,7 +144,7 @@ If yes, ask for task type and only present allowed options based on project type
 | DATA_MOVEMENT | (any) | REPLICATION, LAKE_LANDING |
 | DATA_PIPELINE | SYNAPSE, FABRIC, MSSQL, REDSHIFT, BIGQUERY, DATABRICKS, SNOWFLAKE (landing → tables in Snowflake) | LANDING, STORAGE, REGISTERED_DATA, TRANSFORM |
 | DATA_PIPELINE | SNOWFLAKE (landing → files in cloud storage) | LAKE_LANDING, STORAGE, REGISTERED_DATA, TRANSFORM |
-| DATA_PIPELINE | QLIK_OPEN_LAKEHOUSE | LAKE_LANDING, LAKEHOUSE_STORAGE, STREAMING_LAKE_LANDING, STREAMING_TRANSFORM, LAKEHOUSE_MIRROR |
+| DATA_PIPELINE | QLIK_OPEN_LAKEHOUSE | LAKE_LANDING, LAKEHOUSE_STORAGE, STREAMING_LAKE_LANDING, STREAMING_TRANSFORM, LAKEHOUSE_MIRROR, REPLICATE_LANDING |
 | DATA_PIPELINE | QVD | LANDING, QVD_STORAGE |
 
 ---
@@ -153,7 +158,7 @@ If yes, ask for task type and only present allowed options based on project type
 | Task Type | Allowed Scheduling |
 |---|---|
 | STORAGE | `TIME_BASED` always allowed; `EVENT_BASED` conditionally allowed — see STORAGE check below |
-| QVD_STORAGE, LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REGISTERED_DATA, REPLICATION | ❌ No scheduling — do not create `schedule.yaml` |
+| QVD_STORAGE, LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REGISTERED_DATA, REPLICATION, REPLICATE_LANDING | ❌ No scheduling — do not create `schedule.yaml` |
 | TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM, LAKEHOUSE_STORAGE | `TIME_BASED` or `EVENT_BASED` — ask the user which type |
 
 **STORAGE event-based eligibility check:**
@@ -227,7 +232,7 @@ All task types require `properties.name`, `properties.id`, and `properties.type`
 | TRANSFORM | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)*, `taskRuntime.warehouseSelection.warehouseName` *(two-level)* |
 | REGISTERED_DATA | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName` *(two-level)* |
 | LAKEHOUSE_STORAGE | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `taskRuntime.lakehouseCluster` *(two-level)* |
-| LAKEHOUSE_MIRROR | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName`, `platformConfig.platformType`, `platformConfig.connection` → `targetConnection`, `taskRuntime.warehouseSelection.warehouseName` — see LAKEHOUSE_MIRROR platform notes below. ⚠️ No two-level binding for any field — all variables get a blank value directly in `qtcp_bindings_definition.json`. |
+| LAKEHOUSE_MIRROR | `artifactsLocation.internalSchema`, `artifactsLocation.taskSchema`, `artifactsLocation.databaseName`, `platformConfig.platformType`, `platformConfig.connection` → `targetConnection` — see LAKEHOUSE_MIRROR platform notes below. Add `taskRuntime.warehouseSelection.warehouseName` only when `platformConfig.platformType` is `SNOWFLAKE`. ⚠️ No two-level binding for any field — all variables get a blank value directly in `qtcp_bindings_definition.json`. |
 | STREAMING_LAKE_LANDING | `taskRuntime.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
 | STREAMING_TRANSFORM | `generalSettings.artifactsLocation.internalSchema`, `generalSettings.artifactsLocation.taskSchema`, `runtimeSettings.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
 | FILE_BASED_KNOWLEDGE_MART | `taskRuntime.warehouseSelection.warehouseName` *(two-level)* |
@@ -235,6 +240,7 @@ All task types require `properties.name`, `properties.id`, and `properties.type`
 | LAKE_LANDING *(DATA_MOVEMENT)* | `targetEndpoint.targetConnection` |
 | DATAMART | ❌ DO NOT create — must be created in QTC UI then committed back |
 | KNOWLEDGE_MART | ❌ DO NOT create — must be created in QTC UI then committed back |
+| REPLICATE_LANDING | `taskRuntime.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
 
 **LAKEHOUSE_MIRROR: Data Warehouse Platform**
 
@@ -244,11 +250,11 @@ When creating a `LAKEHOUSE_MIRROR` task, after asking for the task name also ask
 
 Set `platformType` under `settings.platformConfig` in `task.yaml`.
 
-Based on the chosen `platformType`, add the corresponding settings block under `settings.platformConfig`
+Based on the chosen `platformType`, add the corresponding settings block under `settings.platformConfig`, and conditionally include `taskRuntime.warehouseSelection.warehouseName`:
 
-- **`SNOWFLAKE`:** add `snowflakeIcebergSettings` with properties `snowflakeExternalVolume` and `snowflakeCatalogIntegration`
-- **`REDSHIFT`:** add `redshiftIcebergSettings` with property `redshiftExternalSchema`
-- **`DATABRICKS`:** add `databricksIcebergSettings` with property `databricksForeignCatalog`
+- **`SNOWFLAKE`:** add `snowflakeIcebergSettings` with properties `snowflakeExternalVolume` and `snowflakeCatalogIntegration`; add `taskRuntime.warehouseSelection.warehouseName`
+- **`REDSHIFT`:** add `redshiftIcebergSettings` with property `redshiftExternalSchema`; do **not** add `taskRuntime.warehouseSelection.warehouseName`
+- **`DATABRICKS`:** add `databricksIcebergSettings` with property `databricksForeignCatalog`; do **not** add `taskRuntime.warehouseSelection.warehouseName`
 
 **Minimal schedule.yaml (Time-based):**
 ```yaml
@@ -343,7 +349,7 @@ There are three distinct workflows depending on the task type:
 
 ---
 
-### Landing Tasks (LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REPLICATION)
+### Landing Tasks (LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REPLICATION, REPLICATE_LANDING)
 
 Landing tasks read **directly from a data source connection**. The user must provide:
 1. **Data source** (the connection)
@@ -360,6 +366,18 @@ Landing tasks read **directly from a data source connection**. The user must pro
 **Minimal sourceSelection.yaml (landing tasks):**
 ```yaml
 sourceConnection: '{{task.<task-id>.sourceConnection}}'
+explicitlySelected:
+  - name: <TableName>
+    schema: '{{task.<task-id>:<database>$_$<schema>.schema}}'
+    type: TABLE
+```
+
+**`REPLICATE_LANDING` tasks** follow the same pattern but also require `rootDirectoryPath` as an additional root-level property:
+
+**Minimal sourceSelection.yaml (REPLICATE_LANDING tasks):**
+```yaml
+sourceConnection: '{{task.<task-id>.sourceConnection}}'
+rootDirectoryPath: ''
 explicitlySelected:
   - name: <TableName>
     schema: '{{task.<task-id>:<database>$_$<schema>.schema}}'
@@ -386,6 +404,8 @@ excludePatterns:
     type: TABLE
 ```
 
+For `REPLICATE_LANDING` tasks, also include `rootDirectoryPath` at the root level alongside `sourceConnection`.
+
 ---
 
 ### Non-Landing Tasks (STORAGE, QVD_STORAGE, TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_STORAGE, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM)
@@ -396,11 +416,12 @@ Non-landing tasks read **from an upstream task**, not directly from a data sourc
 
 **Prompting:**
 - ❓ **ASK:** "Which task should this read from?" (List available tasks from `qtcp_tasks/` folder)
+  - ⚠️ **Landing source restriction:** Only `STORAGE` tasks may read from landing task types (`LANDING`, `LAKE_LANDING`, `STREAMING_LAKE_LANDING`, `REPLICATION`, `REPLICATE_LANDING`). All other non-landing task types **cannot** read from landing tasks — do not present landing tasks as source options for them.
 - ❓ **ASK:** "Which tables/datasets from that task do you want to include?"
 
 **Add entries to the task's `sourceSelection.yaml`.**
 - Non-landing tasks use `sourceTask` on each `explicitlySelected` item to reference the upstream task
-- ❌ **DO NOT** include `sourceConnection` — non-landing tasks do not use a direct data source connection
+- ❌ **DO NOT** include `sourceConnection` or `rootDirectoryPath` — non-landing tasks do not use a direct data source connection
 - Refer to the `sourceSelection` schema for required and optional properties in `explicitlySelected` items
 
 **`sourceTask` value format:**
@@ -443,8 +464,6 @@ properties:
     - taskId: <upstream-task-id>
       datasetId: <upstream-dataset-id>
       name: <upstream-dataset-name>
-mappingSettings:
-  mappings: []
 ```
 
 **Pattern 2: Custom SQL** — use for JOINs, aggregations, or calculated columns. Requires an `alias` array mapping SQL placeholders to dataset references.
@@ -506,14 +525,14 @@ properties:
 - **If any required location value is missing (`database`, `schema`, `name`, `type`), ask follow-up questions and do not write `sourceSelection.yaml` yet.**
 
 **Add entries to the task's `sourceSelection.yaml`.**
-- ❌ **DO NOT** include `sourceConnection` — `REGISTERED_DATA` tasks do not use a data source connection
+- ❌ **DO NOT** include `sourceConnection` or `rootDirectoryPath` — `REGISTERED_DATA` tasks do not use a data source connection
 - ❌ **DO NOT** include `sourceTask` — `REGISTERED_DATA` tasks do not read from an upstream task
 - ❌ **DO NOT** use `includePatterns` / wildcard patterns as a fallback for `REGISTERED_DATA` requests such as "add source"
 - Each `explicitlySelected` item must specify `database`, `schema`, `name`, and `type`
 - If the request uses the word "dataset" without explicitly saying "dataset file"/"dataset yaml", still treat it as source-selection intent and update `sourceSelection.yaml`.
 
 **Completion check (REGISTERED_DATA, MUST pass before final response):**
-1. `sourceSelection.yaml` contains no `sourceConnection`.
+1. `sourceSelection.yaml` contains no `sourceConnection` or `rootDirectoryPath`.
 2. `sourceSelection.yaml` contains no `sourceTask`.
 3. Every `explicitlySelected` item includes `database`, `schema`, `name`, and `type`.
 4. No wildcard fallback was used to bypass missing required values.
@@ -576,6 +595,7 @@ For these properties, instead of adding a blank value in `qtcp_bindings_definiti
 | KNOWLEDGE_MART | `knowledgeMart` |
 | FILE_BASED_KNOWLEDGE_MART | `fileBasedKnowledgeMart` |
 | REPLICATION | `replication` |
+| REPLICATE_LANDING | `replicateLanding` |
 
 **Example:** For a `LANDING` task with id `landing-1234` and property `databaseName`, add to `qtcp_bindings_definition.json`:
 ```json

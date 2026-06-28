@@ -9,7 +9,7 @@
     "datamart": {
       "$ref": "./newtaskdefaults.settings.datamart.schema.json"
     },
-    "fileBasedKnowledgeMart": {
+		"fileBasedKnowledgeMart": {
       "$ref": "./newtaskdefaults.settings.filebasedknowledgemart.schema.json"
     },
     "knowledgeMart": {
@@ -26,6 +26,9 @@
     },
     "registeredData": {
       "$ref": "./newtaskdefaults.settings.registereddata.schema.json"
+    },
+    "replicateLanding": {
+      "$ref": "./newtaskdefaults.settings.replicatelanding.schema.json"
     },
     "storage": {
       "$ref": "./newtaskdefaults.settings.storage.schema.json"

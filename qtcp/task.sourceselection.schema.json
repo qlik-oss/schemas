@@ -7,7 +7,11 @@
 	"properties": {
 		"sourceConnection": {
 			"type": "string",
-			"description": "Source connection ID"
+			"description": "Source connection ID for landing tasks"
+		},
+		"rootDirectoryPath": {
+			"type": "string",
+			"description": "Root directory path for replicate landing tasks"
 		},
 		"includePatterns": {
 			"type": "array",

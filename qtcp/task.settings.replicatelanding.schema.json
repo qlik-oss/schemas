@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.settings.replicatelanding.schema.json",
+	"title": "Replicate Landing Task Settings",
+	"description": "Schema for Replicate Landing task settings configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["taskRuntime"],
+	"properties": {
+		"generalSettings": {
+			"type": "object",
+			"description": "General configuration for the task",
+			"additionalProperties": false,
+			"properties": {
+				"storageLocationSettings": {
+					"$ref": "task.settings.common.schema.json#/definitions/locationSettings"
+				},
+				"deleteFilesInSourceAfterLoad": {
+					"type": "boolean",
+					"description": "Whether to delete source files after successful loading",
+					"default": false
+				},
+				"automaticallyIncludeFutureTables": {
+					"type": "boolean",
+					"description": "Whether to automatically include future tables",
+					"default": false
+				}
+			}
+		},
+		"taskRuntime": {
+			"type": "object",
+			"description": "Runtime configuration for the task",
+			"additionalProperties": false,
+			"required": ["lakehouseClusterId"],
+			"properties": {
+				"lakehouseClusterId": {
+					"type": "string",
+					"description": "Lakehouse cluster Id"
+				}
+			}
+		}
+	}
+}

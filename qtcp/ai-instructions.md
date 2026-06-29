@@ -48,8 +48,8 @@ This guide provides comprehensive instructions for AI assistants to build Qlik T
 ❓ **ASK:** "What is the use case for this project?"
 
 Present exactly these options:
-1. Replication
-2. Data pipeline
+1. Replication - point to point replication task
+2. Data pipeline - data pipeline centered arround single platform
 
 **STEP 3: Set Project Type from Use Case**
 

@@ -1,6 +1,6 @@
 # AI Assistant Guide: Data Projects
 
-This guide provides comprehensive instructions for AI assistants to build Qlik Talend Cloud Platform (QTCP) data projects using YAML configuration files. All workflows, templates, and examples are consolidated here for efficient reference.
+Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data projects using YAML configuration files.
 
 > ⚠️ **Read this entire document before responding to any request.** Rules are distributed throughout — do not stop at the first relevant section. Two sections are mandatory on every task:
 > - **Variable Naming Conventions** — binding rules, two-level bindings, ordering, aliases, and the Mandatory Binding variable rules / synchronization gate
@@ -49,7 +49,7 @@ This guide provides comprehensive instructions for AI assistants to build Qlik T
 
 Present exactly these options:
 1. Replication - point to point replication task
-2. Data pipeline - data pipeline centered arround single platform
+2. Data pipeline - data pipeline centered around single platform
 
 **STEP 3: Set Project Type from Use Case**
 
@@ -101,14 +101,7 @@ If the landing target is **`tables in Snowflake`**: no additional properties are
 
 ❓ **ASK:** "Would you like me to create a task now?"
 
-If yes, ask for task type and only present allowed options based on project type **and** platform type:
-
-- For `DATA_MOVEMENT` projects: `REPLICATION`, `LAKE_LANDING`
-- For `DATA_PIPELINE` projects, allowed task types depend on `platformType` (read from `qtcp_project.yaml`):
-  - `SYNAPSE`, `FABRIC`, `MSSQL`, `REDSHIFT`, `BIGQUERY`, `DATABRICKS`, or `SNOWFLAKE` with landing target = tables in Snowflake: `LANDING`, `STORAGE`, `REGISTERED_DATA`, `TRANSFORM`
-  - `SNOWFLAKE` with landing target = files in cloud storage: `LAKE_LANDING`, `STORAGE`, `REGISTERED_DATA`, `TRANSFORM`
-  - `QLIK_OPEN_LAKEHOUSE`: `LAKE_LANDING`, `LAKEHOUSE_STORAGE`, `STREAMING_LAKE_LANDING`, `STREAMING_TRANSFORM`, `LAKEHOUSE_MIRROR`, `REPLICATE_LANDING`
-  - `QVD`: `LANDING`, `QVD_STORAGE`
+If yes, ask for task type and only present allowed options based on project type **and** platform type — see **Task Type Availability by Project Type** table below.
 
 ❌ Do **not** include `DATAMART`, `KNOWLEDGE_MART`, or `FILE_BASED_KNOWLEDGE_MART` in the presented list — if the user requests any of these, redirect them to create it in the QTC UI and commit back
 
@@ -158,7 +151,9 @@ If yes, ask for task type and only present allowed options based on project type
 | Task Type | Allowed Scheduling |
 |---|---|
 | STORAGE | `TIME_BASED` always allowed; `EVENT_BASED` conditionally allowed — see STORAGE check below |
-| QVD_STORAGE, LANDING, LAKE_LANDING, STREAMING_LAKE_LANDING, REGISTERED_DATA, REPLICATION, REPLICATE_LANDING | ❌ No scheduling — do not create `schedule.yaml` |
+| LANDING, LAKE_LANDING | `TIME_BASED` allowed **only if** the task has `fullLoadOnly: true`; otherwise ❌ no scheduling. No `EVENT_BASED` — see LANDING check below |
+| REPLICATION | `TIME_BASED` allowed **unless** the task has `applyChanges: true`; if `applyChanges: true` → ❌ no scheduling. No `EVENT_BASED` — see REPLICATION check below |
+| QVD_STORAGE, STREAMING_LAKE_LANDING, REGISTERED_DATA, REPLICATE_LANDING | ❌ No scheduling — do not create `schedule.yaml` |
 | TRANSFORM, DATAMART, KNOWLEDGE_MART, FILE_BASED_KNOWLEDGE_MART, LAKEHOUSE_MIRROR, STREAMING_TRANSFORM, LAKEHOUSE_STORAGE | `TIME_BASED` or `EVENT_BASED` — ask the user which type |
 
 **STORAGE event-based eligibility check:**
@@ -170,11 +165,27 @@ Before offering `EVENT_BASED` to a STORAGE task, check whether its source landin
 4. If `fullLoadOnly: true` → both `TIME_BASED` and `EVENT_BASED` are allowed.
 5. If `fullLoadOnly` is absent or `false` → only `TIME_BASED` is allowed.
 
+**LANDING / LAKE_LANDING time-based eligibility check:**
+
+Before creating `schedule.yaml` for a `LANDING` or `LAKE_LANDING` task, read the current task's `task.yaml` and look under `settings` for `fullLoadOnly`:
+- If `fullLoadOnly: true` → `TIME_BASED` is allowed (no `EVENT_BASED`).
+- If `fullLoadOnly` is absent or `false` → no scheduling; do not create `schedule.yaml`.
+
+**REPLICATION time-based eligibility check:**
+
+Before creating `schedule.yaml` for a `REPLICATION` task, read the current task's `task.yaml` and look under `settings.taskSettings` for `applyChanges`:
+- If `applyChanges` is absent or `false` → `TIME_BASED` is allowed (no `EVENT_BASED`).
+- If `applyChanges: true` → no scheduling; do not create `schedule.yaml`.
+
 **Schedule Creation Workflow:**
+
+> ⚠️ **Do not suggest enabling scheduling by changing task properties.** When scheduling is not allowed because of a property's presence or absence (e.g. `applyChanges: true`, or `fullLoadOnly` not set), simply inform the user it is not available — never propose or offer to change those properties to make scheduling possible.
 
 **STEP 1:** Check the task type against the table above.
 - If scheduling is not allowed → inform the user and do not create `schedule.yaml`
-- If the task is `STORAGE` → perform the eligibility check above to determine whether `EVENT_BASED` is also available
+- If the task is `STORAGE` → perform the STORAGE eligibility check above to determine whether `EVENT_BASED` is also available
+- If the task is `LANDING` or `LAKE_LANDING` → perform the LANDING / LAKE_LANDING eligibility check above; if not eligible, inform the user and do not create `schedule.yaml`
+- If the task is `REPLICATION` → perform the REPLICATION eligibility check above; if not eligible, inform the user and do not create `schedule.yaml`
 - If only `TIME_BASED` is allowed → proceed directly to the time-based flow
 - If both are allowed → ❓ **ASK:** "Should this task run on a time-based schedule or be triggered by another task completing (event-based)?"
 
@@ -301,7 +312,7 @@ scheduling:
 
 **Key Characteristics:**
 - Task types: `REPLICATION`, `LAKE_LANDING`
-- **Schedules NOT supported** - do not create `schedule.yaml`
+- **Scheduling is limited to `TIME_BASED` and only when eligible** — `REPLICATION` tasks are eligible unless `applyChanges: true`; `LAKE_LANDING` tasks are eligible only when `fullLoadOnly: true`. Apply the REPLICATION and LANDING / LAKE_LANDING eligibility checks in the scheduling rules above. If not eligible, do not create `schedule.yaml`. `EVENT_BASED` is never available for these task types.
 - No `settings.artifactsNaming` in project.yaml
 - For `REPLICATION` tasks, always set both `fullLoad: true` and `applyChanges: true` under `settings.taskSettings` by default
 - Only deviate from this default if the user explicitly specifies different modes; the valid modes are `fullLoad`, `applyChanges`, and `storeChanges`
@@ -356,7 +367,7 @@ Landing tasks read **directly from a data source connection**. The user must pro
 2. **Schema** and **table names**
 
 **Prompting:**
-- ❓ **ASK:** "Please provide the table names and schemas you want to include"
+- ❓ **ASK:** "Please provide the schema and table names you want to include"
 - ❓ **IF schema not specified:** "What is the schema for this table?"
 
 **Add entries to the task's `sourceSelection.yaml`.**
@@ -488,7 +499,7 @@ properties:
     - datasetId: orders--4w6
       name: orders
       taskId: onboarding_storage--4w0
-   customDatasetSettings:
+  customDatasetSettings:
     customSql:
       expressionStatement: "SELECT c.[customer_id], ...\nFROM ${customers} AS c\nINNER JOIN ${orders} AS o ON c.[customer_id] = o.[customer_id]"
       alias:

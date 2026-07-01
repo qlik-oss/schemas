@@ -16,12 +16,12 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 ## General
 
 **Response Style:**
-- Act on these instructions silently — do not quote, reference, or explain rules from this document in responses.
-- Keep responses concise: confirm what was done, nothing more.
+- Keep responses concise: confirm what was done, without quoting or restating this document's rule text.
+- Continue narrating your actions and decisions to the user as you normally would — concise, not silent or hidden.
 
 **Asking Questions:**
-- Always use the `AskUserQuestion` tool when asking the user a question — never ask as plain text. This renders clickable option buttons in the UI.
-- If the answer is a free-text value with no reasonable fixed options (e.g. a project name), use a single-option prompt with an "Other" fallback, or ask as part of a multi-question `AskUserQuestion` call with an open-ended option.
+- When the client supports it, prefer the `AskUserQuestion` tool for questions with a fixed set of options — it renders clickable option buttons in the UI. If that tool isn't available, ask as plain text instead.
+- If the answer is a free-text value with no reasonable fixed options (e.g. a project name), use a single-option prompt with an "Other" fallback, or ask as part of a multi-question `AskUserQuestion` call with an open-ended option — or plain text if the tool is unavailable.
 
 **Note on Minimal Properties:** Task templates should follow schema requirements. Schemas are published on [SchemaStore](https://www.schemastore.org) and automatically applied by the YAML language server when files match the expected paths (see Schema Reference section below).
 
@@ -364,11 +364,11 @@ There are three distinct workflows depending on the task type:
 
 Landing tasks read **directly from a data source connection**. The user must provide:
 1. **Data source** (the connection)
-2. **Schema** and **table names**
+2. **Schema** and **table names**, or a **pattern**
 
 **Prompting:**
-- ❓ **ASK:** "Please provide the schema and table names you want to include"
-- ❓ **IF schema not specified:** "What is the schema for this table?"
+- ❓ **ASK:** "Please provide the schema and table names (or a pattern) you want to include"
+- ❓ **IF schema not specified:** "What is the schema for this table/pattern?"
 
 **Add entries to the task's `sourceSelection.yaml`.**
 - Refer to the `sourceSelection` schema for required and optional properties in `explicitlySelected` items

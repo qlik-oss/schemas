@@ -383,12 +383,12 @@ explicitlySelected:
     type: TABLE
 ```
 
-**`REPLICATE_LANDING` tasks** follow the same pattern but also require `rootDirectoryPath` as an additional root-level property:
+**`REPLICATE_LANDING` tasks** follow the same pattern but also require `rootDirectoryPath` as an additional root-level property. `rootDirectoryPath` is a binding variable — do **not** ask the user for its value; just include it in the template and add the variable to `qtcp_bindings_definition.json` with a blank value.
 
 **Minimal sourceSelection.yaml (REPLICATE_LANDING tasks):**
 ```yaml
 sourceConnection: '{{task.<task-id>.sourceConnection}}'
-rootDirectoryPath: ''
+rootDirectoryPath: '{{task.<task-id>.rootDirectoryPath}}'
 explicitlySelected:
   - name: <TableName>
     schema: '{{task.<task-id>:<database>$_$<schema>.schema}}'
@@ -415,7 +415,7 @@ excludePatterns:
     type: TABLE
 ```
 
-For `REPLICATE_LANDING` tasks, also include `rootDirectoryPath` at the root level alongside `sourceConnection`.
+For `REPLICATE_LANDING` tasks, also include `rootDirectoryPath` at the root level alongside `sourceConnection`. Do **not** ask the user for its value — it is a binding variable; add it to `qtcp_bindings_definition.json` with a blank value.
 
 ---
 

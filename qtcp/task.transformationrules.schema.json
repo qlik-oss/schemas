@@ -100,12 +100,33 @@
 						"type": "object",
 						"description": "Transformation action to apply",
 						"required": [],
-						"additionalProperties": true,
+						"additionalProperties": false,
 						"properties": {
 							"renameType": {
 								"type": "string",
 								"description": "Type of rename operation",
 								"enum": ["NONE", "RENAME", "ADD_PREFIX", "REMOVE_PREFIX", "ADD_SUFFIX", "REMOVE_SUFFIX", "REPLACE_PREFIX", "REPLACE_SUFFIX", "TO_UPPER", "TO_LOWER", "EXPRESSION", "NAME_MAPPING"]
+							},
+							"value": {
+								"$ref": "#/$defs/Value"
+							},
+							"oldValue": {
+								"type": "string",
+								"description": "Value to replace (used by REPLACE_PREFIX / REPLACE_SUFFIX)"
+							},
+							"expression": {
+								"$ref": "#/$defs/Expression"
+							},
+							"valueMapping": {
+								"type": "object",
+								"description": "Dynamic key-value mapping where keys are variable property names (used by NAME_MAPPING)",
+								"additionalProperties": {
+									"type": "string",
+									"description": "Mapped value for the key"
+								},
+								"examples": [
+									{"key1": "value1", "key2": "value2"}
+								]
 							},
 							"applyColumnDatatype": {
 								"type": "boolean",
@@ -292,6 +313,7 @@
 														"type": "string",
 														"description": "Value to replace"
 													},
+													"applyColumnDatatype": true,
 													"column": true
 												},
 												"additionalProperties": false
@@ -349,8 +371,11 @@
 													"description": "The column name",
 													"example": ["newcol"]
 												},
+												"ordinal":true,
 												"nullable": true,
-												"datatype": true
+												"primaryKeyOrdinal": true,
+												"datatype": true,
+												"flags": true
 											},
 											"additionalProperties": false
 										}

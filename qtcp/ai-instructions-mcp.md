@@ -800,6 +800,8 @@ rules:
 - `KEEP` with rename: Rename existing column (requires `columnName` and `newColumnName`)
 - `KEEP` with expression: Add value transformation (requires `columnName` and `expression`)
 
+**Expression alias rule (applies to any action that carries an `expression` — including `ADD` and `KEEP`):** When an `expressionStatement` uses `${...}` placeholders, `expression` MUST also include an `alias` array. For every distinct placeholder in the statement, add one entry whose `name` and `value` are both set to the placeholder's name (e.g. `${price}` → `- name: price` / `value: price`).
+
 **Dataset Transformation Examples:**
 
 **Example 1: ADD a new column**
@@ -861,6 +863,9 @@ transformations:
       columnName: price
       expression:
         expressionStatement: ${price} * 1.1
+        alias:
+          - name: price
+            value: price
 ```
 
 ❌ **DO NOT:** Modify `transformationRules.yaml` for dataset-level transformations

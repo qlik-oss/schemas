@@ -2,10 +2,27 @@
 
 Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data projects using YAML configuration files.
 
-> ⚠️ **Read this entire document before responding to any request.** Rules are distributed throughout — do not stop at the first relevant section. Two sections are mandatory on every task:
+> ⚠️ **Read this entire document before responding to any request.** Rules are distributed throughout — do not stop at the first relevant section. A partial read is not acceptable. The sections are mandatory on every task:
 > - **Variable Naming Conventions** — binding rules, two-level bindings, ordering, aliases, and the Mandatory Binding variable rules / synchronization gate
 > - **Critical Rules Summary** (bottom of document) — final checklist before stating task completion
 > - When creating or editing files, these instructions are the sole source of truth for structure, templates, and conventions. Existing tasks in the workspace are examples only - never copy or infer structure from them. If a conflict exists between an existing task's structure and the instructions, the instructions win.
+> 🔒 **Read-completion gate:** This document ends with the token `QTCP-INSTRUCTIONS-COMPLETE`. You MUST read to the end of this document and locate that token before responding to any user request. If you have not yet seen it, continue reading now — do not answer until you have.
+> ⚠️ **This file is approximately 965 lines long.** A single `read_file` call with a small line range is NOT sufficient. You MUST read this file in multiple sequential `read_file` chunks (e.g. 200–300 lines each) until all lines are covered and you have found `QTCP-INSTRUCTIONS-COMPLETE`.
+
+---
+
+## Before You Answer — Mandatory Pre-flight Checks
+
+> ⚠️ After reading the full document, scan this table before writing any response. Each trigger condition points to the section that must be followed.
+
+| If the user asked about... | Before answering, you MUST... |
+|---|---|
+| The value of any property (e.g. connection name, schema, database) | Follow **§Resolving a Variable Property Value** — never report `""` or a raw `{{...}}` placeholder as the answer |
+| Creating or editing any YAML or JSON project file | Run the **Binding Synchronization Gate** (§Variable Naming Conventions: Mandatory Binding variable rules) |
+| Creating a new project | Follow the full **§Unified Project Creation Workflow** steps 1–8 |
+| Validating a project | Follow the full **§Project Validation Workflow** (local first, then tool) |
+
+---
 
 **Project Types:**
 - **Replication Projects** (`DATA_MOVEMENT`) - Use case: Replication
@@ -874,6 +891,22 @@ transformations:
 
 ---
 
+## Resolving a Variable Property Value
+
+> ⚠️ **MANDATORY** — Any time you are about to report the value of a property and that value is a `{{...}}` binding reference, you MUST resolve it through the steps below. Never report the raw placeholder or the empty string from `qtcp_bindings_definition.json` as the answer.
+
+> ⚠️ **`qtcp_bindings_definition.json` is a template — NOT a source of resolved values.** It defines variable names and structural defaults only. An empty string `""` found there does NOT mean the value is empty or unknown — the actual resolved value lives in `bindings.json` or is returned by `qlik_get_pipeline_project_details`. Always proceed through the resolution steps below regardless of what `qtcp_bindings_definition.json` contains.
+
+When the user asks **what the value of a property is** (e.g. "what is the value of `sourceConnection`?") and that property's value is a **variable** (a `{{...}}` binding reference), resolve it as follows:
+
+1. First search for a file named `bindings.json` under the project folder.
+   - **If found** → search the variable in it and report the resolved value.
+2. **If `bindings.json` is not found** → use `tool_search` to check whether `qlik_get_pipeline_project_details` is available.
+   - **If available** → call it (`objectType: 'bindings'`, `query: projectId`) to retrieve the bindings, then search the variable in the returned bindings and report the resolved value.
+   - **If not available** → inform the user the value cannot be resolved locally.
+
+---
+
 ## Project Validation Workflow
 
 When the user asks to **validate the project**, always perform local validation first, then optionally call the validation tool.
@@ -937,3 +970,8 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 6. **Binding synchronization (MUST)** — extract every `{{...}}` variable from all changed files and verify each exists in `qtcp_bindings_definition.json` under `variables` before responding (→ **Variable Naming Conventions: Mandatory Binding variable rules**)
 7. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section). After adding any two-level binding, verify that the corresponding `task-type.*` variable with a blank value also exists in `qtcp_bindings_definition.json` — the synchronization gate does **not** catch missing `task-type.*` entries automatically.
 8. **Prefer `AskUserQuestion` tool** for fixed-choice questions when the client supports it, to render clickable options; fall back to plain text otherwise
+9. **Resolve variable values before reporting** — if a property value is a `{{...}}` binding reference, always follow the **Resolving a Variable Property Value** workflow (check `bindings.json`, then `qlik_get_pipeline_project_details`) before reporting it. Never report a raw placeholder or empty string as the answer. Remember: `qtcp_bindings_definition.json` is a **template**, not a resolved-value store — an empty string `""` there is not the answer.
+
+---
+
+`QTCP-INSTRUCTIONS-COMPLETE`

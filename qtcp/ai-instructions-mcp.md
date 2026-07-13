@@ -353,6 +353,24 @@ Required settings fields for each task type are listed in the table above.
 
 ---
 
+## Resolving the Project ID
+
+Several workflows need the current project's `projectId` (and sometimes its `spaceId`). Use this procedure wherever an instruction says "resolve the project ID":
+
+1. Derive the project name from the name of the folder that contains `qtcp_project.yaml` (strip any trailing datetime suffix, e.g. `_20240101T120000`).
+2. Use `tool_search` to check whether `qlik_search` is available.
+   - **If `qlik_search` is NOT available** → do **not** ask the user for a name or ID (any follow-up would fail too). Instead, tell the user the Qlik MCP server is not available, so the project ID cannot be resolved, and stop.
+   - **If `qlik_search` IS available** → call it (`resourceType: pipelineproject`, `query:` derived name):
+     - **Exactly one match** → record its `projectId` and `spaceId`.
+     - **Multiple matches by branch** → check the VS Code Git branch to disambiguate; if still ambiguous → ask the user which to use.
+     - **Multiple matches across spaces** → ask the user which to use.
+     - **No match** → ❓ **ASK** the user for the project name or project ID. If they give a name, re-run `qlik_search` with it; if they give an ID, use it directly.
+3. If the project ID still cannot be determined after asking the user → the calling workflow should inform the user and stop (or, where the workflow allows, offer to treat it as a new project).
+
+Cache the resolved `projectId` and `spaceId` for the session and reuse them on subsequent requests.
+
+---
+
 ## Source Selection Workflow
 
 When the user asks to **"add source"**, **"add table"**, **"add view"**, **"add dataset"**, or provides database/schema/name/type values → **update or create `sourceSelection.yaml` only**.
@@ -401,12 +419,9 @@ The user may either specify the schema and table name explicitly, or write a pat
 This flow is entered only after the target landing task is known (from the **Determine Target Task** step above) and the user has chosen to search rather than specify schema/table explicitly or via a pattern.
 
 **Step 1 — Resolve the project**
-- Derive project name from the name of the folder that contains `qtcp_project.yaml` (strip trailing datetime suffix, e.g. `_20240101T120000`).
-- Call `qlik_search` (resourceType: `pipelineproject`, query: derived name).
-- Multiple matches by branch → check VS Code Git branch; still ambiguous → ask user.
-- Multiple matches across spaces → ask user which to use.
-- Found → record `projectId` and `spaceId`, proceed to Step 2.
-- Not found → ask user for project name/ID, or confirm new project → skip to Step 3.
+- Resolve the project ID using **§Resolving the Project ID**, recording both `projectId` and `spaceId`.
+- Resolved → proceed to Step 2.
+- Not resolved (user could not supply one) → skip to Step 3.
 
 **Step 2 — Resolve the source connection from local bindings**
 - First search for a file named `bindings.json` under the project folder.
@@ -897,13 +912,15 @@ transformations:
 
 > ⚠️ **`qtcp_bindings_definition.json` is a template — NOT a source of resolved values.** It defines variable names and structural defaults only. An empty string `""` found there does NOT mean the value is empty or unknown — the actual resolved value lives in `bindings.json` or is returned by `qlik_get_pipeline_project_details`. Always proceed through the resolution steps below regardless of what `qtcp_bindings_definition.json` contains.
 
+> ❌ **DO NOT** show the contents of `qtcp_bindings_definition.json` to the user as an intermediate or fallback answer — not even with annotations like "*(not set)*". If the project cannot be identified, ask the user for the project name or ID and wait for their answer before reporting anything.
+
 When the user asks **what the value of a property is** (e.g. "what is the value of `sourceConnection`?") and that property's value is a **variable** (a `{{...}}` binding reference), resolve it as follows:
 
 1. First search for a file named `bindings.json` under the project folder.
    - **If found** → search the variable in it and report the resolved value.
 2. **If `bindings.json` is not found** → use `tool_search` to check whether `qlik_get_pipeline_project_details` is available.
-   - **If available** → call it (`objectType: 'bindings'`, `query: projectId`) to retrieve the bindings, then search the variable in the returned bindings and report the resolved value.
-   - **If not available** → inform the user the value cannot be resolved locally.
+   - **If NOT available** → inform the user the value cannot be resolved locally.
+   - **If available** → first resolve the project ID using **§Resolving the Project ID**, then call `qlik_get_pipeline_project_details` (`objectType: 'bindings'`, `query: projectId`) to retrieve the bindings, search the variable in the returned bindings, and report the resolved value. If the project ID cannot be determined even after asking the user → inform the user the value cannot be resolved and stop.
 
 ---
 
@@ -970,7 +987,7 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 6. **Binding synchronization (MUST)** — extract every `{{...}}` variable from all changed files and verify each exists in `qtcp_bindings_definition.json` under `variables` before responding (→ **Variable Naming Conventions: Mandatory Binding variable rules**)
 7. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section). After adding any two-level binding, verify that the corresponding `task-type.*` variable with a blank value also exists in `qtcp_bindings_definition.json` — the synchronization gate does **not** catch missing `task-type.*` entries automatically.
 8. **Prefer `AskUserQuestion` tool** for fixed-choice questions when the client supports it, to render clickable options; fall back to plain text otherwise
-9. **Resolve variable values before reporting** — if a property value is a `{{...}}` binding reference, always follow the **Resolving a Variable Property Value** workflow (check `bindings.json`, then `qlik_get_pipeline_project_details`) before reporting it. Never report a raw placeholder or empty string as the answer. Remember: `qtcp_bindings_definition.json` is a **template**, not a resolved-value store — an empty string `""` there is not the answer.
+9. **Resolve variable values before reporting** — if a property value is a `{{...}}` binding reference, always follow the **Resolving a Variable Property Value** workflow (check `bindings.json`, then `qlik_get_pipeline_project_details`) before reporting it. Never report a raw placeholder or empty string as the answer.  Remember: `qtcp_bindings_definition.json` is a **template**, not a resolved-value store — an empty string `""` there is not the answer.
 
 ---
 

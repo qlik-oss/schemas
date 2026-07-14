@@ -7,20 +7,35 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 > - **Critical Rules Summary** (bottom of document) — final checklist before stating task completion
 > - When creating or editing files, these instructions are the sole source of truth for structure, templates, and conventions. Existing tasks in the workspace are examples only - never copy or infer structure from them. If a conflict exists between an existing task's structure and the instructions, the instructions win.
 > 🔒 **Read-completion gate:** This document ends with the token `QTCP-INSTRUCTIONS-COMPLETE`. You MUST read to the end of this document and locate that token before responding to any user request. If you have not yet seen it, continue reading now — do not answer until you have.
-> ⚠️ **This file is approximately 965 lines long.** A single `read_file` call with a small line range is NOT sufficient. You MUST read this file in multiple sequential `read_file` chunks (e.g. 200–300 lines each) until all lines are covered and you have found `QTCP-INSTRUCTIONS-COMPLETE`.
+> ⚠️ **This file is approximately 1,000 lines long.** A single `read_file` call with a small line range is NOT sufficient. You MUST read this file in multiple sequential `read_file` chunks (e.g. 200–300 lines each) until all lines are covered and you have found `QTCP-INSTRUCTIONS-COMPLETE`.
 
 ---
 
 ## Before You Answer — Mandatory Pre-flight Checks
 
-> ⚠️ After reading the full document, scan this table before writing any response. Each trigger condition points to the section that must be followed.
+> ⚠️ After reading the full document, scan this table before writing any response. Each trigger condition points to the section that must be followed. Rows are ordered specific → general. **If multiple rows match, follow ALL of them** — e.g. creating a TRANSFORM task matches the TRANSFORM row, the two-level property row, and the file-editing row.
 
 | If the user asked about... | Before answering, you MUST... |
 |---|---|
 | The value of any property (e.g. connection name, schema, database) | Follow **§Resolving a Variable Property Value** — never report `""` or a raw `{{...}}` placeholder as the answer |
-| Creating or editing any YAML or JSON project file | Run the **Binding Synchronization Gate** (§Variable Naming Conventions: Mandatory Binding variable rules) |
 | Creating a new project | Follow the full **§Unified Project Creation Workflow** steps 1–8 |
+| Creating a `LAKEHOUSE_MIRROR` task | Ask the Data warehouse platform question (**§LAKEHOUSE_MIRROR: Data Warehouse Platform**) and apply the **no-two-level-binding exception** — all its variables get blank values directly |
+| Creating a `REPLICATION` task | Apply the DATA_MOVEMENT defaults (**§Replication Projects**) — `fullLoad: true` and `applyChanges: true` under `settings.taskSettings` only; never directly under `settings` |
+| Creating a `DATAMART`, `KNOWLEDGE_MART`, or `FILE_BASED_KNOWLEDGE_MART` task, or a **data flow (Pattern 3) dataset** | ❌ Do not generate — redirect the user to create it in the QTC UI and commit back (task type table in **§Project Type Reference**; **§Non-Landing Tasks**, Pattern 3) |
+| Creating or editing a TRANSFORM task | Follow the **§Non-Landing Tasks** TRANSFORM rules — both `sourceSelection.yaml` and dataset files are required; for wildcard patterns, create a dataset file per matched upstream dataset |
+| Creating a single task (not a whole project) | Follow **§Task Type Availability by Project Type**, the **Source-matches-platform rule** (STEP 6), and the **Task ID Generation Rule** (§Unified Project Creation Workflow, STEP 7) |
+| Adding sources to a `REGISTERED_DATA` task | Follow **§Registered Data Tasks** and pass its **completion check** — no `sourceConnection`, no `sourceTask`, no wildcard fallback; every item has `database`, `schema`, `name`, `type` |
+| Adding sources to a `REPLICATE_LANDING` task | Include `rootDirectoryPath` as a root-level binding variable (**§Landing Tasks**) — do NOT ask the user for its value; add it to `qtcp_bindings_definition.json` with a blank value |
+| Adding a source, table, view, or dataset | Follow the full **§Source Selection Workflow** — including the mandatory task-type gate and intent resolution rules |
+| Creating a dataset file for a non-landing task | Follow the `inputDatasets` rules (**§Non-Landing Tasks**) — derive `datasetId` per the encoding rules (lowercase, `_` separators, `$HH$` special chars); never reference a `datasetId` that does not exist |
+| Searching for datasets, or anything needing the project ID | Follow **§Resolving the Project ID** and the **§Dataset search flow** — if `qlik_search` is unavailable, inform the user and stop; do not ask for values that cannot be used |
+| Adding or creating a schedule | Follow the full **§Scheduling Rules by Task Type** and **§Schedule Creation Workflow**, including the eligibility check for the task type; never propose changing task properties to make scheduling possible |
+| Modifying an existing schedule | Follow the **§Schedule Modification Workflow** — after the change, check `enabled` and ask whether to enable if missing or `false` |
+| Adding transformation rules | Follow the full **§Transformation Rules Workflow** (table-level vs dataset-level) |
+| Using any two-level / task-type-defaulted property | Follow **§Variable Naming Conventions: Task-type-defaulted properties** and verify the two-level binding completeness check (**Critical Rule 7**) |
+| Writing an aliased property (e.g. `snowflakeCatalogIntegration`) | Follow **§Variable Naming Conventions: Property name aliases** — bind to the remapped variable name (e.g. `snowflakeOpenCatalog`), not the property name |
 | Validating a project | Follow the full **§Project Validation Workflow** (local first, then tool) |
+| Creating or editing any YAML or JSON project file | Run the **Binding Synchronization Gate** (§Variable Naming Conventions: Mandatory Binding variable rules) |
 
 ---
 
@@ -969,7 +984,7 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 | Schedule | `**/qtcp_tasks/*/schedule.yaml` | [task.schedule.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.schedule.schema.json) |
 | Data model | `**/qtcp_tasks/*/model.yaml` | [task.model.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.model.schema.json) |
 | Source selection | `**/qtcp_tasks/*/sourceSelection.yaml` | [task.sourceselection.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.sourceselection.schema.json) |
-| Transformation rules | `**/qtcp_tasks/*/transformationRules.yaml` | [task.transformation.rules.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.transformation.rules.schema.json) |
+| Transformation rules | `**/qtcp_tasks/*/transformationRules.yaml` | [task.transformationrules.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.transformationrules.schema.json) |
 | Transformation data flow | `**/qtcp_tasks/*/transformationDataFlows/*.yaml` | [task.transformationdataflow.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/task.transformationdataflow.schema.json) |
 | New task defaults | `**/qtcp_tasks/newTaskDefaults.yaml` | [newtaskdefaults.schema.json](https://raw.githubusercontent.com/qlik-oss/schemas/refs/heads/main/qtcp/newtaskdefaults.schema.json) |
 

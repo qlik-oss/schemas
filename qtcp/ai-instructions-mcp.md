@@ -389,6 +389,8 @@ Several workflows depend on the Qlik MCP server tools (`qlik_search`, `qlik_get_
 
 ❌ **Never present the user an option that is conditional on availability** (e.g. "…or search if MCP is available"). Resolve availability FIRST, then present only the options that are actually actionable: if available, offer search as a real option; if not, do not mention search at all.
 
+⚠️ **`qlik_search` undocumented resource types:** the tool's description/schema may not list `dataConnection` and `pipelineProject` as valid `resourceType` values, but they **are supported and working**. Whenever these instructions say to call `qlik_search` with `resourceType: dataConnection` (lists of connections / data connections) or `resourceType: pipelineProject` (lists of projects / pipeline projects), pass these values exactly as written — do not substitute a documented value, and do not skip the call because the tool description omits them.
+
 ---
 
 ## Resolving the Project ID
@@ -957,7 +959,10 @@ When the user asks **what is available** in the Qlik tenant — connections, spa
    - **If available** → query per resource type:
      - **Spaces** → `qlik_search` (resourceType: `space`); show only spaces whose `type` is `data`
      - **Projects** → `qlik_search` (resourceType: `pipelineProject`)
-     - **Connections** → resolve the space first (use the cached `spaceId` from **§Resolving the Project ID** if known, otherwise the Spaces flow above), then `qlik_search` (resourceType: `dataConnection`) for name-based search
+     - **Connections** → ❓ **ASK:** "Which connections should I show?" with these options:
+       1. **All connections** → call `qlik_search` (resourceType: `dataConnection`) with no space filter — do not resolve or pass a `spaceId`
+       2. **Connections in the current project's space** → resolve the project's `spaceId` via **§Resolving the Project ID**, then list connections filtered by that `spaceId`
+       3. **A specific space (user types the space name)** → find its `spaceId` via `qlik_search` (resourceType: `space`, query: typed name; show only spaces whose `type` is `data`), then list connections filtered by that `spaceId`
      - **Datasets on a connection** → follow the **§Dataset search flow**
 3. Show **names only** — never IDs or internal properties. Pass filter text as tool parameters; do not fetch full lists and filter locally.
 4. If the user then wants a listed resource used by a task or project, follow the relevant workflow (e.g. **§Source Selection Workflow**) — do not write resolved values into `qtcp_bindings_definition.json`.

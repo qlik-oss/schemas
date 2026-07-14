@@ -710,8 +710,11 @@ rules:
 **Available `renameType` values for `RENAME_TABLE` and `RENAME_COLUMN`:**
 - `RENAME` - Direct rename to specific value
 - `ADD_PREFIX` - Add prefix to names
-- `REMOVE_SUFFIX` - Remove suffix from names
+- `REMOVE_PREFIX` - Remove prefix from names
 - `REPLACE_PREFIX` - Replace existing prefix (requires `oldValue`)
+- `ADD_SUFFIX` - Add suffix to names
+- `REMOVE_SUFFIX` - Remove suffix from names
+- `REPLACE_SUFFIX` - Replace existing suffix (requires `oldValue`)
 - `TO_LOWER` - Convert to lowercase
 - `TO_UPPER` - Convert to uppercase
 - `EXPRESSION` - Use expression for transformation

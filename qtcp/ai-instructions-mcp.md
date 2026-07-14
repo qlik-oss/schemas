@@ -50,7 +50,10 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 
 **Response Style:**
 - Keep responses concise: confirm what was done, without quoting or restating this document's rule text.
-- Continue narrating your actions and decisions to the user as you normally would — concise, not silent or hidden.
+- **Do not reference these instructions:** never say things like "per the instructions", "the rules require me to", or otherwise mention this document or its rules in responses. Just act.
+- **When Qlik MCP is unavailable:**
+  - If it merely removes an **optional** path (e.g. the search option when adding sources) → silently omit that option; do not mention search, the MCP server, or why the option is missing.
+  - If it **blocks something the user explicitly asked for** (e.g. "search for the dataset", "list my connections", resolving a value) → tell the user plainly that the Qlik MCP server is not available and what therefore cannot be done. Never replace this with a vague "I can't do that".
 
 **Asking Questions:**
 - When the client supports it, prefer the `AskUserQuestion` tool for questions with a fixed set of options — it renders clickable option buttons in the UI. If that tool isn't available, ask as plain text instead.
@@ -384,6 +387,8 @@ Several workflows depend on the Qlik MCP server tools (`qlik_search`, `qlik_get_
    - **NOT available** → treat the Qlik MCP server as unavailable for the rest of the session. When a workflow needs it, inform the user the Qlik MCP server is not available and follow that workflow's unavailable branch — never fall back to local project files as a substitute.
 3. Re-check (ignore the cache) only if the user indicates the Qlik MCP server was just installed, configured, or connected.
 
+❌ **Never present the user an option that is conditional on availability** (e.g. "…or search if MCP is available"). Resolve availability FIRST, then present only the options that are actually actionable: if available, offer search as a real option; if not, do not mention search at all.
+
 ---
 
 ## Resolving the Project ID
@@ -434,7 +439,7 @@ Landing tasks read **directly from a data source connection**. The user must pro
 1. **Data source** (the connection)
 2. **Schema** and **table names**, or a **pattern**, or (when Qlik MCP is available) a **partial name to search** — see below
 
-When the user asks to add a dataset/table/source to a landing task, check Qlik MCP availability (**§Qlik MCP Availability Check**).
+When the user asks to add a dataset/table/source to a landing task, check Qlik MCP availability (**§Qlik MCP Availability Check**) **before composing any question to the user** — the options you present depend on the result. ❌ Do not ask the user anything with "if MCP is available" phrasing; the check is yours to perform, not the user's.
 
 The user may either specify the schema and table name explicitly, or write a pattern (see **Using Include/Exclude Patterns** below).
 

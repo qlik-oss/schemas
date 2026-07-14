@@ -18,6 +18,7 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 | If the user asked about... | Before answering, you MUST... |
 |---|---|
 | The value of any property (e.g. connection name, schema, database) | Follow **§Resolving a Variable Property Value** — never report `""` or a raw `{{...}}` placeholder as the answer |
+| What connections, spaces, projects, or datasets are **available**, or listing/choosing them | Follow **§Listing Available Resources** — ❌ never answer from local project files, and never offer to fill blanks in `qtcp_bindings_definition.json` |
 | Creating a new project | Follow the full **§Unified Project Creation Workflow** steps 1–8 |
 | Creating a `LAKEHOUSE_MIRROR` task | Ask the Data warehouse platform question (**§LAKEHOUSE_MIRROR: Data Warehouse Platform**) and apply the **no-two-level-binding exception** — all its variables get blank values directly |
 | Creating a `REPLICATION` task | Apply the DATA_MOVEMENT defaults (**§Replication Projects**) — `fullLoad: true` and `applyChanges: true` under `settings.taskSettings` only; never directly under `settings` |
@@ -28,7 +29,7 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 | Adding sources to a `REPLICATE_LANDING` task | Include `rootDirectoryPath` as a root-level binding variable (**§Landing Tasks**) — do NOT ask the user for its value; add it to `qtcp_bindings_definition.json` with a blank value |
 | Adding a source, table, view, or dataset | Follow the full **§Source Selection Workflow** — including the mandatory task-type gate and intent resolution rules |
 | Creating a dataset file for a non-landing task | Follow the `inputDatasets` rules (**§Non-Landing Tasks**) — derive `datasetId` per the encoding rules (lowercase, `_` separators, `$HH$` special chars); never reference a `datasetId` that does not exist |
-| Searching for datasets, or anything needing the project ID | Follow **§Resolving the Project ID** and the **§Dataset search flow** — if `qlik_search` is unavailable, inform the user and stop; do not ask for values that cannot be used |
+| Searching for datasets, or anything needing the project ID | Follow **§Resolving the Project ID** and the **§Dataset search flow** — check availability once per **§Qlik MCP Availability Check**; if unavailable, inform the user and stop; do not ask for values that cannot be used |
 | Adding or creating a schedule | Follow the full **§Scheduling Rules by Task Type** and **§Schedule Creation Workflow**, including the eligibility check for the task type; never propose changing task properties to make scheduling possible |
 | Modifying an existing schedule | Follow the **§Schedule Modification Workflow** — after the change, check `enabled` and ask whether to enable if missing or `false` |
 | Adding transformation rules | Follow the full **§Transformation Rules Workflow** (table-level vs dataset-level) |
@@ -62,6 +63,11 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 - YAML and JSON files in this project must contain only data — no inline comments, no block comments, no explanatory annotations
 
 **Bindings Guidance:** Follow the canonical rules in the **Variable Naming Conventions** section below (single source of truth).
+
+**`qtcp_bindings_definition.json` — usage rules (apply everywhere):**
+- It is a **template**. Read it only to perform the binding synchronization checks — never as a source of answers about values, connections, or environment state.
+- Variable values must remain blank `""` or `task-type.*` references. ❌ **DO NOT** write resolved/actual values into it, and ❌ **DO NOT** offer the user to "assign" or "fill in" its blank values — actual values live in `bindings.json` or in QTC (via `qlik_get_pipeline_project_details`).
+- Only exception: `connectionProperties` entries with a known `type`/`kindId` (see **Variable Naming Conventions: Mandatory Binding variable rules**).
 
 ---
 
@@ -368,14 +374,26 @@ Required settings fields for each task type are listed in the table above.
 
 ---
 
+## Qlik MCP Availability Check
+
+Several workflows depend on the Qlik MCP server tools (`qlik_search`, `qlik_get_pipeline_project_details`, `qlik_list_data_connections`, `qlik_search_connection_objects`, `qlik_validate_pipeline_project_definition`). Wherever an instruction says **"if Qlik MCP is available"**, use this procedure:
+
+1. **If availability was already determined earlier in this session** → reuse the cached result. ❌ Do not re-run `tool_search`.
+2. **Otherwise** → use `tool_search` **once** to check whether `qlik_get_pipeline_project_details` is available, and cache the result for the session:
+   - **Available** → treat all Qlik MCP tools listed above as available.
+   - **NOT available** → treat the Qlik MCP server as unavailable for the rest of the session. When a workflow needs it, inform the user the Qlik MCP server is not available and follow that workflow's unavailable branch — never fall back to local project files as a substitute.
+3. Re-check (ignore the cache) only if the user indicates the Qlik MCP server was just installed, configured, or connected.
+
+---
+
 ## Resolving the Project ID
 
 Several workflows need the current project's `projectId` (and sometimes its `spaceId`). Use this procedure wherever an instruction says "resolve the project ID":
 
 1. Derive the project name from the name of the folder that contains `qtcp_project.yaml` (strip any trailing datetime suffix, e.g. `_20240101T120000`).
-2. Use `tool_search` to check whether `qlik_search` is available.
-   - **If `qlik_search` is NOT available** → do **not** ask the user for a name or ID (any follow-up would fail too). Instead, tell the user the Qlik MCP server is not available, so the project ID cannot be resolved, and stop.
-   - **If `qlik_search` IS available** → call it (`resourceType: pipelineproject`, `query:` derived name):
+2. Check Qlik MCP availability (**§Qlik MCP Availability Check**).
+   - **If NOT available** → do **not** ask the user for a name or ID (any follow-up would fail too). Instead, tell the user the Qlik MCP server is not available, so the project ID cannot be resolved, and stop.
+   - **If available** → call `qlik_search` (resourceType: `pipelineProject`, query: derived name):
      - **Exactly one match** → record its `projectId` and `spaceId`.
      - **Multiple matches by branch** → check the VS Code Git branch to disambiguate; if still ambiguous → ask the user which to use.
      - **Multiple matches across spaces** → ask the user which to use.
@@ -414,22 +432,22 @@ There are three distinct workflows depending on the task type:
 
 Landing tasks read **directly from a data source connection**. The user must provide:
 1. **Data source** (the connection)
-2. **Schema** and **table names**, or a **pattern**, or (when `qlik_search` is available) a **partial name to search** — see below
+2. **Schema** and **table names**, or a **pattern**, or (when Qlik MCP is available) a **partial name to search** — see below
 
-When the user asks to add a dataset/table/source to a landing task, use `tool_search` to check whether `qlik_search` is available.
+When the user asks to add a dataset/table/source to a landing task, check Qlik MCP availability (**§Qlik MCP Availability Check**).
 
 The user may either specify the schema and table name explicitly, or write a pattern (see **Using Include/Exclude Patterns** below).
 
-- **If `qlik_search` is NOT available** → continue with the existing flow:
+- **If Qlik MCP is NOT available** → continue with the existing flow:
   - ❓ **ASK:** "Please provide the schema and table names (or a pattern) you want to include"
   - ❓ **IF schema not specified:** "What is the schema for this table/pattern?"
   - If the user provides a pattern instead of explicit names → use the **Using Include/Exclude Patterns** flow below.
-- **If `qlik_search` IS available** → the user may specify schema and table name explicitly (as above), provide a pattern, or write a partial name and search for the dataset. ❓ **ASK** which they prefer.
+- **If Qlik MCP IS available** → the user may specify schema and table name explicitly (as above), provide a pattern, or write a partial name and search for the dataset. ❓ **ASK** which they prefer.
   - If they specify schema and table explicitly → use the existing flow above.
   - If they provide a pattern → use the **Using Include/Exclude Patterns** flow below.
   - If they want to search → follow the **Dataset search flow** below.
 
-#### Dataset search flow (only when `qlik_search` is available and the user chooses to search)
+#### Dataset search flow (only when Qlik MCP is available and the user chooses to search)
 
 This flow is entered only after the target landing task is known (from the **Determine Target Task** step above) and the user has chosen to search rather than specify schema/table explicitly or via a pattern.
 
@@ -449,7 +467,7 @@ This flow is entered only after the target landing task is known (from the **Det
 
 **Step 3 — Resolve space and connection interactively**
 If `spaceId` is unknown, ask for space first and call `qlik_search` (resourceType: `space`, query: typed text). Show only spaces whose `type` equals `data` — filter out all other space types. Show names only; record selected `spaceId`.
-Then ask for connection name and call `qlik_search` (resourceType: `connection`, query: typed text). Show names only; record selected `connectionId`.
+Then ask for connection name and call `qlik_search` (resourceType: `dataConnection`, query: typed text). Show names only; record selected `connectionId`.
 - After the user selects a connection, if the received connection data contains `kind`, open `qtcp_bindings_definition.json` and check `connectionProperties` for a key `"task.<taskId>.sourceConnection"` (where `<taskId>` is from the landing task's `task.yaml`).
   - If the entry is missing, or exists but has no `kind`, add/update it using the `kind` from the selected connection (omit any field that is blank/null). Example:
     ```json
@@ -462,7 +480,7 @@ Then ask for connection name and call `qlik_search` (resourceType: `connection`,
     ```
 
 **Step 4 — Browse and select datasets**
-- Call `qlik_search_connection_datasets` with `connectionId` and `tablePattern`.
+- Call `qlik_search_connection_objects` with `connectionId` and `tablePattern`.
 - Show names only as a selectable list.
 
 ##### Session Memory
@@ -924,6 +942,23 @@ transformations:
 
 ---
 
+## Listing Available Resources (Connections, Spaces, Projects, Datasets)
+
+When the user asks **what is available** in the Qlik tenant — connections, spaces, projects, or datasets — or to list, browse, or choose one:
+
+1. ❌ **DO NOT** answer from local project files (`qtcp_bindings_definition.json`, `bindings.json`, `qtcp_project.yaml`, task folders, etc.) — these describe *this project's* configuration and variable names, not the catalog of what exists in the tenant.
+2. Check Qlik MCP availability (**§Qlik MCP Availability Check**).
+   - **If NOT available** → inform the user the Qlik MCP server is not available so the resources cannot be listed, and stop. ❌ Do not fall back to local project files as the answer.
+   - **If available** → query per resource type:
+     - **Spaces** → `qlik_search` (resourceType: `space`); show only spaces whose `type` is `data`
+     - **Projects** → `qlik_search` (resourceType: `pipelineProject`)
+     - **Connections** → resolve the space first (use the cached `spaceId` from **§Resolving the Project ID** if known, otherwise the Spaces flow above), then `qlik_search` (resourceType: `dataConnection`) for name-based search
+     - **Datasets on a connection** → follow the **§Dataset search flow**
+3. Show **names only** — never IDs or internal properties. Pass filter text as tool parameters; do not fetch full lists and filter locally.
+4. If the user then wants a listed resource used by a task or project, follow the relevant workflow (e.g. **§Source Selection Workflow**) — do not write resolved values into `qtcp_bindings_definition.json`.
+
+---
+
 ## Resolving a Variable Property Value
 
 > ⚠️ **MANDATORY** — Any time you are about to report the value of a property and that value is a `{{...}}` binding reference, you MUST resolve it through the steps below. Never report the raw placeholder or the empty string from `qtcp_bindings_definition.json` as the answer.
@@ -936,9 +971,9 @@ When the user asks **what the value of a property is** (e.g. "what is the value 
 
 1. First search for a file named `bindings.json` under the project folder.
    - **If found** → search the variable in it and report the resolved value.
-2. **If `bindings.json` is not found** → use `tool_search` to check whether `qlik_get_pipeline_project_details` is available.
+2. **If `bindings.json` is not found** → check Qlik MCP availability (**§Qlik MCP Availability Check**).
    - **If NOT available** → inform the user the value cannot be resolved locally.
-   - **If available** → first resolve the project ID using **§Resolving the Project ID**, then call `qlik_get_pipeline_project_details` (`objectType: 'bindings'`, `query: projectId`) to retrieve the bindings, search the variable in the returned bindings, and report the resolved value. If the project ID cannot be determined even after asking the user → inform the user the value cannot be resolved and stop.
+   - **If available** → first resolve the project ID using **§Resolving the Project ID**, then call `qlik_get_pipeline_project_details` (objectType: `bindings`, query: `projectId`) to retrieve the bindings, search the variable in the returned bindings, and report the resolved value. If the project ID cannot be determined even after asking the user → inform the user the value cannot be resolved and stop.
 
 ---
 
@@ -950,11 +985,11 @@ When the user asks to **validate the project**, always perform local validation 
 
 Validate the project against every rule in this document — especially the **Critical Rules Summary** — and report any violations to the user (list the issues found, or confirm none).
 
-**Step 2 — Tool validation (only if the tool exists)**
+**Step 2 — Tool validation (only if Qlik MCP is available)**
 
-Use `tool_search` to check whether `qlik_validate_pipeline_project_definition` is available.
-- **If it is NOT available** → stop after Step 1; do not attempt to zip or call the tool.
-- **If it IS available** → run it as additional validation:
+Check Qlik MCP availability (**§Qlik MCP Availability Check**).
+- **If NOT available** → stop after Step 1; do not attempt to zip or call the tool.
+- **If available** → run `qlik_validate_pipeline_project_definition` as additional validation:
   1. Create a zip file of the project, starting from the folder that contains `qtcp_project.yaml` (include that folder and all its contents).
   2. In a single operation: convert the zip to base64 and immediately pass the resulting string to `qlik_validate_pipeline_project_definition` as `zipFileBase64` — do not store, print, or re-derive the base64 between steps.
   3. Tell the user validation may take some time.

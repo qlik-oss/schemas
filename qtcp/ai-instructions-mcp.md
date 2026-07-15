@@ -475,13 +475,16 @@ This flow is entered only after the target landing task is known (from the **Det
 **Step 3 — Resolve space and connection interactively**
 If `spaceId` is unknown, ask for space first and call `qlik_search` (resourceType: `space`, query: typed text). Show only spaces whose `type` equals `data` — filter out all other space types. Show names only; record selected `spaceId`.
 Then ask for connection name and call `qlik_search` (resourceType: `dataConnection`, query: typed text). Show names only; record selected `connectionId`.
-- After the user selects a connection, if the received connection data contains `kindId`, open `qtcp_bindings_definition.json` and check `connectionProperties` for a key `"task.<taskId>.sourceConnection"` (where `<taskId>` is from the landing task's `task.yaml`).
-  - If the entry is missing, or exists but has no `kindId`, add/update it using the `kindId` from the selected connection (omit any field that is blank/null). Example:
+- After the user selects a connection, if the received connection data contains `dataConnection.kindId`, open `qtcp_bindings_definition.json` and check `connectionProperties` for a key `"task.<taskId>.sourceConnection"` (where `<taskId>` is from the landing task's `task.yaml`).
+  - If the entry is missing, or exists but has no `kindId`, add/update it as follows (omit any field that is blank/null):
+    - `kindId` ← `dataConnection.kindId`
+    - `type` ← `dataConnection.dataSourceId` if defined; otherwise leave `type` unchanged (do not use the top-level `type` of the connection result)
+    Example — for a connection whose `dataConnection` is `{"dataSourceId": "external_data_provider", "kindId": "versioncontrol:github@1.0.0", "externalDataProviderType": "versioncontrol:github"}`:
     ```json
     "connectionProperties": {
       "task.onboarding1_landing-8wfv.sourceConnection": {
         "type": "external_data_provider",
-        "kindId": "source:Salesforce@2.0.0"
+        "kindId": "versioncontrol:github@1.0.0"
       }
     }
     ```

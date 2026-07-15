@@ -35,7 +35,7 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 | Adding transformation rules | Follow the full **§Transformation Rules Workflow** (table-level vs dataset-level) |
 | Using any two-level / task-type-defaulted property | Follow **§Variable Naming Conventions: Task-type-defaulted properties** and verify the two-level binding completeness check (**Critical Rule 7**) |
 | Writing an aliased property (e.g. `snowflakeCatalogIntegration`) | Follow **§Variable Naming Conventions: Property name aliases** — bind to the remapped variable name (e.g. `snowflakeOpenCatalog`), not the property name |
-| Validating a project | Follow the full **§Project Validation Workflow** (local first, then tool) |
+| Validating a project | Follow the full **§Project Validation Workflow** (local validation only — tool validation is currently disabled) |
 | Creating or editing any YAML or JSON project file | Run the **Binding Synchronization Gate** (§Variable Naming Conventions: Mandatory Binding variable rules) |
 
 ---
@@ -475,8 +475,8 @@ This flow is entered only after the target landing task is known (from the **Det
 **Step 3 — Resolve space and connection interactively**
 If `spaceId` is unknown, ask for space first and call `qlik_search` (resourceType: `space`, query: typed text). Show only spaces whose `type` equals `data` — filter out all other space types. Show names only; record selected `spaceId`.
 Then ask for connection name and call `qlik_search` (resourceType: `dataConnection`, query: typed text). Show names only; record selected `connectionId`.
-- After the user selects a connection, if the received connection data contains `kind`, open `qtcp_bindings_definition.json` and check `connectionProperties` for a key `"task.<taskId>.sourceConnection"` (where `<taskId>` is from the landing task's `task.yaml`).
-  - If the entry is missing, or exists but has no `kind`, add/update it using the `kind` from the selected connection (omit any field that is blank/null). Example:
+- After the user selects a connection, if the received connection data contains `kindId`, open `qtcp_bindings_definition.json` and check `connectionProperties` for a key `"task.<taskId>.sourceConnection"` (where `<taskId>` is from the landing task's `task.yaml`).
+  - If the entry is missing, or exists but has no `kindId`, add/update it using the `kindId` from the selected connection (omit any field that is blank/null). Example:
     ```json
     "connectionProperties": {
       "task.onboarding1_landing-8wfv.sourceConnection": {
@@ -989,7 +989,7 @@ When the user asks **what the value of a property is** (e.g. "what is the value 
 
 ## Project Validation Workflow
 
-When the user asks to **validate the project**, always perform local validation first, then optionally call the validation tool.
+When the user asks to **validate the project**, perform local validation (Step 1). Tool validation (Step 2) is currently disabled — do not perform it.
 
 **Step 1 — Local validation (always)**
 
@@ -997,26 +997,7 @@ Validate the project against every rule in this document — especially the **Cr
 
 **Step 2 — Tool validation (only if Qlik MCP is available)**
 
-Check Qlik MCP availability (**§Qlik MCP Availability Check**).
-- **If NOT available** → stop after Step 1; do not attempt to zip or call the tool.
-- **If available** → run `qlik_validate_pipeline_project_definition` as additional validation:
-  1. Create a zip file of the project, starting from the folder that contains `qtcp_project.yaml` (include that folder and all its contents).
-  2. In a single operation: convert the zip to base64 and immediately pass the resulting string to `qlik_validate_pipeline_project_definition` as `zipFileBase64` — do not store, print, or re-derive the base64 between steps.
-  3. Tell the user validation may take some time.
-  4. When the tool returns, show the result to the user.
-
-### Generating base64 (no embedded newlines)
-
-**Windows (PowerShell):**
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\to\file.zip"))
-```
-**macOS / Linux:**
-```bash
-base64 -w 0 /path/to/file.zip
-```
-Do NOT use `certutil -encode` or piped/chunked methods — they embed real newlines that corrupt the decoded ZIP.
-Do not inspect or verify the base64 string before passing it to the tool — capture and use it directly. Do not try `zipFilePath` first.
+> 🚫 **CURRENTLY DISABLED — DO NOT PERFORM THIS STEP.**
 
 ---
 

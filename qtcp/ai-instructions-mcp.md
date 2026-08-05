@@ -384,7 +384,7 @@ Required settings fields for each task type are listed in the table above.
 
 ## Qlik MCP Availability Check
 
-Several workflows depend on the Qlik MCP server tools (`qlik_search`, `qlik_get_pipeline_project_details`, `qlik_list_data_connections`, `qlik_search_connection_objects`, `qlik_validate_pipeline_project_definition`). Wherever an instruction says **"if Qlik MCP is available"**, use this procedure:
+Several workflows depend on the Qlik MCP server tools (`qlik_search`, `qlik_get_pipeline_project_details`, `qlik_search_connection_objects`). Wherever an instruction says **"if Qlik MCP is available"**, use this procedure:
 
 1. **If availability was already determined earlier in this session** → reuse the cached result. ❌ Do not re-run `tool_search`.
 2. **Otherwise** → use `tool_search` **once** to check whether `qlik_get_pipeline_project_details` is available, and cache the result for the session:

@@ -294,10 +294,10 @@ All task types require `properties.name`, `properties.id`, and `properties.type`
 | KNOWLEDGE_MART | ❌ DO NOT create — must be created in QTC UI then committed back |
 | REPLICATE_LANDING | `taskRuntime.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
 
-**LANDING / LAKE_LANDING binding name guardrail (MUST):**
-- For `landingDwSettings.landingArtifactsLocation.dataAssetSchema`, always use `{{task.<task-id>.taskSchema}}`.
-- ❌ Never use synonym variable names such as `landingSchema` for this field.
-- When editing existing files, preserve canonical variable suffixes from this table and do not rename them unless the user explicitly asks.
+**DATA_PIPELINE binding name guardrail (MUST):**
+- Applies to all tasks in DATA_PIPELINE project.
+- For task schema properties, always use the canonical `taskSchema` suffix: `{{task.<task-id>.taskSchema}}`.
+- ❌ Never use synonym variable names such as `landingSchema`, `targetSchema`, `artifactSchema`, or `internalTaskSchema` for these fields.
 
 **LAKEHOUSE_MIRROR: Data Warehouse Platform**
 

@@ -294,6 +294,11 @@ All task types require `properties.name`, `properties.id`, and `properties.type`
 | KNOWLEDGE_MART | ❌ DO NOT create — must be created in QTC UI then committed back |
 | REPLICATE_LANDING | `taskRuntime.lakehouseClusterId` → `lakehouseCluster` *(two-level)* |
 
+**DATA_PIPELINE binding name guardrail (MUST):**
+- Applies to all tasks in DATA_PIPELINE project.
+- For task schema properties, always use the canonical `taskSchema` suffix: `{{task.<task-id>.taskSchema}}`.
+- ❌ Never use synonym variable names such as `landingSchema`, `targetSchema`, `artifactSchema`, or `internalTaskSchema` for these fields.
+
 **LAKEHOUSE_MIRROR: Data Warehouse Platform**
 
 When creating a `LAKEHOUSE_MIRROR` task, after asking for the task name also ask:
@@ -379,7 +384,7 @@ Required settings fields for each task type are listed in the table above.
 
 ## Qlik MCP Availability Check
 
-Several workflows depend on the Qlik MCP server tools (`qlik_search`, `qlik_get_pipeline_project_details`, `qlik_list_data_connections`, `qlik_search_connection_objects`, `qlik_validate_pipeline_project_definition`). Wherever an instruction says **"if Qlik MCP is available"**, use this procedure:
+Several workflows depend on the Qlik MCP server tools (`qlik_search`, `qlik_get_pipeline_project_details`, `qlik_search_connection_objects`). Wherever an instruction says **"if Qlik MCP is available"**, use this procedure:
 
 1. **If availability was already determined earlier in this session** → reuse the cached result. ❌ Do not re-run `tool_search`.
 2. **Otherwise** → use `tool_search` **once** to check whether `qlik_get_pipeline_project_details` is available, and cache the result for the session:
@@ -469,7 +474,7 @@ This flow is entered only after the target landing task is known (from the **Det
   - If not found → call `qlik_get_pipeline_project_details` (objectType: 'bindings', query: projectId) to retrieve the bindings.
 - In the bindings, find the variable key `"task.<taskId>.sourceConnection"`, where `<taskId>` is the ID from the landing task's `task.yaml`.
 - Extract the connection reference: it is the 2nd parameter inside `{{id(connection, <spaceName>.<connectionName>)}}`, formatted as `spaceName.connectionName`, e.g. `Default_Data_Space.Microsoft_SQL_Server_test` (space `Default_Data_Space`, connection `Microsoft_SQL_Server_test`).
-- Found → call `qlik_list_data_connections` filtered by `spaceId` found at Step 1 , match by connection name to get `connectionId`, skip to Step 4.
+- Found → call `qlik_search` filtered by `spaceId` found at Step 1 , match by connection name to get `connectionId`, skip to Step 4.
 - Not found → proceed to Step 3.
 
 **Step 3 — Resolve space and connection interactively**
@@ -988,6 +993,40 @@ When the user asks **what the value of a property is** (e.g. "what is the value 
    - **If NOT available** → inform the user the value cannot be resolved locally.
    - **If available** → first resolve the project ID using **§Resolving the Project ID**, then call `qlik_get_pipeline_project_details` (objectType: `bindings`, query: `projectId`) to retrieve the bindings, search the variable in the returned bindings, and report the resolved value. If the project ID cannot be determined even after asking the user → inform the user the value cannot be resolved and stop.
 
+**Empty-value presentation fallback rules (for binding-derived task properties):**
+
+When presenting **project details**, always include `project.current.prefixSchema`.
+
+After resolving a binding variable value, apply these presentation rules in order:
+
+1. If the task-level variable key for the requested property is not found, omit that property from the response (do not show placeholder text, fallback text, or "not found").
+2. If the resolved value is empty or one of these empty-like values for one of the properties below, apply the property-specific fallback steps in this section and present the fallback text instead of showing empty output.
+3. Otherwise, present the resolved value as-is.
+
+When rule 2 applies, the fallback text replaces the original/resolved output.
+
+Empty-like values:
+
+- `""` (empty string)
+- `(empty)`
+- `DEFAULT`
+- `empty default`
+- `blank`
+- `not present`
+
+1. `<task-id>.taskSchema`
+  - Base fallback value: task name derived from `<task-id>` by removing the 5-character `-NNNN` suffix.
+  - Then, only as part of this empty-like fallback path, prepend `project.current.prefixSchema` when available.
+  - Example: `my_task-4821` → `my_task`
+2. `<task-id>.internalSchema`
+  - Base fallback value: task name derived from `<task-id>` by removing the 5-character `-NNNN` suffix, then append `__internal`.
+  - Then, only as part of this empty-like fallback path, prepend `project.current.prefixSchema` when available.
+  - Example: `my_task-4821` → `my_task__internal`
+3. `<task-id>.databaseName` and `<task-id>.warehouseName`
+  - Present exactly this message: `This value will be taken from the project connection`
+
+These fallbacks apply only when rule 2 matches one of the empty or empty-like values above; they do not apply to non-empty resolved values.
+
 ---
 
 ## Project Validation Workflow
@@ -1035,6 +1074,8 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 7. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section). After adding any two-level binding, verify that the corresponding `task-type.*` variable with a blank value also exists in `qtcp_bindings_definition.json` — the synchronization gate does **not** catch missing `task-type.*` entries automatically.
 8. **Prefer `AskUserQuestion` tool** for fixed-choice questions when the client supports it, to render clickable options; fall back to plain text otherwise
 9. **Resolve variable values before reporting** — if a property value is a `{{...}}` binding reference, always follow the **Resolving a Variable Property Value** workflow (check `bindings.json`, then `qlik_get_pipeline_project_details`) before reporting it. Never report a raw placeholder or empty string as the answer.  Remember: `qtcp_bindings_definition.json` is a **template**, not a resolved-value store — an empty string `""` there is not the answer.
+10. **Apply fallback/omit/prefix presentation rules for task-level fields** — for `taskSchema`, `internalSchema`, `databaseName`, and `warehouseName`, follow the required replacement, omission, and `project.current.prefixSchema` prefix behavior in **§Resolving a Variable Property Value**.
+
 
 ---
 

@@ -49,8 +49,19 @@
 				"registeredType": {
 					"type": "string",
 					"description": "Type of registered incremental loading",
-					"enum": ["NONE", "INCREMENTAL", "CDC"],
+					"enum": ["NONE", "REPLICATE", "WATERMARK", "STITCH"],
 					"default": "NONE"
+				},
+				"watermarkColumnName": {
+					"type": "object",
+					"description": "Column used as the watermark for incremental loading",
+					"additionalProperties": false,
+					"properties": {
+						"expressionStatement": {
+							"type": "string",
+							"description": "Expression identifying the watermark column"
+						}
+					}
 				},
 				"useBatchTimeAsFromDate": {
 					"type": "boolean",
@@ -58,11 +69,33 @@
 					"enum": [true, false],
 					"default": false
 				},
+				"fromDateColumnName": {
+					"type": "object",
+					"description": "Column used as the from-date for incremental loading",
+					"additionalProperties": false,
+					"properties": {
+						"expressionStatement": {
+							"type": "string",
+							"description": "Expression identifying the from-date column"
+						}
+					}
+				},
 				"useSameTableAsCt": {
 					"type": "boolean",
 					"description": "Whether to use same table as CT",
 					"enum": [true, false],
 					"default": false
+				},
+				"ctTableName": {
+					"type": "object",
+					"description": "Name of the change table (CT) used for incremental loading",
+					"additionalProperties": false,
+					"properties": {
+						"expressionStatement": {
+							"type": "string",
+							"description": "Expression identifying the CT table name"
+						}
+					}
 				},
 				"softDeleteSupport": {
 					"type": "boolean",
@@ -70,11 +103,33 @@
 					"enum": [true, false],
 					"default": false
 				},
+				"softDeleteExpression": {
+					"type": "object",
+					"description": "Expression identifying soft-deleted rows",
+					"additionalProperties": false,
+					"properties": {
+						"expressionStatement": {
+							"type": "string",
+							"description": "Expression evaluating whether a row was soft-deleted"
+						}
+					}
+				},
 				"priorImageSupport": {
 					"type": "boolean",
 					"description": "Whether prior image is supported",
 					"enum": [true, false],
 					"default": false
+				},
+				"priorImageExpression": {
+					"type": "object",
+					"description": "Expression identifying prior-image (before) rows",
+					"additionalProperties": false,
+					"properties": {
+						"expressionStatement": {
+							"type": "string",
+							"description": "Expression evaluating whether a row is a prior image"
+						}
+					}
 				}
 			}
 		}

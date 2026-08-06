@@ -474,7 +474,7 @@ This flow is entered only after the target landing task is known (from the **Det
   - If not found → call `qlik_get_pipeline_project_details` (objectType: 'bindings', query: projectId) to retrieve the bindings.
 - In the bindings, find the variable key `"task.<taskId>.sourceConnection"`, where `<taskId>` is the ID from the landing task's `task.yaml`.
 - Extract the connection reference: it is the 2nd parameter inside `{{id(connection, <spaceName>.<connectionName>)}}`, formatted as `spaceName.connectionName`, e.g. `Default_Data_Space.Microsoft_SQL_Server_test` (space `Default_Data_Space`, connection `Microsoft_SQL_Server_test`).
-- Found → call `qlik_list_data_connections` filtered by `spaceId` found at Step 1 , match by connection name to get `connectionId`, skip to Step 4.
+- Found → call `qlik_search` filtered by `spaceId` found at Step 1 , match by connection name to get `connectionId`, skip to Step 4.
 - Not found → proceed to Step 3.
 
 **Step 3 — Resolve space and connection interactively**

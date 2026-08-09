@@ -8,7 +8,8 @@
 	"required": ["artifactsLocation"],
 	"properties": {
 		"fullLoadOnly": {
-			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"
+			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True",
+			"description": "Defines the change detection to Compare with current storage (true) or Incremental using high watermark (false)"
 		},
 		"ddlHandlingPolicy": {
 			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"

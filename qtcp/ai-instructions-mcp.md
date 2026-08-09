@@ -25,6 +25,7 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 | Creating a `DATAMART`, `KNOWLEDGE_MART`, or `FILE_BASED_KNOWLEDGE_MART` task, or a **data flow (Pattern 3) dataset** | ❌ Do not generate — redirect the user to create it in the QTC UI and commit back (task type table in **§Project Type Reference**; **§Non-Landing Tasks**, Pattern 3) |
 | Creating or editing a TRANSFORM task | Follow the **§Non-Landing Tasks** TRANSFORM rules — both `sourceSelection.yaml` and dataset files are required; for wildcard patterns, create a dataset file per matched upstream dataset |
 | Creating a single task (not a whole project) | Follow **§Task Type Availability by Project Type**, the **Source-matches-platform rule** (STEP 6), and the **Task ID Generation Rule** (§Unified Project Creation Workflow, STEP 7) |
+| Creating a `REGISTERED_DATA` task | Ask the Update method question (**§REGISTERED_DATA: Update Method**) and set `settings.fullLoadOnly` / `incrementalSettings.registeredType` accordingly |
 | Adding sources to a `REGISTERED_DATA` task | Follow **§Registered Data Tasks** and pass its **completion check** — no `sourceConnection`, no `sourceTask`, no wildcard fallback; every item has `database`, `schema`, `name`, `type` |
 | Adding sources to a `REPLICATE_LANDING` task | Include `rootDirectoryPath` as a root-level binding variable (**§Landing Tasks**) — do NOT ask the user for its value; add it to `qtcp_bindings_definition.json` with a blank value |
 | Adding a source, table, view, or dataset | Follow the full **§Source Selection Workflow** — including the mandatory task-type gate and intent resolution rules |
@@ -312,6 +313,30 @@ Based on the chosen `platformType`, add the corresponding settings block under `
 - **`SNOWFLAKE`:** add `snowflakeIcebergSettings` with properties `snowflakeExternalVolume` and `snowflakeCatalogIntegration`; add `taskRuntime.warehouseSelection.warehouseName`
 - **`REDSHIFT`:** add `redshiftIcebergSettings` with property `redshiftExternalSchema`; do **not** add `taskRuntime.warehouseSelection.warehouseName`
 - **`DATABRICKS`:** add `databricksIcebergSettings` with property `databricksForeignCatalog`; do **not** add `taskRuntime.warehouseSelection.warehouseName`
+
+**REGISTERED_DATA: Update Method**
+
+When creating a `REGISTERED_DATA` task, after asking for the task name also ask:
+
+❓ **ASK:** "What is the Update method?"
+1. Compare with current storage
+2. Incremental using high watermark
+
+Based on the answer:
+- **Compare with current storage** → do not set `settings.fullLoadOnly`
+- **Incremental using high watermark** → set `settings.fullLoadOnly: false`
+
+If **Incremental using high watermark** was chosen, also ask:
+
+❓ **ASK:** "What are the incremental load settings?"
+1. Qlik replicate default settings
+2. Stitch default settings
+3. Project default settings
+
+Set `settings.incrementalSettings.registeredType` accordingly:
+- Qlik replicate default settings → `REPLICATE`
+- Stitch default settings → `STITCH`
+- Project default settings → `WATERMARK`
 
 **Minimal schedule.yaml (Time-based):**
 ```yaml

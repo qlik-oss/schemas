@@ -830,7 +830,12 @@
 								"then": {
 									"properties": {
 										"action": true,
-										"columnName": true
+										"columnName": true,
+										"primaryKeyOrdinal": true,
+										"ordinal": true,
+										"nullable": true,
+										"markAsMetadata": true,
+										"hash": true
 									},
 									"required": ["columnName"],
 									"additionalProperties": false
@@ -847,8 +852,8 @@
 											"description": "The new name for the column when renaming it (applicable for KEEP action)",
 											"examples": ["ShipPostalCode-ren"]
 										},
-										"primaryKeyOrdinal": true,
 										"newDataType": true,
+										"primaryKeyOrdinal": true,
 										"ordinal": true,
 										"nullable": true,
 										"markAsMetadata": true,

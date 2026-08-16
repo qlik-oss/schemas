@@ -644,7 +644,7 @@
         "loadingMethod": {
           "type": "string",
           "description": "Method used for loading files",
-          "enum": ["BULK_LOADING", "INSERT"],
+          "enum": ["BULK_LOADING", "SNOWPIPE_STREAMING"],
           "default": "BULK_LOADING"
         }
       }

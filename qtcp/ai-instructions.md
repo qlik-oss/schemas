@@ -279,6 +279,30 @@ Based on the chosen `platformType`, add the corresponding settings block under `
 - **`REDSHIFT`:** add `redshiftIcebergSettings` with property `redshiftExternalSchema`; do **not** add `taskRuntime.warehouseSelection.warehouseName`
 - **`DATABRICKS`:** add `databricksIcebergSettings` with property `databricksForeignCatalog`; do **not** add `taskRuntime.warehouseSelection.warehouseName`
 
+**REGISTERED_DATA: Update Method**
+
+When creating a `REGISTERED_DATA` task, after asking for the task name also ask:
+
+❓ **ASK:** "What is the Update method?"
+1. Compare with current storage
+2. Incremental using high watermark
+
+Based on the answer:
+- **Compare with current storage** → do not set `settings.fullLoadOnly`
+- **Incremental using high watermark** → set `settings.fullLoadOnly: false`
+
+If **Incremental using high watermark** was chosen, also ask:
+
+❓ **ASK:** "What are the incremental load settings?"
+1. Qlik replicate default settings
+2. Stitch default settings
+3. Project default settings
+
+Set `settings.incrementalSettings.registeredType` accordingly:
+- Qlik replicate default settings → `REPLICATE`
+- Stitch default settings → `STITCH`
+- Project default settings → `WATERMARK`
+
 **Minimal schedule.yaml (Time-based):**
 ```yaml
 scheduling:

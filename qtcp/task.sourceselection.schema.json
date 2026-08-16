@@ -5,6 +5,7 @@
 	"description": "Schema for task sourceSelection configuration",
 	"type": "object",
 	"properties": {
+		"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" },
 		"sourceConnection": {
 			"type": "string",
 			"description": "Source connection ID for landing tasks"
@@ -158,5 +159,17 @@
 		}
 	},
 	"required": [],
+	"$defs": {
+		"ModifiedByAi": {
+			"type": "object",
+			"description": "Metadata describing the latest AI modification",
+			"required": ["lastUpdated", "model"],
+			"properties": {
+				"lastUpdated": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$", "description": "UTC timestamp of the latest AI modification" },
+				"model": { "type": "string", "minLength": 1, "description": "AI model that made the latest modification" }
+			},
+			"additionalProperties": false
+		}
+	},
 	"additionalProperties": false
 }

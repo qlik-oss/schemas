@@ -66,6 +66,18 @@ Instructions for AI assistants building Qlik Talend Cloud Platform (QTCP) data p
 - ❌ **DO NOT** add comments (`#` in YAML, `//` or `/* */` in JSON) to any generated project files
 - YAML and JSON files in this project must contain only data — no inline comments, no block comments, no explanatory annotations
 
+**AI Edit Marker (MUST):**
+- Whenever you create or edit any YAML file in a QTCP project (including `qtcp_project.yaml`, `task.yaml`, `sourceSelection.yaml`, `transformationRules.yaml`, `schedule.yaml`, `model.yaml`, `newTaskDefaults.yaml`, dataset YAML files, and transformation data flow YAML files), add or update this top-level object at the **end** of the file:
+```yaml
+modifiedByAi:
+  lastUpdated: '2026-08-03T13:55:10.106Z'
+  model: <ai model>
+```
+- `lastUpdated` must be the current UTC time in ISO-8601 format with milliseconds (`YYYY-MM-DDTHH:mm:ss.SSSZ`). Generate it fresh for each edit; never reuse the example, a stale value, or a placeholder.
+- `model` must identify the AI model making the edit.
+- If `modifiedByAi` already exists, update its `lastUpdated` and `model` values and move the object to the end of the file if necessary. Never add a duplicate.
+- This rule does not apply to `qtcp_bindings_definition.json` or documentation files.
+
 **Bindings Guidance:** Follow the canonical rules in the **Variable Naming Conventions** section below (single source of truth).
 
 **`qtcp_bindings_definition.json` — usage rules (apply everywhere):**
@@ -1094,13 +1106,13 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 2. **Create minimal files** — only include required fields; consult schemas for what is required
 3. **No automatic extras** — don't create files unless explicitly requested
 4. **No comments in generated files** — YAML and JSON files must contain only data
-5. **Dataset-level transformations** — use separate dataset files, not `transformationRules.yaml`
-6. **Binding synchronization (MUST)** — extract every `{{...}}` variable from all changed files and verify each exists in `qtcp_bindings_definition.json` under `variables` before responding (→ **Variable Naming Conventions: Mandatory Binding variable rules**)
-7. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section). After adding any two-level binding, verify that the corresponding `task-type.*` variable with a blank value also exists in `qtcp_bindings_definition.json` — the synchronization gate does **not** catch missing `task-type.*` entries automatically.
-8. **Prefer `AskUserQuestion` tool** for fixed-choice questions when the client supports it, to render clickable options; fall back to plain text otherwise
-9. **Resolve variable values before reporting** — if a property value is a `{{...}}` binding reference, always follow the **Resolving a Variable Property Value** workflow (check `bindings.json`, then `qlik_get_pipeline_project_details`) before reporting it. Never report a raw placeholder or empty string as the answer.  Remember: `qtcp_bindings_definition.json` is a **template**, not a resolved-value store — an empty string `""` there is not the answer.
-10. **Apply fallback/omit/prefix presentation rules for task-level fields** — for `taskSchema`, `internalSchema`, `databaseName`, and `warehouseName`, follow the required replacement, omission, and `project.current.prefixSchema` prefix behavior in **§Resolving a Variable Property Value**.
-
+5. **AI edit marker (MUST)** — every created or edited QTCP project YAML ends with one fresh `modifiedByAi` object containing `lastUpdated` and `model`
+6. **Dataset-level transformations** — use separate dataset files, not `transformationRules.yaml`
+7. **Binding synchronization (MUST)** — extract every `{{...}}` variable from all changed files and verify each exists in `qtcp_bindings_definition.json` under `variables` before responding (→ **Variable Naming Conventions: Mandatory Binding variable rules**)
+8. **Two-level bindings** — task-type-defaulted properties (e.g. `warehouseName`, `databaseName`, `lakehouseCluster`) use a `task-type.*` reference, not a blank value — except `LAKEHOUSE_MIRROR` tasks (→ **Variable Naming Conventions** section). After adding any two-level binding, verify that the corresponding `task-type.*` variable with a blank value also exists in `qtcp_bindings_definition.json` — the synchronization gate does **not** catch missing `task-type.*` entries automatically.
+9. **Prefer `AskUserQuestion` tool** for fixed-choice questions when the client supports it, to render clickable options; fall back to plain text otherwise
+10. **Resolve variable values before reporting** — if a property value is a `{{...}}` binding reference, always follow the **Resolving a Variable Property Value** workflow (check `bindings.json`, then `qlik_get_pipeline_project_details`) before reporting it. Never report a raw placeholder or empty string as the answer.  Remember: `qtcp_bindings_definition.json` is a **template**, not a resolved-value store — an empty string `""` there is not the answer.
+11. **Apply fallback/omit/prefix presentation rules for task-level fields** — for `taskSchema`, `internalSchema`, `databaseName`, and `warehouseName`, follow the required replacement, omission, and `project.current.prefixSchema` prefix behavior in **§Resolving a Variable Property Value**.
 
 ---
 

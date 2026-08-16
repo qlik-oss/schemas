@@ -14,7 +14,8 @@
 						{	"properties": {"type": { "const": "DATAMART" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.datamart.schema.json" }
+				"settings": { "$ref": "task.settings.datamart.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -27,7 +28,8 @@
 						{	"properties": {"type": { "const": "FILE_BASED_KNOWLEDGE_MART" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.filebasedknowledgemart.schema.json" }
+				"settings": { "$ref": "task.settings.filebasedknowledgemart.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -40,7 +42,8 @@
 						{	"properties": {"type": { "const": "LAKEHOUSE_STORAGE" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.lakehousestorage.schema.json" }
+				"settings": { "$ref": "task.settings.lakehousestorage.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -53,7 +56,8 @@
 						{	"properties": {"type": { "const": "STREAMING_TRANSFORM" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.streamingtransform.schema.json" }
+				"settings": { "$ref": "task.settings.streamingtransform.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -66,7 +70,8 @@
 						{	"properties": {"type": { "const": "KNOWLEDGE_MART" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.knowledgemart.schema.json" }
+				"settings": { "$ref": "task.settings.knowledgemart.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -79,7 +84,8 @@
 						{	"properties": {"type": { "const": "LAKE_LANDING" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.lakelanding.schema.json" }
+				"settings": { "$ref": "task.settings.lakelanding.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -92,7 +98,8 @@
 						{	"properties": {"type": { "const": "LANDING" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.landing.schema.json" }
+				"settings": { "$ref": "task.settings.landing.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -105,7 +112,8 @@
 						{	"properties": {"type": { "const": "LAKEHOUSE_MIRROR" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.lakehousemirror.schema.json" }
+				"settings": { "$ref": "task.settings.lakehousemirror.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -118,7 +126,8 @@
 						{	"properties": {"type": { "const": "QVD_STORAGE" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.qvdstorage.schema.json" }
+				"settings": { "$ref": "task.settings.qvdstorage.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"additionalProperties": false
 		},
@@ -130,7 +139,8 @@
 						{	"properties": {"type": { "const": "REGISTERED_DATA" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.registereddata.schema.json" }
+				"settings": { "$ref": "task.settings.registereddata.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -143,7 +153,8 @@
 						{	"properties": {"type": { "const": "REPLICATE_LANDING" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.replicatelanding.schema.json" }
+				"settings": { "$ref": "task.settings.replicatelanding.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -156,7 +167,8 @@
 						{	"properties": {"type": { "const": "REPLICATION" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.replication.schema.json" }
+				"settings": { "$ref": "task.settings.replication.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -169,7 +181,8 @@
 						{	"properties": {"type": { "const": "STORAGE" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.storage.schema.json" }
+				"settings": { "$ref": "task.settings.storage.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -182,7 +195,8 @@
 						{	"properties": {"type": { "const": "STREAMING_LAKE_LANDING" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.streaminglakelanding.schema.json" }
+				"settings": { "$ref": "task.settings.streaminglakelanding.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
@@ -195,13 +209,33 @@
 						{	"properties": {"type": { "const": "TRANSFORM" }}}
 					]
 				},
-				"settings": { "$ref": "task.settings.transform.schema.json" }
+				"settings": { "$ref": "task.settings.transform.schema.json" },
+				"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" }
 			},
 			"required": ["properties", "settings"],
 			"additionalProperties": false
 		}
 	],
 	"$defs": {
+		"ModifiedByAi": {
+			"type": "object",
+			"description": "Metadata describing the latest AI modification",
+			"required": ["lastUpdated", "model"],
+			"properties": {
+				"lastUpdated": {
+					"type": "string",
+					"format": "date-time",
+					"pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+					"description": "UTC timestamp of the latest AI modification"
+				},
+				"model": {
+					"type": "string",
+					"minLength": 1,
+					"description": "AI model that made the latest modification"
+				}
+			},
+			"additionalProperties": false
+		},
 		"BaseProperties": {
 			"type": "object",
 			"description": "Basic properties",

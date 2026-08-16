@@ -6,6 +6,7 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+		"modifiedByAi": { "$ref": "#/$defs/ModifiedByAi" },
     "datamart": {
       "$ref": "./newtaskdefaults.settings.datamart.schema.json"
     },
@@ -44,6 +45,18 @@
     },
     "streamingLakeLanding": {
       "$ref": "./newtaskdefaults.settings.streaminglakelanding.schema.json"
+    }
+  },
+  "$defs": {
+    "ModifiedByAi": {
+      "type": "object",
+      "description": "Metadata describing the latest AI modification",
+      "required": ["lastUpdated", "model"],
+      "properties": {
+        "lastUpdated": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$", "description": "UTC timestamp of the latest AI modification" },
+        "model": { "type": "string", "minLength": 1, "description": "AI model that made the latest modification" }
+      },
+      "additionalProperties": false
     }
   }
 }

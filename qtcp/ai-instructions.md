@@ -1002,10 +1002,22 @@ When the user asks **what is available** in the Qlik tenant — connections, spa
    - **If available** → query per resource type:
      - **Spaces** → `qlik_search` (resourceType: `space`); show only spaces whose `type` is `data`
      - **Projects** → `qlik_search` (resourceType: `pipelineProject`)
-     - **Connections** → ❓ **ASK:** "Which connections should I show?" with these options:
+     - **Connections** → first determine the **connection-type qualifier** from the user's request:
+       - Request says **"source connections"** → connection type = `Source` — skip the connection-type question below.
+       - Request says **"target connections"** → connection type = `Target` — skip the connection-type question below.
+       - Request says **"all connections"** (explicit "all", no source/target qualifier) → connection type = `Both` (unfiltered, as today) — skip the connection-type question below.
+       - Otherwise (user just says "show/list connections" with no qualifier) → connection type is not yet known; ❓ **ASK:** "Would you like to filter by connection type?" with options: **Source**, **Target**, **Both** (`Both` = unfiltered).
+       Then continue with the space-scope question. ❓ **ASK:** "Which connections should I show?" with these options:
        1. **All connections** → call `qlik_search` (resourceType: `dataConnection`) with no space filter — do not resolve or pass a `spaceId`
        2. **Connections in the current project's space** → resolve the project's `spaceId` via **§Resolving the Project ID**, then list connections filtered by that `spaceId`
        3. **A specific space (user types the space name)** → find its `spaceId` via `qlik_search` (resourceType: `space`, query: typed name; show only spaces whose `type` is `data`), then list connections filtered by that `spaceId`
+
+       - Apply the resolved connection type to the `qlik_search` results per **Connection Type Filtering** below.
+
+       **Connection Type Filtering:**
+       - `Source` → keep only results whose `dataConnection.dataSourceId` starts with `repsrc_` or `external`
+       - `Target` → keep only results whose `dataConnection.dataSourceId` starts with `reptgt_`
+       - `Both` (or an explicit "all connections" request) → no filtering — show all results as returned
      - **Datasets on a connection** → follow the **§Dataset search flow**
 3. Show **names only** — never IDs or internal properties. Pass filter text as tool parameters; do not fetch full lists and filter locally.
 4. If the user then wants a listed resource used by a task or project, follow the relevant workflow (e.g. **§Source Selection Workflow**) — do not write resolved values into `qtcp_bindings_definition.json`.

@@ -11,33 +11,45 @@
 			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True"
 		},
 		"artifactsSettings": {
-			"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-WithDeletedRows"
-    },
+		    "type": "object",
+			"description": "Artifacts settings configuration",
+			"additionalProperties": false,
+			"properties": {
+				"liveViewsEnabled": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsLiveViewsEnabled" },
+				"historyEnabled": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsHistoryEnabled" },
+				"materialized": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsMaterialized" },
+				"changeTablesEnabled": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsChangeTablesEnabled" },
+				"currentTableSuffix": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsCurrentTableSuffix" },
+				"reloadType": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsReloadType-WithDeletedRows" },
+				"createConsumptionViews": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsCreateConsumptionViews" },
+				"artifactsPrefix": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsArtifactsPrefix" }
+			}
+    	},
 		"artifactsLocation": {
 			"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"
-    },
+    	},
 		"taskRuntime": {
-      "type": "object",
-      "description": "Task runtime configuration",
-      "additionalProperties": false,
-      "required": ["warehouseSelection"],
-      "properties": {
-        "tableUpdateConcurrency": {
-          "$ref": "task.settings.common.schema.json#/definitions/tableUpdateConcurrency"
-        },
-        "warehouseSelection": {
-          "$ref": "task.settings.common.schema.json#/definitions/warehouseSelection"
-        }
-      }
-    },
-		"catalogIntegration": {
-			"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
-    },
-		"tableTypeSettings": {
-			"$ref": "task.settings.common.schema.json#/definitions/tableTypeSettings"
-    },
-		"viewType": {
-      "$ref": "task.settings.common.schema.json#/definitions/viewType"
-    }
+      		"type": "object",
+      		"description": "Task runtime configuration",
+      		"additionalProperties": false,
+      		"required": ["warehouseSelection"],
+      		"properties": {
+        		"tableUpdateConcurrency": {
+          			"$ref": "task.settings.common.schema.json#/definitions/tableUpdateConcurrency"
+        		},
+        		"warehouseSelection": {
+          			"$ref": "task.settings.common.schema.json#/definitions/warehouseSelection"
+        		}
+      		}
+		},
+			"catalogIntegration": {
+				"$ref": "task.settings.common.schema.json#/definitions/catalogIntegration"
+		},
+			"tableTypeSettings": {
+				"$ref": "task.settings.common.schema.json#/definitions/tableTypeSettings"
+		},
+			"viewType": {
+		"$ref": "task.settings.common.schema.json#/definitions/viewType"
+		}
 	}
 }

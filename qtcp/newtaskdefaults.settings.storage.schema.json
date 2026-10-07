@@ -9,6 +9,9 @@
     "hasLiveViews": {
       "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/hasLiveViews"
     },
+    "createConsumptionViews": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/createConsumptionViews"
+    },
     "hasHistory": {
       "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/hasHistory"
     },

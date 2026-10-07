@@ -150,50 +150,69 @@
         }
       }
     },
+    "artifactsSettingsLiveViewsEnabled": {
+      "type": "boolean",
+      "description": "Whether live views are enabled",
+      "enum": [true, false],
+      "default": false
+    },
+    "artifactsSettingsHistoryEnabled": {
+      "type": "boolean",
+      "description": "Whether history is enabled",
+      "enum": [true, false],
+      "default": false
+    },
+    "artifactsSettingsMaterialized": {
+      "type": "boolean",
+      "description": "Whether artifacts are materialized",
+      "enum": [true, false],
+      "default": false
+    },
+    "artifactsSettingsChangeTablesEnabled": {
+      "type": "boolean",
+      "description": "Whether change tables are enabled",
+      "enum": [true, false],
+      "default": false
+    },
+    "artifactsSettingsCurrentTableSuffix": {
+      "type": "string",
+      "description": "Suffix for current tables",
+      "example": "__current"
+    },
+    "artifactsSettingsArtifactsPrefix": {
+      "type": "string",
+      "description": "Prefix for artifacts"
+    },
+    "artifactsSettingsCreateConsumptionViews": {
+      "type": "boolean",
+      "description": "Whether consumption views are created",
+      "enum": [true, false],
+      "default": true
+    },
+    "artifactsSettingsReloadType-WithDeletedRows": {
+      "type": "string",
+      "description": "Type of reload operation (TRUNCATE_AND_INSERT, COMPARE_AND_APPLY are not supported for iceberg transform tasks)",
+      "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE", "TRUNCATE_AND_INSERT", "COMPARE_AND_APPLY"],
+      "default": "COMPARE_AND_APPLY_WITH_DELETED_ROWS"
+    },
+    "artifactsSettingsReloadType-Standard": {
+      "type": "string",
+      "description": "Type of reload operation",
+      "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE", "TRUNCATE_AND_INSERT", "COMPARE_AND_APPLY"],
+      "default": "COMPARE_AND_APPLY"
+    },
     "artifactsSettings-WithDeletedRows": {
       "type": "object",
       "description": "Artifacts settings configuration",
       "additionalProperties": false,
       "properties": {
-        "liveViewsEnabled": {
-          "type": "boolean",
-          "description": "Whether live views are enabled",
-          "enum": [true, false],
-          "default": false
-        },
-        "historyEnabled": {
-          "type": "boolean",
-          "description": "Whether history is enabled",
-          "enum": [true, false],
-          "default": false
-        },
-        "materialized": {
-          "type": "boolean",
-          "description": "Whether artifacts are materialized",
-          "enum": [true, false],
-          "default": false
-        },
-        "changeTablesEnabled": {
-          "type": "boolean",
-          "description": "Whether change tables are enabled",
-          "enum": [true, false],
-          "default": false
-        },
-        "currentTableSuffix": {
-          "type": "string",
-          "description": "Suffix for current tables",
-          "example": "__current"
-        },
-        "reloadType": {
-          "type": "string",
-          "description": "Type of reload operation (TRUNCATE_AND_INSERT, COMPARE_AND_APPLY are not supported for iceberg transform tasks)",
-          "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE", "TRUNCATE_AND_INSERT", "COMPARE_AND_APPLY"],
-          "default": "COMPARE_AND_APPLY_WITH_DELETED_ROWS"
-        },
-        "artifactsPrefix": {
-          "type": "string",
-          "description": "Prefix for artifacts"
-        }
+        "liveViewsEnabled": { "$ref": "#/definitions/artifactsSettingsLiveViewsEnabled" },
+        "historyEnabled": { "$ref": "#/definitions/artifactsSettingsHistoryEnabled" },
+        "materialized": { "$ref": "#/definitions/artifactsSettingsMaterialized" },
+        "changeTablesEnabled": { "$ref": "#/definitions/artifactsSettingsChangeTablesEnabled" },
+        "currentTableSuffix": { "$ref": "#/definitions/artifactsSettingsCurrentTableSuffix" },
+        "reloadType": { "$ref": "#/definitions/artifactsSettingsReloadType-WithDeletedRows" },
+        "artifactsPrefix": { "$ref": "#/definitions/artifactsSettingsArtifactsPrefix" }
       }
     },
     "artifactsSettings-Standard": {
@@ -201,45 +220,13 @@
       "description": "Artifacts settings configuration",
       "additionalProperties": false,
       "properties": {
-        "liveViewsEnabled": {
-          "type": "boolean",
-          "description": "Whether live views are enabled",
-          "enum": [true, false],
-          "default": false
-        },
-        "historyEnabled": {
-          "type": "boolean",
-          "description": "Whether history is enabled",
-          "enum": [true, false],
-          "default": false
-        },
-        "materialized": {
-          "type": "boolean",
-          "description": "Whether artifacts are materialized",
-          "enum": [true, false],
-          "default": false
-        },
-        "changeTablesEnabled": {
-          "type": "boolean",
-          "description": "Whether change tables are enabled",
-          "enum": [true, false],
-          "default": false
-        },
-        "currentTableSuffix": {
-          "type": "string",
-          "description": "Suffix for current tables",
-          "example": "__current"
-        },
-        "reloadType": {
-          "type": "string",
-          "description": "Type of reload operation",
-          "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE", "TRUNCATE_AND_INSERT", "COMPARE_AND_APPLY"],
-          "default": "COMPARE_AND_APPLY"
-        },
-        "artifactsPrefix": {
-          "type": "string",
-          "description": "Prefix for artifacts"
-        }
+        "liveViewsEnabled": { "$ref": "#/definitions/artifactsSettingsLiveViewsEnabled" },
+        "historyEnabled": { "$ref": "#/definitions/artifactsSettingsHistoryEnabled" },
+        "materialized": { "$ref": "#/definitions/artifactsSettingsMaterialized" },
+        "changeTablesEnabled": { "$ref": "#/definitions/artifactsSettingsChangeTablesEnabled" },
+        "currentTableSuffix": { "$ref": "#/definitions/artifactsSettingsCurrentTableSuffix" },
+        "reloadType": { "$ref": "#/definitions/artifactsSettingsReloadType-Standard" },
+        "artifactsPrefix": { "$ref": "#/definitions/artifactsSettingsArtifactsPrefix" }
       }
     },
     "tableUpdateConcurrency": {

@@ -14,7 +14,19 @@
 			"$ref": "task.settings.common.schema.json#/definitions/ddlHandlingPolicy"
     },
     "artifactsSettings": {
-			"$ref": "task.settings.common.schema.json#/definitions/artifactsSettings-Standard"
+		  "type": "object",
+			"description": "Artifacts settings configuration",
+			"additionalProperties": false,
+			"properties": {
+				"liveViewsEnabled": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsLiveViewsEnabled" },
+				"historyEnabled": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsHistoryEnabled" },
+				"materialized": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsMaterialized" },
+				"changeTablesEnabled": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsChangeTablesEnabled" },
+				"currentTableSuffix": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsCurrentTableSuffix" },
+				"reloadType": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsReloadType-Standard" },
+				"createConsumptionViews": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsCreateConsumptionViews" },
+				"artifactsPrefix": { "$ref": "task.settings.common.schema.json#/definitions/artifactsSettingsArtifactsPrefix" }
+			}
     },
     "artifactsLocation": {
 			"$ref": "task.settings.common.schema.json#/definitions/artifactsLocationWithDatabase"

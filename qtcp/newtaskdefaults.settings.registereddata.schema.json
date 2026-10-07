@@ -51,6 +51,9 @@
     },
     "viewType": {
       "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/viewType"
+    },
+    "createConsumptionViews": {
+      "$ref": "newtaskdefaults.settings.common.schema.json#/definitions/createConsumptionViews"
     }
   }
 }

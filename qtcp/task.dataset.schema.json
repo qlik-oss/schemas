@@ -181,6 +181,12 @@
 							"description": "Create external artifacts",
 							"enum": ["INHERIT","ON","OFF"],
 							"default": "INHERIT"
+						},
+						"createConsumptionViews": {
+							"type": "string",
+							"description": "Create consumption views",
+							"enum": ["INHERIT","ON","OFF"],
+							"default": "INHERIT"
 						}
 					}
 				},

@@ -113,6 +113,12 @@
       "description": "Whether the storage has live views",
       "default": true
     },
+	"createConsumptionViews": {
+      "type": "boolean",
+      "enum": [true, false],
+      "description": "Whether consumption views are created",
+      "default": true
+    },
     "materialized": {
       "type": "boolean",
       "description": "Whether artifacts are materialized",

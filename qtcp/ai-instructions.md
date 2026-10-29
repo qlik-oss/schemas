@@ -599,6 +599,19 @@ Non-landing tasks read **from an upstream task**, not directly from a data sourc
 **Prompting:**
 - ❓ **ASK:** "Which task should this read from?" (List available tasks from `qtcp_tasks/` folder)
   - ⚠️ **Landing source restriction:** Only `STORAGE` tasks may read from landing task types (`LANDING`, `LAKE_LANDING`, `STREAMING_LAKE_LANDING`, `REPLICATION`, `REPLICATE_LANDING`). All other non-landing task types **cannot** read from landing tasks — do not present landing tasks as source options for them.
+  - ⚠️ **One landing task per STORAGE task (MUST):** A `STORAGE` task may be linked
+    to only **one** upstream landing-type task (`LANDING`, `LAKE_LANDING`,
+    `STREAMING_LAKE_LANDING`, `REPLICATION`, `REPLICATE_LANDING`) — never more than
+    one, even across multiple `explicitlySelected`/`includePatterns` entries.
+    - Before adding a source from a landing task, read the target `STORAGE` task's
+      current `sourceSelection.yaml` and collect the distinct `sourceTask` values
+      from `explicitlySelected[]` and `includePatterns[]`.
+    - If the new source's `sourceTask` refers to a **different** landing task than
+      the one(s) already present → ❌ **do not add it.** Inform the user: "This
+      STORAGE task is already linked to `<existing-landing-task>` — a STORAGE task
+      can only be linked to one landing task." Ask whether they want to:
+      1. Replace the existing landing source with the new one, or
+      2. Choose a different, non-landing upstream task instead.
 - ❓ **ASK:** "Which tables/datasets from that task do you want to include?"
 
 **Add entries to the task's `sourceSelection.yaml`.**
@@ -1123,7 +1136,7 @@ All YAML files in a QTCP project are validated against JSON schemas published on
 9. **Prefer `AskUserQuestion` tool** for fixed-choice questions when the client supports it, to render clickable options; fall back to plain text otherwise
 10. **Resolve variable values before reporting** — if a property value is a `{{...}}` binding reference, always follow the **Resolving a Variable Property Value** workflow (check `bindings.json`, then `qlik_get_pipeline_project_details`) before reporting it. Never report a raw placeholder or empty string as the answer.  Remember: `qtcp_bindings_definition.json` is a **template**, not a resolved-value store — an empty string `""` there is not the answer.
 11. **Apply fallback/omit/prefix presentation rules for task-level fields** — for `taskSchema`, `internalSchema`, `databaseName`, and `warehouseName`, follow the required replacement, omission, and `project.current.prefixSchema` prefix behavior in **§Resolving a Variable Property Value**.
-
+12. **A STORAGE task may be linked to only one landing task** — verify existing sourceTask entries before adding a new landing-sourced table/pattern.
 ---
 
 `QTCP-INSTRUCTIONS-COMPLETE`

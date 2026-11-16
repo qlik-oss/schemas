@@ -191,15 +191,15 @@
     },
     "artifactsSettingsReloadType-WithDeletedRows": {
       "type": "string",
-      "description": "Type of reload operation (TRUNCATE_AND_INSERT, COMPARE_AND_APPLY are not supported for iceberg transform tasks)",
-      "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE", "TRUNCATE_AND_INSERT", "COMPARE_AND_APPLY"],
+      "description": "Type of reload operation",
+      "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE"],
       "default": "COMPARE_AND_APPLY_WITH_DELETED_ROWS"
     },
     "artifactsSettingsReloadType-Standard": {
       "type": "string",
       "description": "Type of reload operation",
-      "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE", "TRUNCATE_AND_INSERT", "COMPARE_AND_APPLY"],
-      "default": "COMPARE_AND_APPLY"
+      "enum": ["COMPARE_AND_APPLY_WITH_DELETED_ROWS", "COMPARE_AND_APPLY_WITHOUT_DELETED_ROWS", "DROP_AND_CREATE"],
+      "default": "COMPARE_AND_APPLY_WITH_DELETED_ROWS"
     },
     "artifactsSettings-WithDeletedRows": {
       "type": "object",

@@ -8,7 +8,7 @@
 	"required": ["landingDwSettings"],
 	"properties": {
 		"fullLoadOnly": {
-			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-True"
+			"$ref": "task.settings.common.schema.json#/definitions/fullLoadOnly-False"
 		},
 		"artifactsInfo": {
 			"$ref": "task.settings.common.schema.json#/definitions/artifactsInfo"

@@ -274,7 +274,6 @@ After applying the change, check the `enabled` field on the scheduling entry tha
 properties:
   exportVersion: '1.0'
   name: '{{projectName}}'
-  space: 'ref{project.current.spaceId}'
   type: DATA_PIPELINE
   platformType: <PLATFORM_TYPE>
   platformConnection: '{{platformConnection}}'
@@ -407,7 +406,6 @@ scheduling:
 properties:
   exportVersion: '1.0'
   name: '{{projectName}}'
-  space: 'ref{project.current.spaceId}'
   type: DATA_MOVEMENT
 ```
 

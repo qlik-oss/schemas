@@ -23,7 +23,8 @@
 				"space": {
 					"type": "string",
 					"description": "Deprecated. Not exported anymore and ignored on import; the target space is selected at import time.",
-					"deprecated": true
+					"deprecated": true,
+					"doNotSuggest": true
 				},
 				"type": {
 					"type": "string",

@@ -931,12 +931,6 @@
 						}
 					}
 				},
-				"loadMode": {
-					"type": "string",
-					"description": "Load mode of the physical table",
-					"enum": ["APPEND_ONLY", "MERGE"],
-					"default": "MERGE"
-				},
 				"additionalTableProperties": {
 					"type": "object",
 					"description": "Additional table properties",

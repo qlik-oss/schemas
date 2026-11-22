@@ -22,8 +22,9 @@
 				},
 				"space": {
 					"type": "string",
-					"description": "Space ID in which the project is created, recommended to use reference like ref{project.current.spaceId}",
-					"examples": ["ref{project.current.spaceId}"]
+					"description": "Deprecated. Not exported anymore and ignored on import; the target space is selected at import time.",
+					"deprecated": true,
+					"doNotSuggest": true
 				},
 				"type": {
 					"type": "string",
@@ -58,6 +59,11 @@
 					"type": "string",
 					"description": "Lakehouse cloud provider",
 					"enum": ["AWS"]
+				},
+				"externalExecutionEngineConnection": {
+					"type": "string",
+					"description": "External execution engine connection ID (e.g. Athena connection used for batch transformations in Qlik Open Lakehouse projects)",
+					"examples": ["{{externalExecutionEngineConnection}}"]
 				},
 				"projectVersion": {
 					"type": "string",

@@ -373,6 +373,9 @@
 							"description": "Whether the custom SQL dataset is incremental",
 							"enum": [true, false],
 							"default": false
+						},
+						"physicalTableSettings": {
+							"$ref": "#/$defs/PhysicalTableSettings"
 						}
 					}
 				},
@@ -400,6 +403,19 @@
 							"description": "Whether the dataflow dataset runs incrementally",
 							"enum": [true, false],
 							"default": false
+						},
+						"physicalTableSettings": {
+							"$ref": "#/$defs/PhysicalTableSettings"
+						}
+					}
+				},
+				"transformTargetDatasetSettings": {
+					"type": "object",
+					"description": "Settings specific to model based transform target datasets. Mappings are stored separately, only the user-set physical table settings are exported",
+					"additionalProperties": false,
+					"properties": {
+						"physicalTableSettings": {
+							"$ref": "#/$defs/PhysicalTableSettings"
 						}
 					}
 				},
@@ -879,6 +895,62 @@
 		}
 	},
 	"$defs": {
+		"PhysicalTableSettings": {
+			"type": "object",
+			"description": "Physical table settings of the dataset (Athena batch transformation in Qlik Open Lakehouse projects)",
+			"additionalProperties": false,
+			"properties": {
+				"entityPartitionSettings": {
+					"type": "object",
+					"description": "Partitioning of the physical table",
+					"additionalProperties": false,
+					"properties": {
+						"partitionColumnSettings": {
+							"type": "array",
+							"description": "Partition columns",
+							"items": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"columnName": {
+										"type": "string",
+										"description": "Partition column name"
+									},
+									"transform": {
+										"type": "string",
+										"description": "Partition transform function",
+										"enum": ["IDENTITY", "YEAR", "MONTH", "DAY", "HOUR", "TRUNCATE", "BUCKET"],
+										"default": "IDENTITY"
+									},
+									"parameter": {
+										"type": "string",
+										"description": "Transform parameter (e.g. width for TRUNCATE, number of buckets for BUCKET)"
+									}
+								}
+							}
+						}
+					}
+				},
+				"additionalTableProperties": {
+					"type": "object",
+					"description": "Additional table properties",
+					"additionalProperties": false,
+					"properties": {
+						"attributeSourceValue": {
+							"type": "string",
+							"description": "Source value for the attribute",
+							"enum": ["INHERIT", "CUSTOM"],
+							"default": "INHERIT"
+						},
+						"customValue": {
+							"type": "string",
+							"description": "Custom additional table properties, used when attributeSourceValue is CUSTOM",
+							"default": ""
+						}
+					}
+				}
+			}
+		},
 		"ModifiedByAi": {
 			"type": "object",
 			"description": "Metadata describing the latest AI modification",

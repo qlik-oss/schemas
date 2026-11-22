@@ -294,6 +294,29 @@
         }
       }
     },
+    "physicalTableSettings": {
+      "type": "object",
+      "description": "Physical table settings applied to the tables created by the task (Athena batch transformation in Qlik Open Lakehouse projects)",
+      "additionalProperties": false,
+      "properties": {
+        "additionalTableProperties": {
+          "type": "string",
+          "description": "Additional table properties added to the table definition, e.g. 'key1'='value1','key2'='value2'",
+          "default": ""
+        },
+        "folderLocationType": {
+          "type": "string",
+          "description": "Type of folder location",
+          "enum": ["DATA_ASSET_NAME", "ROOT_FOLDER", "SPECIFIC_FOLDER"],
+          "default": "DATA_ASSET_NAME"
+        },
+        "specificFolder": {
+          "type": "string",
+          "description": "Specific folder path when folderLocationType is SPECIFIC_FOLDER",
+          "default": ""
+        }
+      }
+    },
     "locationSettings": {
       "type": "object",
       "description": "Location settings configuration",

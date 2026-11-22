@@ -50,6 +50,9 @@
 		},
 			"viewType": {
 		"$ref": "task.settings.common.schema.json#/definitions/viewType"
+		},
+		"physicalTableSettings": {
+			"$ref": "task.settings.common.schema.json#/definitions/physicalTableSettings"
 		}
 	}
 }
